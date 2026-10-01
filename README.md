@@ -21,7 +21,7 @@ Data Science Project/
 ```
    venv\Scripts\activate.bat
 ```
-3. Open `SmogPrediction.ipynb` and select the kernel **Python (smog-venv)**.
+3. Open `air_quality.ipynb` and select the kernel **Python (smog-venv)**.
 4. If you install a new package, update the requirements file:
 ```
    pip freeze > requirements.txt
