@@ -1,0 +1,15 @@
+# Virtual environment
+venv/
+
+# Python / Jupyter junk
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Editor / OS files
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Raw data (shared via Google Drive instead)
+Dataset/
