@@ -27,3 +27,8 @@ WEATHER_FILES = {
 def weather_path(city):
     """Builds Dataset/<Country>/Weather/<file> for a city."""
     return DATASET_DIR / COUNTRY_FOLDER[CITY_COUNTRY[city]] / "Weather" / WEATHER_FILES[city]
+
+TRAIN_START = "2022-08-04"
+TRAIN_END = "2023-08-31"
+VALID_START = "2023-09-04"
+VALID_END = "2023-12-31"
