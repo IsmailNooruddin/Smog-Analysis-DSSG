@@ -59,3 +59,8 @@ CITY_COORDS = {
     "Ludhiana":       (30.8963,   75.8343),
     "Jalandhar":      (31.3181,   75.62575),
 }
+
+TRAIN_START = "2022-08-04"
+TRAIN_END = "2023-08-31"
+VALID_START = "2023-09-04"
+VALID_END = "2023-12-31"
