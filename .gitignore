@@ -15,3 +15,6 @@ Thumbs.db
 # Raw data (shared via Google Drive instead)
 Dataset/Exported_AQ
 
+
+# Fire outputs (rebuilt by fire.ipynb)
+Dataset/Exported_Fire
