@@ -1,0 +1,5 @@
+,city_days,temp_mean_c,temp_range_c,rh_mean_pct,rain_days_pct,wind_speed_mean_kmh,stagnant_pct
+April to September,2321,28.771,10.278,63.759,34.942,7.88,12.667
+October to March,2002,17.293,12.401,66.036,12.987,7.433,8.791
+Other days,3853,23.329,11.257,64.299,24.89,7.961,0.0
+Stagnant days,470,24.498,11.297,69.029,23.83,5.308,100.0

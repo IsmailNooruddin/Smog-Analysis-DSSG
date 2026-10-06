@@ -1,0 +1,153 @@
+// Renders docs/manuscript/manuscript.json (made by build_manuscript.py) into
+// Milestone2_Manuscript_Draft.docx at the repository root.
+// Run from the repository root:  node docs/manuscript/render_docx.js
+// Needs the 'docx' npm package (npm install docx).
+const fs = require("fs");
+const path = require("path");
+const {
+  Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell,
+  WidthType, ShadingType, BorderStyle, ImageRun, LevelFormat, Footer, PageNumber, TableLayoutType,
+} = require("docx");
+
+const ROOT = path.resolve(__dirname, "..", "..");
+const model = JSON.parse(fs.readFileSync(path.join(__dirname, "manuscript.json"), "utf8"));
+const FONT = "Times New Roman";
+const TEXT_W = 9638; // A4 (11906) minus 2 x 1134 margins, in DXA
+
+// "**bold** and *italic*" -> TextRuns
+function runs(text, opts = {}) {
+  const out = [];
+  const re = /(\*\*[^*]+\*\*|\*[^*]+\*)/g;
+  let last = 0, m;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) out.push(new TextRun({ text: text.slice(last, m.index), ...opts }));
+    const tok = m[0];
+    if (tok.startsWith("**")) out.push(new TextRun({ text: tok.slice(2, -2), bold: true, ...opts }));
+    else out.push(new TextRun({ text: tok.slice(1, -1), italics: true, ...opts }));
+    last = m.index + tok.length;
+  }
+  if (last < text.length) out.push(new TextRun({ text: text.slice(last), ...opts }));
+  return out;
+}
+
+function pngSize(file) {
+  const b = fs.readFileSync(file);
+  return { w: b.readUInt32BE(16), h: b.readUInt32BE(20) };
+}
+
+const border = { style: BorderStyle.SINGLE, size: 4, color: "8C8C8C" };
+const borders = { top: border, bottom: border, left: border, right: border };
+
+function makeTable(b) {
+  const size = Math.round((b.font || 8.5) * 2);
+  const total = b.widths.reduce((a, c) => a + c, 0);
+  const widths = b.widths.map((w) => Math.round((w * TEXT_W) / total));
+  widths[widths.length - 1] += TEXT_W - widths.reduce((a, c) => a + c, 0);
+  const cell = (txt, i, header) => new TableCell({
+    borders,
+    width: { size: widths[i], type: WidthType.DXA },
+    shading: header ? { fill: "E8EEF4", type: ShadingType.CLEAR, color: "auto" } : undefined,
+    margins: { top: 40, bottom: 40, left: 80, right: 80 },
+    children: [new Paragraph({ spacing: { before: 0, after: 0 }, children: runs(txt, { size, bold: header || undefined, font: FONT }) })],
+  });
+  const rows = [new TableRow({ tableHeader: true, children: b.header.map((h, i) => cell(h, i, true)) })];
+  for (const r of b.rows) rows.push(new TableRow({ cantSplit: true, children: r.map((c, i) => cell(c, i, false)) }));
+  return new Table({ width: { size: TEXT_W, type: WidthType.DXA }, columnWidths: widths, layout: TableLayoutType.FIXED, rows });
+}
+
+const children = [];
+for (const b of model.blocks) {
+  switch (b.t) {
+    case "title":
+      children.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 120 },
+        children: [new TextRun({ text: b.text, bold: true, size: 32, font: FONT })] }));
+      break;
+    case "subtitle":
+      children.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 120 },
+        children: [new TextRun({ text: b.text, italics: true, size: 22, font: FONT })] }));
+      break;
+    case "authors":
+      children.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 40 },
+        children: [new TextRun({ text: b.text, size: 22, font: FONT })] }));
+      break;
+    case "affil":
+      children.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 240 },
+        border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: "404040", space: 6 } },
+        children: [new TextRun({ text: b.text, size: 20, color: "404040", font: FONT })] }));
+      break;
+    case "h1":
+      children.push(new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: b.text })] }));
+      break;
+    case "h2":
+      children.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: b.text })] }));
+      break;
+    case "h3":
+      children.push(new Paragraph({ heading: HeadingLevel.HEADING_3, children: [new TextRun({ text: b.text })] }));
+      break;
+    case "p":
+      children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, spacing: { after: 120 }, children: runs(b.text) }));
+      break;
+    case "bullets":
+      for (const it of b.items)
+        children.push(new Paragraph({ numbering: { reference: "bullets", level: 0 }, alignment: AlignmentType.JUSTIFIED,
+          spacing: { after: 60 }, children: runs(it) }));
+      break;
+    case "refs":
+      for (const it of b.items)
+        children.push(new Paragraph({ numbering: { reference: "refs", level: 0 }, spacing: { after: 60 },
+          children: runs(it, { size: 20 }) }));
+      break;
+    case "table":
+      children.push(new Paragraph({ keepNext: true, spacing: { before: 160, after: 80 }, children: runs(b.caption, { size: 19 }) }));
+      children.push(makeTable(b));
+      children.push(new Paragraph({ spacing: { after: 120 }, children: b.note ? runs(b.note, { size: 18, italics: true }) : [] }));
+      break;
+    case "figure": {
+      const { w, h } = pngSize(b.path);
+      const wpx = Math.round(b.width_in * 96);
+      const hpx = Math.round((wpx * h) / w);
+      children.push(new Paragraph({ alignment: AlignmentType.CENTER, keepNext: true, spacing: { before: 160, after: 60 },
+        children: [new ImageRun({ type: "png", data: fs.readFileSync(b.path), transformation: { width: wpx, height: hpx },
+          altText: { title: path.basename(b.path), description: b.caption.replace(/\*/g, ""), name: path.basename(b.path) } })] }));
+      children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, spacing: { after: 200 }, children: runs(b.caption, { size: 19 }) }));
+      break;
+    }
+    default:
+      throw new Error("unknown block " + b.t);
+  }
+}
+
+const doc = new Document({
+  creator: "Munir Tariq, Ismail Nooruddin, Bilal Ayub",
+  title: "Trans-Boundary Smog Prediction: Milestone 2 manuscript draft",
+  styles: {
+    default: { document: { run: { font: FONT, size: 22 } } },
+    paragraphStyles: [
+      { id: "Heading1", name: "Heading 1", basedOn: "Normal", next: "Normal", quickFormat: true,
+        run: { size: 26, bold: true, font: FONT, color: "1F3A5F" }, paragraph: { spacing: { before: 300, after: 120 }, outlineLevel: 0, keepNext: true } },
+      { id: "Heading2", name: "Heading 2", basedOn: "Normal", next: "Normal", quickFormat: true,
+        run: { size: 23, bold: true, italics: true, font: FONT, color: "1F3A5F" }, paragraph: { spacing: { before: 220, after: 100 }, outlineLevel: 1, keepNext: true } },
+      { id: "Heading3", name: "Heading 3", basedOn: "Normal", next: "Normal", quickFormat: true,
+        run: { size: 22, italics: true, font: FONT }, paragraph: { spacing: { before: 160, after: 80 }, outlineLevel: 2, keepNext: true } },
+    ],
+  },
+  numbering: { config: [
+    { reference: "bullets", levels: [{ level: 0, format: LevelFormat.BULLET, text: "•", alignment: AlignmentType.LEFT,
+      style: { paragraph: { indent: { left: 400, hanging: 260 } } } }] },
+    { reference: "refs", levels: [{ level: 0, format: LevelFormat.DECIMAL, text: "[%1]", alignment: AlignmentType.LEFT,
+      style: { paragraph: { indent: { left: 500, hanging: 500 } } } }] },
+  ] },
+  sections: [{
+    properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: 1134, bottom: 1134, left: 1134, right: 1134 } } },
+    footers: { default: new Footer({ children: [new Paragraph({ alignment: AlignmentType.CENTER,
+      children: [new TextRun({ text: "Trans-Boundary Smog Prediction · Milestone 02 draft · page ", size: 16, color: "666666" }),
+                 new TextRun({ children: [PageNumber.CURRENT], size: 16, color: "666666" })] })] }) },
+    children,
+  }],
+});
+
+Packer.toBuffer(doc).then((buf) => {
+  const out = path.join(ROOT, "Milestone2_Manuscript_Draft.docx");
+  fs.writeFileSync(out, buf);
+  console.log("wrote", out);
+});
