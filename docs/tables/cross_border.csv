@@ -1,12 +1,12 @@
 city,group,IN_fires,IN_fire_days,rho_IN_next_day,PK_fires,PK_fire_days,rho_PK_next_day,IN_share_pct,can_test_cross_border
-Lahore,Near border (PK),8823,54,-0.039,3810,77,0.227,69.841,True
-Faisalabad,Intermediate (PK),12405,40,0.121,4355,89,0.142,74.016,True
-Multan,Far (PK),1343,18,-0.057,3357,85,0.054,28.574,False
-Rawalpindi,Far (PK),40,5,0.185,759,60,0.406,5.006,False
-Sialkot,Near border (PK),1914,45,0.326,1574,58,0.1,54.874,True
-Rahim Yar Khan,Far (PK),14,7,0.162,1135,81,0.221,1.218,False
-Islamabad,Far (PK),4,1,0.168,262,56,0.207,1.504,False
-Amritsar,Indian Punjab,9391,78,-0.007,3968,61,0.19,70.297,n/a (Indian city)
-Ferozepur,Indian Punjab,14558,68,0.087,6017,68,0.296,70.756,n/a (Indian city)
-Ludhiana,Indian Punjab,17978,84,-0.078,5807,69,0.069,75.585,n/a (Indian city)
-Jalandhar,Indian Punjab,14893,83,-0.172,4481,64,-0.095,76.871,n/a (Indian city)
+Lahore,Near border (PK),8823,54,-0.0392,3810,77,0.2266,69.8409,True
+Faisalabad,Intermediate (PK),12405,40,0.1211,4355,89,0.1421,74.0155,True
+Multan,Far (PK),1343,18,-0.0566,3357,85,0.0542,28.5745,False
+Rawalpindi,Far (PK),40,5,0.1846,759,60,0.4062,5.0063,False
+Sialkot,Near border (PK),1914,45,0.3255,1574,58,0.0998,54.8739,True
+Rahim Yar Khan,Far (PK),14,7,0.1616,1135,81,0.2213,1.2185,False
+Islamabad,Far (PK),4,1,0.1678,262,56,0.2068,1.5038,False
+Amritsar,Indian Punjab,9391,78,-0.007,3968,61,0.1902,70.2972,n/a (Indian city)
+Ferozepur,Indian Punjab,14558,68,0.087,6017,68,0.2959,70.7558,n/a (Indian city)
+Ludhiana,Indian Punjab,17978,84,-0.078,5807,69,0.0693,75.5855,n/a (Indian city)
+Jalandhar,Indian Punjab,14893,83,-0.1725,4481,64,-0.0952,76.8711,n/a (Indian city)

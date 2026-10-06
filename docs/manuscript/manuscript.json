@@ -1485,7 +1485,7 @@
   },
   {
    "t": "table",
-   "caption": "**Table 16.** Index rebuilt with other weights on the 4,323 training days (spike thresholds re-learned on training October–March for each version).",
+   "caption": "**Table 16.** Index rebuilt with other weights on the 4,323 training days (spike thresholds re-learned for each version on training October–March without the flagged suspect days, as for the master label).",
    "header": [
     "Index version",
     "Spearman with main",
@@ -1497,30 +1497,30 @@
     [
      "main (PM2.5 0.40, others 0.12)",
      "1.000",
-     "219",
+     "208",
      "0",
      "100.0"
     ],
     [
      "equal weights (1/6 each)",
      "0.980",
-     "244",
-     "63",
-     "91.3"
+     "233",
+     "65",
+     "90.4"
     ],
     [
      "without ozone",
      "0.979",
-     "209",
-     "76",
-     "80.4"
+     "198",
+     "68",
+     "81.2"
     ],
     [
      "without PM10",
      "0.988",
-     "233",
-     "42",
-     "93.6"
+     "222",
+     "40",
+     "93.8"
     ]
    ],
    "widths": [
@@ -1530,12 +1530,12 @@
     1500,
     1638
    ],
-   "note": "For all four versions the thresholds here are re-learned on every training October–March day, including the 44 flagged suspect days. Person A's thresholds, used for the master label, leave those days out, so the main version has 219 spike days here and 208 in the master label (Table 11).",
+   "note": null,
    "font": 8.5
   },
   {
    "t": "p",
-   "text": "All versions rank days almost identically (ρ ≥ 0.979). Dropping ozone changes the most labels (76) because winter ozone moves opposite to NO2. None of the conclusions above depends on these changes: they rest on the continuous index or on 200+ spike days. The main weights are kept and the ozone sensitivity is listed as a limitation."
+   "text": "All versions rank days almost identically (ρ ≥ 0.979). Dropping ozone changes the most labels (68) because winter ozone moves opposite to NO2. None of the conclusions above depends on these changes: they rest on the continuous index or on 200+ spike days. The main weights are kept and the ozone sensitivity is listed as a limitation."
   },
   {
    "t": "h1",

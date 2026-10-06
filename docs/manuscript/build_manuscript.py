@@ -64,24 +64,6 @@ def f(x, d=2):
     return out[1:] if out.startswith("-") and float(out) == 0 else out    # no "-0.00"
 
 
-# The notebook saves tables at 3 decimals, so a value such as -1.1546 is stored as -1.155 and then
-# rounds the wrong way at 2 decimals. These cells carry the full-precision value from merge_analysis.ipynb.
-EXACT = {("summary_train", "Composite Smog Index (z units)", "skew"): -1.1546,
-         ("summary_train", "NO2 daily mean (µg/m³)", "iqr"): 26.8146,
-         ("summary_train", "Fires in upwind cone, 300 km (count)", "sd"): 176.9945,
-         ("outlier_audit_train", "Fires in upwind cone, 300 km (count)", "sd_all"): 176.9945,
-         ("outlier_audit_train", "Rain total (mm)", "sd_without_iqr_outliers"): 0.4253,
-         ("cone_vs_radius", ("Training Oct-Dec (headline)", "Far (PK)"), "upwind cone (up45, 300 km)"): 0.2351,
-         ("cone_vs_radius", ("Training Oct-Dec (headline)", "Near border (PK)"), "downwind placebo (down45, 300 km)"): -0.0045}
-
-
-def exact(name, df):
-    for (n, row, col), v in EXACT.items():
-        if n == name:
-            df.loc[row, col] = v
-    return df
-
-
 # =====================================================================
 # Front matter
 # =====================================================================
@@ -266,7 +248,7 @@ p("**Choosing the default setting (training data only).** The master carries one
 h1("III. Exploratory Data Analysis")
 p("Unless stated, statistics use the 4,323 training city-days (1,012 in October–December 2022). The validation period is only described in Milestone 3, and 2024 is never used.")
 h2("A. Univariate summary statistics")
-s = exact("summary_train", tab("summary_train", index_col=0))
+s = tab("summary_train", index_col=0)
 rows = [[v, f(r['mean']), f(r['median']), f(r['sd']), f(r['iqr']), f(r['skew']), f(r['share_zero_pct'], 1)] for v, r in s.iterrows()]
 table("Central tendency and spread of the key variables, training period (n = 4,323 city-days).",
       ["Variable (unit)", "Mean", "Median", "SD", "IQR", "Skew", "Zero days (%)"], rows, [3300, 1000, 1000, 1000, 1000, 1000, 1338])
@@ -280,7 +262,7 @@ figure("figures/fig_a1_pm25_log_transform.png",
        "The raw values have a long right tail (mean above median); after the transform mean and median nearly coincide. Produced by air_quality.ipynb (flagged December days left out).", 6.0)
 
 h2("B. Outlier diagnostic")
-o = exact("outlier_audit_train", tab("outlier_audit_train", index_col=0))
+o = tab("outlier_audit_train", index_col=0)
 rows = [[v, int(r['z_outliers']), int(r['iqr_outliers']), f(r['iqr_pct'], 1), int(r['z_new_after_removal (masking)']), f(r['sd_all']), f(r['sd_without_iqr_outliers']), f(r['sd_inflation_pct'], 0)]
         for v, r in o.iterrows()]
 table("Outliers by the z-score rule (|z| > 3) and the quartile rule (beyond Q1 − 1.5·IQR or Q3 + 1.5·IQR), training period. "
@@ -342,7 +324,7 @@ figure("figures/fig_m1_cone_radius_sensitivity.png",
        "Median Spearman correlation between the fire count on day t (all origins) and the Composite Smog Index on day t + 1, for every cone and radius. Correlations are computed inside each city and the median over the group is shown. "
        "Top: training harvest season (92 days per city), used to choose the setting (black box). Bottom: full training year (393 days per city), where the shared seasonal cycle inflates every setting, including the downwind placebo. "
        "Near border = Lahore, Sialkot; Far = Multan, Rahim Yar Khan, Islamabad, Rawalpindi. Produced by merge_analysis.ipynb.", 6.5)
-cvr = exact("cone_vs_radius", tab("cone_vs_radius", index_col=[0, 1])).reset_index()
+cvr = tab("cone_vs_radius")
 rows = [[r['period'].replace(' (headline)', ''), r['group'], f(r.iloc[2]), f(r.iloc[3]), f(r.iloc[4]), f(r.iloc[5]), f(r.iloc[6])] for _, r in cvr.iterrows()]
 table("Median Spearman ρ (fires on day t vs index on day t + 1) at 300 km: chosen cone, plain circle, downwind placebo and the other two angles.",
       ["Period", "City group", "Upwind ±45°", "No cone", "Downwind ±45°", "Upwind ±30°", "Upwind ±60°"], rows,
@@ -400,11 +382,9 @@ p("Only Lahore (54 days with India-origin fires in the cone), Sialkot (45) and F
 h3("6. Robustness of the index weights")
 w = tab("weight_check_train", index_col=0)
 rows = [[k, f(r['spearman_with_main'], 3), int(r['spike_days']), int(r['labels_changed']), f(r['main_spikes_kept_pct'], 1)] for k, r in w.iterrows()]
-table("Index rebuilt with other weights on the 4,323 training days (spike thresholds re-learned on training October–March for each version).",
-      ["Index version", "Spearman with main", "Spike days", "Labels changed", "Main spikes kept (%)"], rows, [3600, 1600, 1300, 1500, 1638],
-      note="For all four versions the thresholds here are re-learned on every training October–March day, including the 44 flagged suspect days. "
-           "Person A's thresholds, used for the master label, leave those days out, so the main version has 219 spike days here and 208 in the master label (Table 11).")
-p("All versions rank days almost identically (ρ ≥ 0.979). Dropping ozone changes the most labels (76) because winter ozone moves opposite to NO2. "
+table("Index rebuilt with other weights on the 4,323 training days (spike thresholds re-learned for each version on training October–March without the flagged suspect days, as for the master label).",
+      ["Index version", "Spearman with main", "Spike days", "Labels changed", "Main spikes kept (%)"], rows, [3600, 1600, 1300, 1500, 1638])
+p("All versions rank days almost identically (ρ ≥ 0.979). Dropping ozone changes the most labels (68) because winter ozone moves opposite to NO2. "
   "None of the conclusions above depends on these changes: they rest on the continuous index or on 200+ spike days. The main weights are kept and the ozone sensitivity is listed as a limitation.")
 
 # =====================================================================
@@ -427,10 +407,6 @@ table("Formal hypotheses (H0 = null, H1 = alternative) and the SDG targets they 
        ["H5 Forecast value (A)", "A model with the fire and weather features does not beat the persistence baseline or a weather-only model on validation: ΔPR-AUC ≤ 0 and ΔMAE ≥ 0.",
         "The full model beats both baselines on validation (higher PR-AUC and ROC-AUC, lower Brier score and MAE) for at least one horizon of 1 to 3 days.", "3.d, 3.9"]],
       [1500, 3500, 3200, 1438])
-# harvest_season is left out of the controls: it equals month_10 + month_11 + month_12, so next to the month dummies
-# it is perfectly collinear. H4 uses Pakistani cities only, so only the 6 Pakistani city dummies vary there.
-hm["controls"] = hm["controls"].str.replace("harvest_season, ", "", regex=False).str.replace("month_*, city_*,", "month_02..month_12, city_* (10),", regex=False)
-hm.loc["H4", "controls"] = hm.loc["H4", "controls"].replace("city_* (10)", "city_* (6 Pakistani)")
 rows = [[i, r['Y'], r['X'], r['controls'], r['test']] for i, r in hm.iterrows()]
 table("Variable mapping: every name is a column (or column family) of master_daily.parquet, checked in the notebook (merge_analysis.ipynb, Hypotheses).",
       ["ID", "Response (Y)", "Main predictors (X)", "Controls / confounders", "Planned test"], rows,

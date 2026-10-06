@@ -1,5 +1,5 @@
 version,spearman_with_main,spike_days,labels_changed,main_spikes_kept_pct
-"main (PM2.5 0.40, others 0.12)",1.0,219,0,100.0
-equal weights (1/6 each),0.98,244,63,91.324
-without ozone,0.979,209,76,80.365
-without PM10,0.988,233,42,93.607
+"main (PM2.5 0.40, others 0.12)",1.0,208,0,100.0
+equal weights (1/6 each),0.9802,233,65,90.3846
+without ozone,0.9792,198,68,81.25
+without PM10,0.9878,222,40,93.75

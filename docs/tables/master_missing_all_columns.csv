@@ -189,17 +189,17 @@ fire_cnt_up45_r150_pk_lag3,0,0.0,
 fire_frp_up45_r150_all_lag1,0,0.0,
 fire_frp_up45_r150_all_lag2,0,0.0,
 fire_frp_up45_r150_all_lag3,0,0.0,
-target_index_h1,11,0.194,target day falls in 2024 (sealed)
-target_spike_h1,11,0.194,target day falls in 2024 (sealed)
-target_index_h2,22,0.388,target day falls in 2024 (sealed)
-target_spike_h2,22,0.388,target day falls in 2024 (sealed)
-target_index_h3,33,0.583,target day falls in 2024 (sealed)
-target_spike_h3,33,0.583,target day falls in 2024 (sealed)
+target_index_h1,11,0.1942,target day falls in 2024 (sealed)
+target_spike_h1,11,0.1942,target day falls in 2024 (sealed)
+target_index_h2,22,0.3883,target day falls in 2024 (sealed)
+target_spike_h2,22,0.3883,target day falls in 2024 (sealed)
+target_index_h3,33,0.5825,target day falls in 2024 (sealed)
+target_spike_h3,33,0.5825,target day falls in 2024 (sealed)
 persist_index,0,0.0,
 persist_spike,0,0.0,
-index_lag1,11,0.194,AQ starts 2022-08-04 (no earlier index)
-index_lag2,22,0.388,AQ starts 2022-08-04 (no earlier index)
-index_lag3,33,0.583,AQ starts 2022-08-04 (no earlier index)
+index_lag1,11,0.1942,AQ starts 2022-08-04 (no earlier index)
+index_lag2,22,0.3883,AQ starts 2022-08-04 (no earlier index)
+index_lag3,33,0.5825,AQ starts 2022-08-04 (no earlier index)
 city_faisalabad,0,0.0,
 city_multan,0,0.0,
 city_rawalpindi,0,0.0,

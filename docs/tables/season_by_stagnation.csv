@@ -1,5 +1,5 @@
 season,wind,city_days,mean_index,spike_share_pct,mean_pm2_5_ugm3
-Jan-Sep,stagnant,382,0.058,5.759,54.33
-Jan-Sep,ventilated,2929,-0.187,2.561,46.791
-Oct-Dec,stagnant,88,0.788,21.591,96.407
-Oct-Dec,ventilated,924,0.357,9.957,74.348
+Jan-Sep,stagnant,382,0.0579,5.7592,54.3303
+Jan-Sep,ventilated,2929,-0.1867,2.5606,46.7905
+Oct-Dec,stagnant,88,0.7884,21.5909,96.4075
+Oct-Dec,ventilated,924,0.3572,9.9567,74.3476

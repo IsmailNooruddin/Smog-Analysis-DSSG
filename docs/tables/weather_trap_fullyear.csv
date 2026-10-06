@@ -1,7 +1,7 @@
 condition,days_with,spike_rate_with_pct,ci95_low_pct,ci95_high_pct,days_without,spike_rate_without_pct,risk_ratio
-Stagnant (vector wind < 2 km/h),470,9.362,7.048,12.335,3853,4.256,2.199
-"Humid (RH > 77.1%, train P75)",1081,8.696,7.159,10.525,3242,3.516,2.473
-Rain-free (< 1 mm),3252,6.396,5.605,7.29,1071,0.0,
-"Large temp. range (> 13.6 °C, train P75)",1070,5.794,4.546,7.359,3253,4.488,1.291
-"Small temp. range (< 8.9 °C, train P25; work-plan proxy)",1071,0.467,0.2,1.088,3252,6.242,0.075
-Stagnant + rain-free + humid,90,28.889,20.542,38.964,4233,4.3,6.719
+Stagnant (vector wind < 2 km/h),470,9.3617,7.0477,12.3346,3853,4.2564,2.1994
+"Humid (RH > 77.1%, train P75)",1081,8.6957,7.1588,10.525,3242,3.5163,2.4729
+Rain-free (< 1 mm),3252,6.3961,5.6055,7.2896,1071,0.0,
+"Large temp. range (> 13.6 °C, train P75)",1070,5.7944,4.5462,7.3589,3253,4.4882,1.291
+"Small temp. range (< 8.9 °C, train P25; work-plan proxy)",1071,0.4669,0.1996,1.0882,3252,6.2423,0.0748
+Stagnant + rain-free + humid,90,28.8889,20.542,38.9642,4233,4.2996,6.719
