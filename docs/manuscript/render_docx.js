@@ -11,8 +11,11 @@ const {
 
 const ROOT = path.resolve(__dirname, "..", "..");
 const model = JSON.parse(fs.readFileSync(path.join(__dirname, "manuscript.json"), "utf8"));
-const FONT = "Times New Roman";
-const TEXT_W = 9638; // A4 (11906) minus 2 x 1134 margins, in DXA
+// Layout follows the team's stream reports (Report_Weather.docx): US Letter, Arial, numbered blue headings
+const FONT = "Arial";
+const NAVY = "1F3864";
+const BLUE = "2E5C8A";
+const TEXT_W = 9792; // Letter (12240) minus 2 x 1224 margins, in DXA
 
 // "**bold** and *italic*" -> TextRuns
 function runs(text, opts = {}) {
@@ -35,19 +38,19 @@ function pngSize(file) {
   return { w: b.readUInt32BE(16), h: b.readUInt32BE(20) };
 }
 
-const border = { style: BorderStyle.SINGLE, size: 4, color: "8C8C8C" };
+const border = { style: BorderStyle.SINGLE, size: 4, color: "9FB3C8" };
 const borders = { top: border, bottom: border, left: border, right: border };
 
 function makeTable(b) {
-  const size = Math.round((b.font || 8.5) * 2);
+  const size = Math.round((b.font || 8) * 2);
   const total = b.widths.reduce((a, c) => a + c, 0);
   const widths = b.widths.map((w) => Math.round((w * TEXT_W) / total));
   widths[widths.length - 1] += TEXT_W - widths.reduce((a, c) => a + c, 0);
   const cell = (txt, i, header) => new TableCell({
     borders,
     width: { size: widths[i], type: WidthType.DXA },
-    shading: header ? { fill: "E8EEF4", type: ShadingType.CLEAR, color: "auto" } : undefined,
-    margins: { top: 40, bottom: 40, left: 80, right: 80 },
+    shading: header ? { fill: "DCE6F2", type: ShadingType.CLEAR, color: "auto" } : undefined,
+    margins: { top: 30, bottom: 30, left: 70, right: 70 },
     children: [new Paragraph({ spacing: { before: 0, after: 0 }, children: runs(txt, { size, bold: header || undefined, font: FONT }) })],
   });
   const rows = [new TableRow({ tableHeader: true, children: b.header.map((h, i) => cell(h, i, true)) })];
@@ -59,21 +62,16 @@ const children = [];
 for (const b of model.blocks) {
   switch (b.t) {
     case "title":
-      children.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 120 },
-        children: [new TextRun({ text: b.text, bold: true, size: 32, font: FONT })] }));
+      children.push(new Paragraph({ spacing: { after: 60 },
+        children: [new TextRun({ text: b.text, bold: true, size: 34, color: NAVY, font: FONT })] }));
       break;
     case "subtitle":
-      children.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 120 },
-        children: [new TextRun({ text: b.text, italics: true, size: 22, font: FONT })] }));
+      children.push(new Paragraph({ spacing: { after: 60 },
+        children: [new TextRun({ text: b.text, bold: true, size: 20, font: FONT })] }));
       break;
     case "authors":
-      children.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 40 },
-        children: [new TextRun({ text: b.text, size: 22, font: FONT })] }));
-      break;
-    case "affil":
-      children.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 240 },
-        border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: "404040", space: 6 } },
-        children: [new TextRun({ text: b.text, size: 20, color: "404040", font: FONT })] }));
+      children.push(new Paragraph({ spacing: { after: 160 },
+        children: [new TextRun({ text: b.text, size: 17, color: "7F7F7F", font: FONT })] }));
       break;
     case "h1":
       children.push(new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: b.text })] }));
@@ -85,31 +83,31 @@ for (const b of model.blocks) {
       children.push(new Paragraph({ heading: HeadingLevel.HEADING_3, children: [new TextRun({ text: b.text })] }));
       break;
     case "p":
-      children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, spacing: { after: 120 }, children: runs(b.text) }));
+      children.push(new Paragraph({ spacing: { after: 100, line: 264 }, children: runs(b.text) }));
       break;
     case "bullets":
       for (const it of b.items)
-        children.push(new Paragraph({ numbering: { reference: "bullets", level: 0 }, alignment: AlignmentType.JUSTIFIED,
-          spacing: { after: 60 }, children: runs(it) }));
+        children.push(new Paragraph({ numbering: { reference: "bullets", level: 0 },
+          spacing: { after: 40, line: 264 }, children: runs(it) }));
       break;
     case "refs":
       for (const it of b.items)
-        children.push(new Paragraph({ numbering: { reference: "refs", level: 0 }, spacing: { after: 60 },
-          children: runs(it, { size: 20 }) }));
+        children.push(new Paragraph({ numbering: { reference: "refs", level: 0 }, spacing: { after: 40 },
+          children: runs(it, { size: 17 }) }));
       break;
     case "table":
-      children.push(new Paragraph({ keepNext: true, spacing: { before: 160, after: 80 }, children: runs(b.caption, { size: 19 }) }));
+      children.push(new Paragraph({ keepNext: true, spacing: { before: 120, after: 60 }, children: runs(b.caption, { size: 17 }) }));
       children.push(makeTable(b));
-      children.push(new Paragraph({ spacing: { after: 120 }, children: b.note ? runs(b.note, { size: 18, italics: true }) : [] }));
+      children.push(new Paragraph({ spacing: { after: 100 }, children: b.note ? runs(b.note, { size: 16, italics: true }) : [] }));
       break;
     case "figure": {
       const { w, h } = pngSize(b.path);
       const wpx = Math.round(b.width_in * 96);
       const hpx = Math.round((wpx * h) / w);
-      children.push(new Paragraph({ alignment: AlignmentType.CENTER, keepNext: true, spacing: { before: 160, after: 60 },
+      children.push(new Paragraph({ alignment: AlignmentType.CENTER, keepNext: true, spacing: { before: 120, after: 40 },
         children: [new ImageRun({ type: "png", data: fs.readFileSync(b.path), transformation: { width: wpx, height: hpx },
           altText: { title: path.basename(b.path), description: b.caption.replace(/\*/g, ""), name: path.basename(b.path) } })] }));
-      children.push(new Paragraph({ alignment: AlignmentType.JUSTIFIED, spacing: { after: 200 }, children: runs(b.caption, { size: 19 }) }));
+      children.push(new Paragraph({ spacing: { after: 160 }, children: runs(b.caption, { size: 17 }) }));
       break;
     }
     default:
@@ -119,29 +117,29 @@ for (const b of model.blocks) {
 
 const doc = new Document({
   creator: "Munir Tariq, Ismail Nooruddin, Bilal Ayub",
-  title: "Trans-Boundary Smog Prediction: Milestone 2 manuscript draft",
+  title: "Trans-Boundary Smog Prediction: Milestone 2 report",
   styles: {
-    default: { document: { run: { font: FONT, size: 22 } } },
+    default: { document: { run: { font: FONT, size: 19 } } },
     paragraphStyles: [
       { id: "Heading1", name: "Heading 1", basedOn: "Normal", next: "Normal", quickFormat: true,
-        run: { size: 26, bold: true, font: FONT, color: "1F3A5F" }, paragraph: { spacing: { before: 300, after: 120 }, outlineLevel: 0, keepNext: true } },
+        run: { size: 26, bold: true, font: FONT, color: NAVY }, paragraph: { spacing: { before: 240, after: 100 }, outlineLevel: 0, keepNext: true } },
       { id: "Heading2", name: "Heading 2", basedOn: "Normal", next: "Normal", quickFormat: true,
-        run: { size: 23, bold: true, italics: true, font: FONT, color: "1F3A5F" }, paragraph: { spacing: { before: 220, after: 100 }, outlineLevel: 1, keepNext: true } },
+        run: { size: 21, bold: true, font: FONT, color: BLUE }, paragraph: { spacing: { before: 160, after: 70 }, outlineLevel: 1, keepNext: true } },
       { id: "Heading3", name: "Heading 3", basedOn: "Normal", next: "Normal", quickFormat: true,
-        run: { size: 22, italics: true, font: FONT }, paragraph: { spacing: { before: 160, after: 80 }, outlineLevel: 2, keepNext: true } },
+        run: { size: 19, bold: true, font: FONT }, paragraph: { spacing: { before: 120, after: 60 }, outlineLevel: 2, keepNext: true } },
     ],
   },
   numbering: { config: [
     { reference: "bullets", levels: [{ level: 0, format: LevelFormat.BULLET, text: "•", alignment: AlignmentType.LEFT,
-      style: { paragraph: { indent: { left: 400, hanging: 260 } } } }] },
+      style: { paragraph: { indent: { left: 360, hanging: 220 } } } }] },
     { reference: "refs", levels: [{ level: 0, format: LevelFormat.DECIMAL, text: "[%1]", alignment: AlignmentType.LEFT,
       style: { paragraph: { indent: { left: 500, hanging: 500 } } } }] },
   ] },
   sections: [{
-    properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: 1134, bottom: 1134, left: 1134, right: 1134 } } },
+    properties: { page: { size: { width: 12240, height: 15840 }, margin: { top: 1000, bottom: 950, left: 1224, right: 1224 } } },
     footers: { default: new Footer({ children: [new Paragraph({ alignment: AlignmentType.CENTER,
-      children: [new TextRun({ text: "Trans-Boundary Smog Prediction · Milestone 02 draft · page ", size: 16, color: "666666" }),
-                 new TextRun({ children: [PageNumber.CURRENT], size: 16, color: "666666" })] })] }) },
+      children: [new TextRun({ text: "Trans-Boundary Smog Prediction, Milestone 02   |   Page ", size: 15, color: "7F7F7F" }),
+                 new TextRun({ children: [PageNumber.CURRENT], size: 15, color: "7F7F7F" })] })] }) },
     children,
   }],
 });
