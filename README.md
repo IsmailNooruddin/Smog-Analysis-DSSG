@@ -17,13 +17,15 @@ Smog-Analysis-DSSG/
 │   └── plotting.py          one colorblind-safe figure style
 ├── Dataset/
 │   ├── India/, Pakistan/    raw files (Air Quality, NASA, Weather); 2024 files are sealed
-│   └── clean/               Role 1 outputs + master_daily.parquet, master_data_dictionary.csv, *_params.json
+│   └── clean/               Role 1 outputs + master_daily.parquet, master_data_dictionary.csv, *_params.json,
+│                            Milestone2_Final_Master_and_EDA.xlsx (master + all EDA, last cell of merge_analysis.ipynb)
 ├── figures/                 all report figures (fig_a* AQ, fig_b* weather, fig_fire_* fire, fig_m* merged)
 ├── docs/
 │   ├── tables/              every table quoted in the manuscript (written by merge_analysis.ipynb)
 │   └── manuscript/          builds Milestone2_Manuscript_Draft.docx from docs/tables
 ├── DECISIONS.md             every data removal or change, with row counts
 ├── Milestone2_Manuscript_Draft.docx   combined Sections I–VI of the paper
+├── submission/              the three Role 2 files handed in (report, merge_analysis.ipynb, Excel workbook)
 └── Report_*.docx / Milestone_2_Report_*.docx   Role 1 stream reports
 ```
 

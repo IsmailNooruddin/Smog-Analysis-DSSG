@@ -89,7 +89,7 @@
   },
   {
    "t": "table",
-   "caption": "**Table 2.** Master analytical dataset (Dataset/clean/master_daily.parquet).",
+   "caption": "**Table 2.** Master analytical dataset (Dataset/clean/master_daily.parquet; sheet Master_Daily_Final of the submitted workbook Milestone2_Final_Master_and_EDA.xlsx).",
    "header": [
     "Item",
     "Value"
@@ -149,7 +149,7 @@
   },
   {
    "t": "p",
-   "text": "The full column list with meaning, unit, source and owner is in Dataset/clean/master_data_dictionary.csv (287 rows, one per column)."
+   "text": "The full column list with meaning, unit, source and owner is in sheet Data_Dictionary of the workbook (287 rows, one per column; also Dataset/clean/master_data_dictionary.csv)."
   },
   {
    "t": "h1",
@@ -212,7 +212,7 @@
   },
   {
    "t": "table",
-   "caption": "**Table 4.** Row bookkeeping from raw files to the master table (every removal is logged in DECISIONS.md).",
+   "caption": "**Table 4.** Row bookkeeping from raw files to the master table (every removal is logged with row counts in DECISIONS.md and in sheet Decisions_Log of the workbook).",
    "header": [
     "Stream",
     "Steps and row counts"
@@ -319,7 +319,7 @@
   },
   {
    "t": "table",
-   "caption": "**Table 6.** Missing values by stage. Counts and percentages for every one of the 287 master columns are in docs/tables/master_missing_all_columns.csv and in the notebook (Part 2B, step 1).",
+   "caption": "**Table 6.** Missing values by stage. Counts and percentages for every one of the 287 master columns are in sheet Missing_All_Columns of the workbook and in merge_analysis.ipynb (Part 2B, step 1).",
    "header": [
     "Where",
     "What is missing",
@@ -391,7 +391,7 @@
   },
   {
    "t": "p",
-   "text": "**Selection bias.** (i) The training period contains **one** harvest season (October–December 2022) and one January–March, while August–December appears twice in the window. Any seasonal estimate rests on one winter. This is why the Week 14 plan retrains with the first half of 2024 and tests on the second half. (ii) 44 city-days on 13–16 December 2022 have near-zero values for every pollutant in all cities at once, a likely source error. They are flagged (suspect_day = 1) and, by team decision, kept in all statistics. They are the reason the index has a skewness of −1.15 on training days (+0.26 without them). (iii) The satellite cannot see fires under thick cloud or fog, which is most common on the worst smog days, so fire–smog associations are likely underestimated. (iv) Islamabad and Rawalpindi share one AQ series, so there are 10 independent AQ series, not 11."
+   "text": "**Selection bias.** (i) The training period contains **one** harvest season (October–December 2022) and one January–March, while August–December appears twice in the window. Any seasonal estimate rests on one winter. This is why the Week 14 plan retrains with the first half of 2024 and tests on the second half. (ii) 44 city-days on 13–16 December 2022 have near-zero values for every pollutant in all cities at once, a likely source error. They are flagged (suspect_day = 1) and, by team decision, kept as rows in the master and in the merged-data statistics. Removing four days would break each city's unbroken daily calendar, which the 1- to 3-day lags and the targets rely on; the flag lets Milestone 3 drop them in a single step; and they are already left out of the AQ scaling and the spike thresholds, so they cannot shift any learned parameter. Their effect is reported where it matters: they are the reason the index has a skewness of −1.15 on training days (+0.26 without them). (iii) The satellite cannot see fires under thick cloud or fog, which is most common on the worst smog days, so fire–smog associations are likely underestimated. (iv) Islamabad and Rawalpindi share one AQ series, so there are 10 independent AQ series, not 11."
   },
   {
    "t": "h2",
@@ -732,7 +732,7 @@
   },
   {
    "t": "p",
-   "text": "**Resistant vs non-resistant.** For the weather variables the mean and median nearly coincide (temperature range: 11.26 vs 11.30 °C, skew 0.02), so mean and SD describe them well. Pollutants are moderately right-skewed (PM2.5 mean 54.4 vs median 46.1 µg/m³), and fire counts and rain are zero-inflated and extremely skewed. Fires in the cone have a mean of 43.3 but a median of 4. India-origin fires in the cone have a median of 0 and are absent on 61% of days. Rain has a median of 0 mm and a mean of 2.2 mm. For these variables the median and IQR describe a typical day, the mean describes the total load, and the SD (4 to 51 times the IQR for the fire counts) is driven by a handful of days. Daily mean PM2.5 exceeds the WHO 24-hour guideline of 15 µg/m³ on 99.5% of training city-days (air_quality.ipynb). These are model estimates, so this is an indication, not an official exceedance count."
+   "text": "**Resistant vs non-resistant.** For the weather variables the mean and median nearly coincide (temperature range: 11.26 vs 11.30 °C, skew 0.02), so mean and SD describe them well. Pollutants are moderately right-skewed (PM2.5 mean 54.4 vs median 46.1 µg/m³), and fire counts and rain are zero-inflated and extremely skewed. Fires in the cone have a mean of 43.3 but a median of 4. India-origin fires in the cone have a median of 0 and are absent on 61% of days. Rain has a median of 0 mm and a mean of 2.2 mm. For these variables the median and IQR describe a typical day, the mean describes the total load, and the SD (4 to 51 times the IQR for the fire counts) is driven by a handful of days. Daily mean PM2.5 exceeds the WHO 24-hour guideline of 15 µg/m³ on 99.4% of training city-days outside the flagged days (merge_analysis.ipynb). These are model estimates, so this is an indication, not an official exceedance count."
   },
   {
    "t": "figure",
@@ -958,7 +958,7 @@
      "Season",
      "Oct-Dec (harvest)",
      "1,012",
-     "0.40",
+     "0.39",
      "0.44",
      "11.0"
     ],
@@ -974,7 +974,7 @@
      "Wind",
      "stagnant (< 2 km/h)",
      "470",
-     "0.20",
+     "0.19",
      "0.12",
      "8.7"
     ],
@@ -1206,7 +1206,7 @@
   },
   {
    "t": "p",
-   "text": "**Findings.** (i) In the harvest season the cone matters more than the circle. At 300 km the ±45° upwind cone gives a median ρ of 0.23 (positive in all 7 Pakistani cities), the plain circle −0.06 and the downwind placebo 0.01. A large circle counts as many fires downwind as upwind and so carries no signal. (ii) Inside the cone, ρ grows with the radius (about 0 at 50 km to 0.23 at 300 km): the smoke that matters is regional. (iii) At **30° and 60°** the results are close (0.19 and 0.20 over all 7 cities). The near-border cities favour the narrow ±30° cone (0.28) and the far cities the wide ±60° cone (0.32), where the wind direction is less certain along a longer path. With 92 days per city a correlation has a standard error of about 0.10, so the angle choice is within noise; ±45° is the middle setting. (iv) Over the full training year every setting looks good (0.19–0.35), **including the placebo**. Pooled-year correlations mostly measure the shared season, which is why the selection used the harvest season only. (v) For Indian Punjab cities the cone adds little (0.06): fires burn all around them."
+   "text": "**Findings.** (i) In the harvest season the cone matters more than the circle. At 300 km the ±45° upwind cone gives a median ρ of 0.23 (positive in all 7 Pakistani cities), the plain circle −0.06 and the downwind placebo 0.01. A large circle counts as many fires downwind as upwind and so carries no signal. (ii) Inside the cone, ρ grows with the radius (about 0 at 50 km to 0.23 at 300 km): the smoke that matters is regional. (iii) At **30° and 60°** the results are close (0.19 and 0.20 over all 7 cities). The near-border cities favour the narrow ±30° cone (0.28) and the far cities the wide ±60° cone (0.32), where the wind direction is less certain along a longer path. With 92 days per city a correlation has a standard error of about 0.10, so the angle choice is within noise; ±45° is the middle setting. (iv) Over the full training year every 300 km setting looks good (0.16–0.35 across the city groups of Table 13), **including the placebo** (0.19 over the 7 Pakistani cities). Pooled-year correlations mostly measure the shared season, which is why the selection used the harvest season only. (v) For Indian Punjab cities the cone adds little (0.06): fires burn all around them."
   },
   {
    "t": "figure",
@@ -1312,7 +1312,7 @@
   },
   {
    "t": "p",
-   "text": "In all four cities rain days are followed by the cleanest next day (pooled median −0.06, against 0.46 after ventilated and 0.80 after stagnant dry days). After stagnant days the median next-day index is highest in Lahore (2.36 vs 1.38), Amritsar (1.63 vs 0.78) and Multan (0.91 vs 0.64), and about the same in Faisalabad. The rain and stagnant boxes hold only 2–9 days per city, so the figure describes the pattern rather than testing it."
+   "text": "In all four cities rain days are followed by the cleanest next day (median over all 11 cities −0.06, against 0.46 after ventilated and 0.80 after stagnant dry days). After stagnant days the median next-day index is highest in Lahore (2.36 vs 1.38), Amritsar (1.63 vs 0.78) and Multan (0.91 vs 0.64), and about the same in Faisalabad. The rain and stagnant boxes hold only 2–9 days per city, so the figure describes the pattern rather than testing it."
   },
   {
    "t": "h3",
@@ -1683,7 +1683,11 @@
   },
   {
    "t": "p",
-   "text": "Code: GitHub repository (private), notebooks run top to bottom with Restart and Run All, in this order: air_quality.ipynb (A), weather.ipynb (B), fire.ipynb (C), merge_analysis.ipynb (Role 2). Shared settings, file names, city coordinates and dates are in src/config.py; merge and EDA functions in src/merge.py and src/eda.py; one figure style in src/plotting.py. Outputs: Dataset/clean/master_daily.parquet, master_data_dictionary.csv, the parameter files, figures/ and docs/tables/. Every removal of data is logged with row counts in DECISIONS.md."
+   "text": "**Notebooks.** air_quality.ipynb (A), weather.ipynb (B), fire.ipynb (C) and merge_analysis.ipynb (Role 2) run top to bottom with Restart and Run All, in this order, from the project root. They use the shared settings in src/config.py (cities, coordinates, dates, file names), the merge and EDA functions in src/merge.py and src/eda.py, and one figure style in src/plotting.py. The submitted notebooks keep all their printed outputs and figures, so every number can be read without rerunning them. Every setting is learned on the training period and saved (aq_params.json, weather_zscore_params.json, fire_zscore_params.json, role2_params.json), so the Week 14 run on 2024 only changes the dates in src/config.py."
+  },
+  {
+   "t": "p",
+   "text": "**Workbook.** The last cell of merge_analysis.ipynb writes Milestone2_Final_Master_and_EDA.xlsx. Its first sheet, Master_Daily_Final, is the final master table (5,665 × 287). Sheet Contents lists every other sheet, the notebook that made it and the table or figure of this report that uses it: the data dictionary, missing values for every column, the decisions log with row counts, the saved parameters, an encoding example, the final table of each Role 1 analysis (air quality, weather, wind, fire), the Role 1 EDA tables (AQ_, WX_, FIRE_) and the Role 2 EDA tables (EDA_, Hypothesis_Mapping)."
   },
   {
    "t": "h1",

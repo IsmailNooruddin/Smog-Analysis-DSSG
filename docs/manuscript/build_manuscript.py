@@ -106,7 +106,7 @@ p("**Research question.** Which fire and weather predictors, available on day *t
 
 h2("B. Master dataset overview")
 ov = tab("master_overview", index_col=0)["value"]
-table("Master analytical dataset (Dataset/clean/master_daily.parquet).",
+table("Master analytical dataset (Dataset/clean/master_daily.parquet; sheet Master_Daily_Final of the submitted workbook Milestone2_Final_Master_and_EDA.xlsx).",
       ["Item", "Value"],
       [["Rows (observations)", ov["Rows (observations)"]], ["Columns (variables)", ov["Columns (variables)"]],
        ["Observational unit", ov["Observational unit"]], ["Cities", ov["Cities"] + ": Lahore, Faisalabad, Multan, Rawalpindi, Sialkot, Rahim Yar Khan, Islamabad; Amritsar, Ferozepur, Ludhiana, Jalandhar"],
@@ -115,7 +115,7 @@ table("Master analytical dataset (Dataset/clean/master_daily.parquet).",
        ["Columns by owner", "Air quality (A) 52; weather (B) 58; fire (C) 128; keys, targets, lags, encodings and split built in the merge 49"],
        ["Sealed", "All 2024 files (kept for the Week 14 out-of-time test); never read in this milestone"]],
       [2400, 7238])
-p("The full column list with meaning, unit, source and owner is in Dataset/clean/master_data_dictionary.csv (287 rows, one per column).")
+p("The full column list with meaning, unit, source and owner is in sheet Data_Dictionary of the workbook (287 rows, one per column; also Dataset/clean/master_data_dictionary.csv).")
 
 # =====================================================================
 # II. Data and Preprocessing
@@ -145,7 +145,7 @@ book = [["Air quality", "453,192 hourly rows → 191,153 in 2022–2023 → 135,
         ["Weather", "433,728 hourly rows → 188,393 in 2022–2023 → 7,852 city-days → 5,665 in the modelling window"],
         ["Fire", "1,284,773 → 287,323 in the study box (26–37°N, 68–79°E) → 279,968 vegetation fires (type 0) → 238,796 nominal/high confidence → 238,756 on 2022–2023 local dates → 8,030 city-days (zeros filled) → 5,665 in the window"],
         ["Master", "spine 5,665 → AQ join 5,665 (all matched) → weather join 5,665 (all matched) → fire join 5,665 (all matched); 287 columns"]]
-table("Row bookkeeping from raw files to the master table (every removal is logged in DECISIONS.md).", ["Stream", "Steps and row counts"], book, [1500, 8138])
+table("Row bookkeeping from raw files to the master table (every removal is logged with row counts in DECISIONS.md and in sheet Decisions_Log of the workbook).", ["Stream", "Steps and row counts"], book, [1500, 8138])
 
 h3("Merge procedure (Part 2A)")
 bullets(["**Swap and check.** Each stream was checked against the shared rules before joining: 11 cities spelled as in the dictionary, correct country code, no duplicate city-day, complete calendar, date stored as a real date. All three passed (merge_analysis.ipynb, 2A.1).",
@@ -168,7 +168,7 @@ table("Split and target availability.",
 h2("C. Cleaning and missing-data strategy")
 mis = tab("master_missing_all_columns", index_col=0)
 complete = int((mis["missing_count"] == 0).sum())
-table("Missing values by stage. Counts and percentages for every one of the 287 master columns are in docs/tables/master_missing_all_columns.csv and in the notebook (Part 2B, step 1).",
+table("Missing values by stage. Counts and percentages for every one of the 287 master columns are in sheet Missing_All_Columns of the workbook and in merge_analysis.ipynb (Part 2B, step 1).",
       ["Where", "What is missing", "Count (%)", "Decision"],
       [["AQ raw, 2022–2023", "All 7 pollutants in one continuous block, 6 Jan (first hour in the files) to 4 Aug 2022, same hours in all cities", "55,248 of 191,153 hourly rows (28.9%)",
         "Not imputed. Modelling starts 2022-08-04 for all streams (listwise deletion of the block)"],
@@ -185,8 +185,7 @@ p(f"In total {complete} of the 287 master columns have no missing value. **Why n
   "from every stream (the team's decision), and the window starts on 2022-08-04.")
 p("**Selection bias.** (i) The training period contains **one** harvest season (October–December 2022) and one January–March, while August–December appears twice in the window. "
   "Any seasonal estimate rests on one winter. This is why the Week 14 plan retrains with the first half of 2024 and tests on the second half. "
-  "(ii) 44 city-days on 13–16 December 2022 have near-zero values for every pollutant in all cities at once, a likely source error. They are flagged (suspect_day = 1) and, by team decision, kept in all statistics. "
-  "They are the reason the index has a skewness of −1.15 on training days (+0.26 without them). "
+  "(ii) 44 city-days on 13–16 December 2022 have near-zero values for every pollutant in all cities at once, a likely source error. They are flagged (suspect_day = 1) and, by team decision, kept as rows in the master and in the merged-data statistics. Removing four days would break each city's unbroken daily calendar, which the 1- to 3-day lags and the targets rely on; the flag lets Milestone 3 drop them in a single step; and they are already left out of the AQ scaling and the spike thresholds, so they cannot shift any learned parameter. Their effect is reported where it matters: they are the reason the index has a skewness of −1.15 on training days (+0.26 without them). "
   "(iii) The satellite cannot see fires under thick cloud or fog, which is most common on the worst smog days, so fire–smog associations are likely underestimated. "
   "(iv) Islamabad and Rawalpindi share one AQ series, so there are 10 independent AQ series, not 11.")
 
@@ -256,7 +255,7 @@ p("**Resistant vs non-resistant.** For the weather variables the mean and median
   "Pollutants are moderately right-skewed (PM2.5 mean 54.4 vs median 46.1 µg/m³), and fire counts and rain are zero-inflated and extremely skewed. Fires in the cone have a mean of 43.3 but a median of 4. "
   "India-origin fires in the cone have a median of 0 and are absent on 61% of days. Rain has a median of 0 mm and a mean of 2.2 mm. "
   "For these variables the median and IQR describe a typical day, the mean describes the total load, and the SD (4 to 51 times the IQR for the fire counts) is driven by a handful of days. "
-  "Daily mean PM2.5 exceeds the WHO 24-hour guideline of 15 µg/m³ on 99.5% of training city-days (air_quality.ipynb). These are model estimates, so this is an indication, not an official exceedance count.")
+  "Daily mean PM2.5 exceeds the WHO 24-hour guideline of 15 µg/m³ on 99.4% of training city-days outside the flagged days (merge_analysis.ipynb). These are model estimates, so this is an indication, not an official exceedance count.")
 figure("figures/fig_a1_pm25_log_transform.png",
        "Daily mean PM2.5 across the 11 cities on training days, before (a) and after (b) the log(1 + x) transform. Dashed line: mean; solid line: median. "
        "The raw values have a long right tail (mean above median); after the transform mean and median nearly coincide. Produced by air_quality.ipynb (flagged December days left out).", 6.0)
@@ -333,7 +332,7 @@ p("**Findings.** (i) In the harvest season the cone matters more than the circle
   "A large circle counts as many fires downwind as upwind and so carries no signal. (ii) Inside the cone, ρ grows with the radius (about 0 at 50 km to 0.23 at 300 km): the smoke that matters is regional. "
   "(iii) At **30° and 60°** the results are close (0.19 and 0.20 over all 7 cities). The near-border cities favour the narrow ±30° cone (0.28) and the far cities the wide ±60° cone (0.32), where the wind direction is less certain along a longer path. "
   "With 92 days per city a correlation has a standard error of about 0.10, so the angle choice is within noise; ±45° is the middle setting. "
-  "(iv) Over the full training year every setting looks good (0.19–0.35), **including the placebo**. Pooled-year correlations mostly measure the shared season, which is why the selection used the harvest season only. "
+  "(iv) Over the full training year every 300 km setting looks good (0.16–0.35 across the city groups of Table 13), **including the placebo** (0.19 over the 7 Pakistani cities). Pooled-year correlations mostly measure the shared season, which is why the selection used the harvest season only. "
   "(v) For Indian Punjab cities the cone adds little (0.06): fires burn all around them.")
 figure("figures/fig_m3_lagged_fire.png",
        "Spearman correlation between the fire count k days earlier (k = 0 to 3) and the Composite Smog Index of the day, median over the 7 Pakistani cities (lines), with the range across cities shaded for the upwind cone; training harvest season. Produced by merge_analysis.ipynb.", 5.4)
@@ -358,7 +357,7 @@ p("Stagnant days are followed by a spike 27.3% of the time (9.4% otherwise) and 
 figure("figures/fig_m4_index_by_weather.png",
        "Composite Smog Index on the next day by today's weather (rain day ≥ 1 mm; stagnant = vector-mean wind < 2 km/h; ventilated = other dry days) for three Pakistani cities and Amritsar, training harvest season. "
        "Boxes show median and IQR, whiskers 1.5 × IQR; n = city-days per box. Produced by merge_analysis.ipynb.", 6.0)
-p("In all four cities rain days are followed by the cleanest next day (pooled median −0.06, against 0.46 after ventilated and 0.80 after stagnant dry days). "
+p("In all four cities rain days are followed by the cleanest next day (median over all 11 cities −0.06, against 0.46 after ventilated and 0.80 after stagnant dry days). "
   "After stagnant days the median next-day index is highest in Lahore (2.36 vs 1.38), Amritsar (1.63 vs 0.78) and Multan (0.91 vs 0.64), and about the same in Faisalabad. "
   "The rain and stagnant boxes hold only 2–9 days per city, so the figure describes the pattern rather than testing it.")
 
@@ -432,9 +431,14 @@ bullets(["**Air quality is model output.** Open-Meteo air quality is CAMS global
          "**Observed vs forecast weather.** Observed daily weather stands in for the forecast weather an operational system would use.",
          "**Dependence.** City-days are not independent (multi-day episodes, shared regional weather), so group comparisons and contingency p-values are descriptive."])
 h1("VI. Reproducibility")
-p("Code: GitHub repository (private), notebooks run top to bottom with Restart and Run All, in this order: air_quality.ipynb (A), weather.ipynb (B), fire.ipynb (C), merge_analysis.ipynb (Role 2). "
-  "Shared settings, file names, city coordinates and dates are in src/config.py; merge and EDA functions in src/merge.py and src/eda.py; one figure style in src/plotting.py. "
-  "Outputs: Dataset/clean/master_daily.parquet, master_data_dictionary.csv, the parameter files, figures/ and docs/tables/. Every removal of data is logged with row counts in DECISIONS.md.")
+p("**Notebooks.** air_quality.ipynb (A), weather.ipynb (B), fire.ipynb (C) and merge_analysis.ipynb (Role 2) run top to bottom with Restart and Run All, in this order, from the project root. "
+  "They use the shared settings in src/config.py (cities, coordinates, dates, file names), the merge and EDA functions in src/merge.py and src/eda.py, and one figure style in src/plotting.py. "
+  "The submitted notebooks keep all their printed outputs and figures, so every number can be read without rerunning them. "
+  "Every setting is learned on the training period and saved (aq_params.json, weather_zscore_params.json, fire_zscore_params.json, role2_params.json), so the Week 14 run on 2024 only changes the dates in src/config.py.")
+p("**Workbook.** The last cell of merge_analysis.ipynb writes Milestone2_Final_Master_and_EDA.xlsx. Its first sheet, Master_Daily_Final, is the final master table (5,665 × 287). "
+  "Sheet Contents lists every other sheet, the notebook that made it and the table or figure of this report that uses it: the data dictionary, missing values for every column, "
+  "the decisions log with row counts, the saved parameters, an encoding example, the final table of each Role 1 analysis (air quality, weather, wind, fire), "
+  "the Role 1 EDA tables (AQ_, WX_, FIRE_) and the Role 2 EDA tables (EDA_, Hypothesis_Mapping).")
 h1("References")
 refs = ["Hersbach, H., et al. (2020). The ERA5 global reanalysis. Quarterly Journal of the Royal Meteorological Society, 146(730), 1999–2049.",
         "Inness, A., et al. (2019). The CAMS reanalysis of atmospheric composition. Atmospheric Chemistry and Physics, 19, 3515–3556.",
