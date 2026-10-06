@@ -64,3 +64,22 @@ TRAIN_START = "2022-08-04"
 TRAIN_END = "2023-08-31"
 VALID_START = "2023-09-04"
 VALID_END = "2023-12-31"
+# ------------------------------------------------------------
+# Role 2: merge and analysis (merge_analysis.ipynb, src/merge.py)
+# ------------------------------------------------------------
+# Modelling window: AQ data starts 2022-08-04, so every stream is cut to this
+# window before the merge (11 cities x 515 days = 5,665 rows). For Week 14,
+# change these dates and rerun; nothing else is hard-coded.
+WINDOW_START = "2022-08-04"
+WINDOW_END = "2023-12-31"
+SKIP_START = "2023-09-01"   # 3-day gap between train and validation (= longest horizon)
+SKIP_END = "2023-09-03"
+
+CLEAN_DIR = DATASET_DIR / "clean"
+FIG_DIR = Path("figures")
+
+# City groups for the cross-border analysis (Pakistani cities only)
+NEAR_BORDER = ["Lahore", "Sialkot"]                                 # border cities, most India-origin fires
+INTERMEDIATE = ["Faisalabad"]                                       # some India-origin fires within 150 km
+FAR_PK = ["Multan", "Rahim Yar Khan", "Islamabad", "Rawalpindi"]    # almost no India-origin fires
+IN_CITIES = ["Amritsar", "Ferozepur", "Ludhiana", "Jalandhar"]

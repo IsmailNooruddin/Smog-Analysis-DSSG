@@ -1,0 +1,107 @@
+{
+  "train_start": "2022-08-04",
+  "train_end": "2023-08-31",
+  "suspect_days_left_out_of_training": true,
+  "index_weights": {
+    "pm2_5": 0.4,
+    "pm10": 0.12,
+    "no2": 0.12,
+    "so2": 0.12,
+    "o3": 0.12,
+    "co": 0.12
+  },
+  "zscore": {
+    "pm10_mean_ugm3": {
+      "log1p": true,
+      "mean": 4.3691657441466,
+      "std": 0.4653037149228592
+    },
+    "pm2_5_mean_ugm3": {
+      "log1p": true,
+      "mean": 3.8990828087809586,
+      "std": 0.4758283847353459
+    },
+    "no2_mean_ugm3": {
+      "log1p": true,
+      "mean": 3.1908110422373785,
+      "std": 0.7225081207888138
+    },
+    "so2_mean_ugm3": {
+      "log1p": true,
+      "mean": 2.4620683128042518,
+      "std": 0.5419364419764717
+    },
+    "o3_mean_ugm3": {
+      "log1p": false,
+      "mean": 82.86804231600266,
+      "std": 20.236545154899378
+    },
+    "co_mean_ugm3": {
+      "log1p": true,
+      "mean": 6.50838645730656,
+      "std": 0.6783618319137916
+    },
+    "dust_mean_ugm3": {
+      "log1p": true,
+      "mean": 2.481709360687196,
+      "std": 1.1441882655139242
+    },
+    "pm10_max_ugm3": {
+      "log1p": true,
+      "mean": 4.725997474115466,
+      "std": 0.47354017195873205
+    },
+    "pm2_5_max_ugm3": {
+      "log1p": true,
+      "mean": 4.266470342047142,
+      "std": 0.47731809068949094
+    },
+    "no2_max_ugm3": {
+      "log1p": false,
+      "mean": 68.55092311287684,
+      "std": 42.405886263278646
+    },
+    "so2_max_ugm3": {
+      "log1p": true,
+      "mean": 2.9331042997810965,
+      "std": 0.5940187225362559
+    },
+    "o3_max_ugm3": {
+      "log1p": false,
+      "mean": 161.78359429773312,
+      "std": 34.23156850700349
+    },
+    "co_max_ugm3": {
+      "log1p": true,
+      "mean": 7.080817173214648,
+      "std": 0.7957042302468372
+    }
+  },
+  "spike_threshold_mean_index": {
+    "Faisalabad": 1.587821393299933,
+    "Islamabad": 0.6543047978931588,
+    "Lahore": 2.177076539279984,
+    "Multan": 1.2505331924464482,
+    "Rahim Yar Khan": 0.36312009931685657,
+    "Rawalpindi": 0.6543047978931588,
+    "Sialkot": 1.3364189597734852,
+    "Amritsar": 1.640228274929081,
+    "Ferozepur": 1.2451625845196737,
+    "Jalandhar": 1.0861592460995857,
+    "Ludhiana": 1.173086614478806
+  },
+  "spike_threshold_max_index": {
+    "Faisalabad": 1.6371860961189337,
+    "Islamabad": 0.8463320544781638,
+    "Lahore": 2.6034598703762004,
+    "Multan": 1.341378935758574,
+    "Rahim Yar Khan": 0.08248627532929681,
+    "Rawalpindi": 0.8463320544781638,
+    "Sialkot": 1.2645237279380306,
+    "Amritsar": 1.6798410269315707,
+    "Ferozepur": 1.1200823361057888,
+    "Jalandhar": 0.8878092185059782,
+    "Ludhiana": 0.9624560009693408
+  },
+  "spike_rule": "smog_spike = 1 if composite_smog_index >= city threshold (90th percentile of training Oct-Mar days)"
+}
