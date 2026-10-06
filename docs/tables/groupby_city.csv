@@ -1,0 +1,12 @@
+city,city_days,mean_index,median_index,spike_share_pct
+Lahore,393,0.627,0.57,4.58
+Faisalabad,393,0.23,0.154,4.58
+Multan,393,-0.063,-0.131,4.58
+Rawalpindi,393,-0.056,-0.01,5.852
+Sialkot,393,-0.039,-0.092,4.58
+Rahim Yar Khan,393,-0.793,-0.854,4.58
+Islamabad,393,-0.056,-0.01,5.852
+Amritsar,393,0.045,-0.044,4.58
+Ferozepur,393,-0.141,-0.242,4.58
+Ludhiana,393,0.019,0.041,4.58
+Jalandhar,393,-0.092,-0.16,4.58

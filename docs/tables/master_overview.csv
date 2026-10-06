@@ -1,0 +1,10 @@
+,value
+Rows (observations),"5,665"
+Columns (variables),287
+Observational unit,1 row = 1 city on 1 local (UTC+5) day
+Cities,"11 cities (7 Pakistani Punjab and ICT, 4 Indian Punjab)"
+Period,2022-08-04 to 2023-12-31 (515 days)
+Source 1: air quality,"Open-Meteo Air Quality API (hourly, CAMS model output)"
+Source 2: weather,"Open-Meteo Historical Weather API (hourly, ERA5-based reanalysis)"
+Source 3: fire,NASA FIRMS VIIRS NOAA-20 active fires (point detections)
+Split,"train 4,323 / skip 33 / validation 1,309"

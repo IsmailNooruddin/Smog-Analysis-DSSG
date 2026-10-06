@@ -1,0 +1,13 @@
+,setting,lag_days,median_rho,min_rho,max_rho
+0,Upwind cone 45° (300 km),0,0.164,-0.004,0.234
+1,Upwind cone 45° (300 km),1,0.239,0.051,0.411
+2,Upwind cone 45° (300 km),2,0.115,0.048,0.398
+3,Upwind cone 45° (300 km),3,0.053,-0.034,0.345
+4,No cone (300 km),0,-0.09,-0.214,0.32
+5,No cone (300 km),1,-0.035,-0.124,0.368
+6,No cone (300 km),2,-0.035,-0.166,0.329
+7,No cone (300 km),3,-0.058,-0.15,0.286
+8,Downwind placebo (300 km),0,-0.045,-0.267,0.045
+9,Downwind placebo (300 km),1,0.011,-0.157,0.106
+10,Downwind placebo (300 km),2,-0.011,-0.146,0.108
+11,Downwind placebo (300 km),3,0.023,-0.101,0.114

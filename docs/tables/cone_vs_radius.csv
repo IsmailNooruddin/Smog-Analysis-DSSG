@@ -1,0 +1,9 @@
+period,group,"upwind cone (up45, 300 km)",no cone (300 km),"downwind placebo (down45, 300 km)",up30 same radius,up60 same radius
+Training Oct-Dec (headline),All Pakistani (7),0.226,-0.058,0.009,0.189,0.204
+Training Oct-Dec (headline),Near border (PK),0.207,-0.093,-0.005,0.277,0.147
+Training Oct-Dec (headline),Far (PK),0.235,-0.052,-0.037,0.176,0.324
+Training Oct-Dec (headline),Indian Punjab,0.059,-0.077,-0.031,0.109,0.039
+Full training year,All Pakistani (7),0.293,0.234,0.193,0.262,0.317
+Full training year,Near border (PK),0.354,0.243,0.207,0.336,0.355
+Full training year,Far (PK),0.263,0.233,0.164,0.232,0.277
+Full training year,Indian Punjab,0.303,0.288,0.263,0.296,0.307

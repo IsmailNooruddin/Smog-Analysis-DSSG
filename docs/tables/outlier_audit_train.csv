@@ -1,0 +1,16 @@
+variable,n,z_outliers,iqr_outliers,iqr_pct,iqr_only,z_new_after_removal (masking),sd_all,sd_without_iqr_outliers,sd_inflation_pct
+Composite Smog Index (z units),4323,33,110,2.545,77,22,0.83,0.677,22.675
+PM2.5 daily mean (µg/m³),4323,96,292,6.755,196,63,30.786,19.932,54.454
+PM10 daily mean (µg/m³),4323,73,232,5.367,159,57,46.666,33.797,38.077
+NO2 daily mean (µg/m³),4323,48,91,2.105,43,31,21.139,17.627,19.921
+CO daily mean (µg/m³),4323,82,241,5.575,159,80,735.93,430.774,70.839
+Temperature mean (°C),4323,0,0,0.0,0,0,7.189,7.189,0.0
+Temperature range (°C),4323,2,2,0.046,0,0,3.112,3.106,0.194
+Relative humidity (%),4323,0,1,0.023,1,0,15.463,15.449,0.087
+Rain total (mm),4323,89,823,19.038,734,144,6.26,0.425,1371.758
+Wind speed mean (km/h),4323,60,170,3.932,110,33,2.62,2.109,24.251
+Vector-mean wind (km/h),4323,51,94,2.174,43,20,3.219,2.848,13.03
+"Fires in upwind cone, 300 km (count)",4323,63,534,12.353,471,101,176.995,14.572,1114.615
+India-origin fires in cone (count),4323,58,745,17.233,687,85,153.435,1.526,9955.483
+"Fires within 300 km, no cone (count)",4323,122,492,11.381,370,129,430.993,53.231,709.669
+FRP in upwind cone (MW),4323,62,559,12.931,497,97,1171.958,69.388,1588.982
