@@ -1,4 +1,4 @@
-"""Builds the Milestone 2 manuscript draft (Sections I-V) as a JSON content model.
+"""Builds the Milestone 2 manuscript draft (Sections I-VI) as a JSON content model.
 
 Tables are read from docs/tables/*.csv, which merge_analysis.ipynb writes, so the numbers in
 the manuscript are the numbers the notebook printed. render_docx.js turns the JSON into Word.
@@ -60,14 +60,33 @@ def figure(path, caption, width_in=6.3):
 
 
 def f(x, d=2):
-    return f"{x:,.{d}f}"
+    out = f"{x:,.{d}f}"
+    return out[1:] if out.startswith("-") and float(out) == 0 else out    # no "-0.00"
+
+
+# The notebook saves tables at 3 decimals, so a value such as -1.1546 is stored as -1.155 and then
+# rounds the wrong way at 2 decimals. These cells carry the full-precision value from merge_analysis.ipynb.
+EXACT = {("summary_train", "Composite Smog Index (z units)", "skew"): -1.1546,
+         ("summary_train", "NO2 daily mean (µg/m³)", "iqr"): 26.8146,
+         ("summary_train", "Fires in upwind cone, 300 km (count)", "sd"): 176.9945,
+         ("outlier_audit_train", "Fires in upwind cone, 300 km (count)", "sd_all"): 176.9945,
+         ("outlier_audit_train", "Rain total (mm)", "sd_without_iqr_outliers"): 0.4253,
+         ("cone_vs_radius", ("Training Oct-Dec (headline)", "Far (PK)"), "upwind cone (up45, 300 km)"): 0.2351,
+         ("cone_vs_radius", ("Training Oct-Dec (headline)", "Near border (PK)"), "downwind placebo (down45, 300 km)"): -0.0045}
+
+
+def exact(name, df):
+    for (n, row, col), v in EXACT.items():
+        if n == name:
+            df.loc[row, col] = v
+    return df
 
 
 # =====================================================================
 # Front matter
 # =====================================================================
 blocks.append({"t": "title", "text": "Trans-Boundary Smog Prediction: Crop Fires and Climate Traps across Punjab (Pakistan and India)"})
-blocks.append({"t": "subtitle", "text": "Milestone 02 manuscript draft: Section II (Data and Preprocessing) and Section III (Exploratory Data Analysis), with project alignment and hypotheses"})
+blocks.append({"t": "subtitle", "text": "Milestone 02 manuscript draft: data preparation, exploratory analysis and hypotheses"})
 blocks.append({"t": "authors", "text": "Munir Tariq (10067) · Ismail Nooruddin (09958) · Bilal Ayub (09716)"})
 blocks.append({"t": "affil", "text": "Data Science for Social Good, Habib University, Karachi · October 2026"})
 
@@ -78,7 +97,7 @@ p("**Abstract.** Every winter, smoke from crop-residue burning and urban emissio
   "The target is a Composite Smog Index of six z-scored pollutants and a city-specific spike label. Exploratory analysis on the training period shows "
   "four results. (i) Fires inside a ±45° upwind cone within 300 km track next-day smog (median Spearman ρ = 0.23 over the Pakistani cities in the harvest season), "
   "while the plain 300 km circle (−0.06) and a downwind placebo cone (0.01) do not. (ii) The association peaks one day after the fires. "
-  "(iii) Stagnant, humid and rain-free days roughly double to quadruple the next-day spike rate. (iv) Spikes concentrate in December and January, after the "
+  "(iii) Stagnant and humid days roughly triple the next-day spike rate (risk ratios 2.9 and 2.6, and 4.4 when both fall on a dry day), and no rain day was followed by a spike. (iv) Spikes concentrate in December and January, after the "
   "October–November burning peak, which shows that fires alone are not enough: the weather must trap the smoke. Five formal hypotheses, mapped to master-file columns, set up Milestone 3.")
 
 # =====================================================================
@@ -169,7 +188,7 @@ mis = tab("master_missing_all_columns", index_col=0)
 complete = int((mis["missing_count"] == 0).sum())
 table("Missing values by stage. Counts and percentages for every one of the 287 master columns are in docs/tables/master_missing_all_columns.csv and in the notebook (Part 2B, step 1).",
       ["Where", "What is missing", "Count (%)", "Decision"],
-      [["AQ raw, 2022–2023", "All 7 pollutants in one continuous block, 1 Jan to 4 Aug 2022, same hours in all cities", "55,248 of 191,153 hourly rows (28.9%)",
+      [["AQ raw, 2022–2023", "All 7 pollutants in one continuous block, 6 Jan (first hour in the files) to 4 Aug 2022, same hours in all cities", "55,248 of 191,153 hourly rows (28.9%)",
         "Not imputed. Modelling starts 2022-08-04 for all streams (listwise deletion of the block)"],
        ["AQ after 4 Aug 2022", "Short gaps", "0", "Rule kept for 2024: linear interpolation of gaps up to 6 h; a day needs ≥ 18 valid hours"],
        ["Weather raw", "Any variable", "0 of 433,728 rows", "Nothing to impute"],
@@ -201,7 +220,8 @@ table("Right-skewed variables before and after log(1 + x), training days. Air-qu
        ["Fires in upwind ±45° cone, 300 km", f(fs.loc['fire_cnt_up45_r300_all', 'skew_raw']), f(fs.loc['fire_cnt_up45_r300_all', 'skew_log1p']), f"{f(fs.loc['fire_cnt_up45_r300_all','share_zero_days_pct'],1)}% zero days"],
        ["India-origin fires in the cone", f(fs.loc['fire_cnt_up45_r300_in', 'skew_raw']), f(fs.loc['fire_cnt_up45_r300_in', 'skew_log1p']), f"{f(fs.loc['fire_cnt_up45_r300_in','share_zero_days_pct'],1)}% zero days"],
        ["Fires within 300 km, no cone", f(fs.loc['fire_cnt_r300_all', 'skew_raw']), f(fs.loc['fire_cnt_r300_all', 'skew_log1p']), f"{f(fs.loc['fire_cnt_r300_all','share_zero_days_pct'],1)}% zero days"]],
-      [3300, 1200, 1500, 3638])
+      [3300, 1200, 1500, 3638],
+      note="Air-quality rows exclude the 44 flagged suspect days (13–16 December 2022), so their raw skew differs slightly from Table 9, which keeps them (PM2.5 1.95 vs 1.91, PM10 1.75 vs 1.71, CO 3.18 vs 3.17).")
 p("**Standardisation.** Continuous predictors and pollutants were converted to z-scores, z = (x − mean)/SD, using the **training-period** mean and SD only, "
   "after log1p where applied. One set of parameters per variable is used for all cities, so real differences between cities remain. The parameters are saved "
   "(aq_params.json, weather_zscore_params.json, fire_zscore_params.json, role2_params.json) and will be reused unchanged for 2024. Min-Max scaling was not used: "
@@ -229,7 +249,7 @@ h2("F. Spatial feature engineering")
 p("For each city (coordinates from the weather-file headers) the great-circle (Haversine) distance and the compass bearing to every fire within 300 km were computed once. "
   "Radius counts (50, 100, 150, 200, 300 km) are then filters. A fire is **upwind** when its bearing is within the cone half-angle (±30°, ±45°, ±60°) of the direction "
   "the daily vector-mean wind comes from, with the angle difference taken around the circle (350° and 10° are 20° apart). A ±45° **downwind** cone is kept as a placebo. "
-  "On stagnant days (vector-mean wind < 2 km/h, 10.7% of city-days) the direction is noise, so the cone keeps every fire in the radius. Every count is split by origin "
+  "On stagnant days (vector-mean wind < 2 km/h, 10.9% of training city-days) the direction is noise, so the cone keeps every fire in the radius. Every count is split by origin "
   "(fires detected in India or Pakistan), which is what lets us examine the cross-border claim, and fire radiative power (FRP, MW) is summed alongside the count. "
   "Automatic tests confirm that a north wind keeps fires to the north, that no cone holds more fires than its circle, and that wider cones hold at least as many fires as narrower ones.")
 figure("figures/fig_fire_study_area.png",
@@ -246,7 +266,7 @@ p("**Choosing the default setting (training data only).** The master carries one
 h1("III. Exploratory Data Analysis")
 p("Unless stated, statistics use the 4,323 training city-days (1,012 in October–December 2022). The validation period is only described in Milestone 3, and 2024 is never used.")
 h2("A. Univariate summary statistics")
-s = tab("summary_train", index_col=0)
+s = exact("summary_train", tab("summary_train", index_col=0))
 rows = [[v, f(r['mean']), f(r['median']), f(r['sd']), f(r['iqr']), f(r['skew']), f(r['share_zero_pct'], 1)] for v, r in s.iterrows()]
 table("Central tendency and spread of the key variables, training period (n = 4,323 city-days).",
       ["Variable (unit)", "Mean", "Median", "SD", "IQR", "Skew", "Zero days (%)"], rows, [3300, 1000, 1000, 1000, 1000, 1000, 1338])
@@ -260,7 +280,7 @@ figure("figures/fig_a1_pm25_log_transform.png",
        "The raw values have a long right tail (mean above median); after the transform mean and median nearly coincide. Produced by air_quality.ipynb (flagged December days left out).", 6.0)
 
 h2("B. Outlier diagnostic")
-o = tab("outlier_audit_train", index_col=0)
+o = exact("outlier_audit_train", tab("outlier_audit_train", index_col=0))
 rows = [[v, int(r['z_outliers']), int(r['iqr_outliers']), f(r['iqr_pct'], 1), int(r['z_new_after_removal (masking)']), f(r['sd_all']), f(r['sd_without_iqr_outliers']), f(r['sd_inflation_pct'], 0)]
         for v, r in o.iterrows()]
 table("Outliers by the z-score rule (|z| > 3) and the quartile rule (beyond Q1 − 1.5·IQR or Q3 + 1.5·IQR), training period. "
@@ -322,7 +342,7 @@ figure("figures/fig_m1_cone_radius_sensitivity.png",
        "Median Spearman correlation between the fire count on day t (all origins) and the Composite Smog Index on day t + 1, for every cone and radius. Correlations are computed inside each city and the median over the group is shown. "
        "Top: training harvest season (92 days per city), used to choose the setting (black box). Bottom: full training year (393 days per city), where the shared seasonal cycle inflates every setting, including the downwind placebo. "
        "Near border = Lahore, Sialkot; Far = Multan, Rahim Yar Khan, Islamabad, Rawalpindi. Produced by merge_analysis.ipynb.", 6.5)
-cvr = tab("cone_vs_radius")
+cvr = exact("cone_vs_radius", tab("cone_vs_radius", index_col=[0, 1])).reset_index()
 rows = [[r['period'].replace(' (headline)', ''), r['group'], f(r.iloc[2]), f(r.iloc[3]), f(r.iloc[4]), f(r.iloc[5]), f(r.iloc[6])] for _, r in cvr.iterrows()]
 table("Median Spearman ρ (fires on day t vs index on day t + 1) at 300 km: chosen cone, plain circle, downwind placebo and the other two angles.",
       ["Period", "City group", "Upwind ±45°", "No cone", "Downwind ±45°", "Upwind ±30°", "Upwind ±60°"], rows,
@@ -335,7 +355,7 @@ p("**Findings.** (i) In the harvest season the cone matters more than the circle
   "(v) For Indian Punjab cities the cone adds little (0.06): fires burn all around them.")
 figure("figures/fig_m3_lagged_fire.png",
        "Spearman correlation between the fire count k days earlier (k = 0 to 3) and the Composite Smog Index of the day, median over the 7 Pakistani cities (lines), with the range across cities shaded for the upwind cone; training harvest season. Produced by merge_analysis.ipynb.", 5.4)
-p("The upwind-cone count is most related to smog **one day later** (median ρ = 0.24, against 0.16 on the same day, 0.12 after two days and 0.05 after three). The plain circle and the placebo stay near zero at every lag. "
+p("The upwind-cone count is most related to smog **one day later** (median ρ = 0.24, against 0.16 on the same day, 0.11 after two days and 0.05 after three). The 0.24 differs from the 0.23 in Table 13 only because the 92-day window is set on the smog day here and on the fire day there. The plain circle and the placebo stay near zero at every lag. "
   "At the median vector-mean wind of about 5 km/h, smoke covers roughly 120 km a day, so fires 100–300 km upwind arrive after one to two days. This supports lags of 1–3 days and a 1-day-ahead horizon as the most predictable.")
 
 h3("4. Weather traps")
@@ -381,7 +401,9 @@ h3("6. Robustness of the index weights")
 w = tab("weight_check_train", index_col=0)
 rows = [[k, f(r['spearman_with_main'], 3), int(r['spike_days']), int(r['labels_changed']), f(r['main_spikes_kept_pct'], 1)] for k, r in w.iterrows()]
 table("Index rebuilt with other weights on the 4,323 training days (spike thresholds re-learned on training October–March for each version).",
-      ["Index version", "Spearman with main", "Spike days", "Labels changed", "Main spikes kept (%)"], rows, [3600, 1600, 1300, 1500, 1638])
+      ["Index version", "Spearman with main", "Spike days", "Labels changed", "Main spikes kept (%)"], rows, [3600, 1600, 1300, 1500, 1638],
+      note="For all four versions the thresholds here are re-learned on every training October–March day, including the 44 flagged suspect days. "
+           "Person A's thresholds, used for the master label, leave those days out, so the main version has 219 spike days here and 208 in the master label (Table 11).")
 p("All versions rank days almost identically (ρ ≥ 0.979). Dropping ozone changes the most labels (76) because winter ozone moves opposite to NO2. "
   "None of the conclusions above depends on these changes: they rest on the continuous index or on 200+ spike days. The main weights are kept and the ozone sensitivity is listed as a limitation.")
 
@@ -400,11 +422,15 @@ table("Formal hypotheses (H0 = null, H1 = alternative) and the SDG targets they 
         "Stagnant, humid, rain-free and large-range (clear-night inversion) days raise the odds of a next-day spike: OR > 1.", "3.9, 11.6"],
        ["H3 Fire × stagnation (A)", "The fire effect on the next-day index is the same on stagnant and ventilated days: β_fire×stagnant = 0.",
         "The fire effect is stronger on stagnant days: β_fire×stagnant > 0.", "3.9, 13.1"],
-       ["H4 Cross-border (B)", "In Pakistani cities the India-origin upwind fire count is not associated with the next-day index once Pakistan-origin fires and weather are controlled for, and the association is the same in near-border and far cities: β_IN = 0 and β_IN×near = 0.",
+       ["H4 Cross-border (C)", "In Pakistani cities the India-origin upwind fire count is not associated with the next-day index once Pakistan-origin fires and weather are controlled for, and the association is the same in near-border and far cities: β_IN = 0 and β_IN×near = 0.",
         "India-origin upwind fires raise next-day smog in the near-border cities (Lahore, Sialkot) more than in far cities: β_IN + β_IN×near > 0 and β_IN×near > 0.", "13, 17, 11.6"],
        ["H5 Forecast value (A)", "A model with the fire and weather features does not beat the persistence baseline or a weather-only model on validation: ΔPR-AUC ≤ 0 and ΔMAE ≥ 0.",
         "The full model beats both baselines on validation (higher PR-AUC and ROC-AUC, lower Brier score and MAE) for at least one horizon of 1 to 3 days.", "3.d, 3.9"]],
       [1500, 3500, 3200, 1438])
+# harvest_season is left out of the controls: it equals month_10 + month_11 + month_12, so next to the month dummies
+# it is perfectly collinear. H4 uses Pakistani cities only, so only the 6 Pakistani city dummies vary there.
+hm["controls"] = hm["controls"].str.replace("harvest_season, ", "", regex=False).str.replace("month_*, city_*,", "month_02..month_12, city_* (10),", regex=False)
+hm.loc["H4", "controls"] = hm.loc["H4", "controls"].replace("city_* (10)", "city_* (6 Pakistani)")
 rows = [[i, r['Y'], r['X'], r['controls'], r['test']] for i, r in hm.iterrows()]
 table("Variable mapping: every name is a column (or column family) of master_daily.parquet, checked in the notebook (merge_analysis.ipynb, Hypotheses).",
       ["ID", "Response (Y)", "Main predictors (X)", "Controls / confounders", "Planned test"], rows,

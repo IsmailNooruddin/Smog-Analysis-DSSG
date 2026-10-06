@@ -6,7 +6,7 @@
   },
   {
    "t": "subtitle",
-   "text": "Milestone 02 manuscript draft: Section II (Data and Preprocessing) and Section III (Exploratory Data Analysis), with project alignment and hypotheses"
+   "text": "Milestone 02 manuscript draft: data preparation, exploratory analysis and hypotheses"
   },
   {
    "t": "authors",
@@ -18,7 +18,7 @@
   },
   {
    "t": "p",
-   "text": "**Abstract.** Every winter, smoke from crop-residue burning and urban emissions is trapped over the Punjab plain shared by Pakistan and India. We build a daily master dataset for 11 cities (7 Pakistani, 4 Indian Punjab) from three independent streams: hourly Open-Meteo air quality (CAMS model output), hourly Open-Meteo weather, and 1.28 million NASA VIIRS fire detections. After alignment to one UTC+5 clock and a one-to-one merge, the master table holds 5,665 city-days (4 August 2022 to 31 December 2023) and 287 columns, with no missing predictor value. The target is a Composite Smog Index of six z-scored pollutants and a city-specific spike label. Exploratory analysis on the training period shows four results. (i) Fires inside a ±45° upwind cone within 300 km track next-day smog (median Spearman ρ = 0.23 over the Pakistani cities in the harvest season), while the plain 300 km circle (−0.06) and a downwind placebo cone (0.01) do not. (ii) The association peaks one day after the fires. (iii) Stagnant, humid and rain-free days roughly double to quadruple the next-day spike rate. (iv) Spikes concentrate in December and January, after the October–November burning peak, which shows that fires alone are not enough: the weather must trap the smoke. Five formal hypotheses, mapped to master-file columns, set up Milestone 3."
+   "text": "**Abstract.** Every winter, smoke from crop-residue burning and urban emissions is trapped over the Punjab plain shared by Pakistan and India. We build a daily master dataset for 11 cities (7 Pakistani, 4 Indian Punjab) from three independent streams: hourly Open-Meteo air quality (CAMS model output), hourly Open-Meteo weather, and 1.28 million NASA VIIRS fire detections. After alignment to one UTC+5 clock and a one-to-one merge, the master table holds 5,665 city-days (4 August 2022 to 31 December 2023) and 287 columns, with no missing predictor value. The target is a Composite Smog Index of six z-scored pollutants and a city-specific spike label. Exploratory analysis on the training period shows four results. (i) Fires inside a ±45° upwind cone within 300 km track next-day smog (median Spearman ρ = 0.23 over the Pakistani cities in the harvest season), while the plain 300 km circle (−0.06) and a downwind placebo cone (0.01) do not. (ii) The association peaks one day after the fires. (iii) Stagnant and humid days roughly triple the next-day spike rate (risk ratios 2.9 and 2.6, and 4.4 when both fall on a dry day), and no rain day was followed by a spike. (iv) Spikes concentrate in December and January, after the October–November burning peak, which shows that fires alone are not enough: the weather must trap the smoke. Five formal hypotheses, mapped to master-file columns, set up Milestone 3."
   },
   {
    "t": "h1",
@@ -329,7 +329,7 @@
    "rows": [
     [
      "AQ raw, 2022–2023",
-     "All 7 pollutants in one continuous block, 1 Jan to 4 Aug 2022, same hours in all cities",
+     "All 7 pollutants in one continuous block, 6 Jan (first hour in the files) to 4 Aug 2022, same hours in all cities",
      "55,248 of 191,153 hourly rows (28.9%)",
      "Not imputed. Modelling starts 2022-08-04 for all streams (listwise deletion of the block)"
     ],
@@ -462,7 +462,7 @@
     1500,
     3638
    ],
-   "note": null,
+   "note": "Air-quality rows exclude the 44 flagged suspect days (13–16 December 2022), so their raw skew differs slightly from Table 9, which keeps them (PM2.5 1.95 vs 1.91, PM10 1.75 vs 1.71, CO 3.18 vs 3.17).",
    "font": 8.5
   },
   {
@@ -545,7 +545,7 @@
   },
   {
    "t": "p",
-   "text": "For each city (coordinates from the weather-file headers) the great-circle (Haversine) distance and the compass bearing to every fire within 300 km were computed once. Radius counts (50, 100, 150, 200, 300 km) are then filters. A fire is **upwind** when its bearing is within the cone half-angle (±30°, ±45°, ±60°) of the direction the daily vector-mean wind comes from, with the angle difference taken around the circle (350° and 10° are 20° apart). A ±45° **downwind** cone is kept as a placebo. On stagnant days (vector-mean wind < 2 km/h, 10.7% of city-days) the direction is noise, so the cone keeps every fire in the radius. Every count is split by origin (fires detected in India or Pakistan), which is what lets us examine the cross-border claim, and fire radiative power (FRP, MW) is summed alongside the count. Automatic tests confirm that a north wind keeps fires to the north, that no cone holds more fires than its circle, and that wider cones hold at least as many fires as narrower ones."
+   "text": "For each city (coordinates from the weather-file headers) the great-circle (Haversine) distance and the compass bearing to every fire within 300 km were computed once. Radius counts (50, 100, 150, 200, 300 km) are then filters. A fire is **upwind** when its bearing is within the cone half-angle (±30°, ±45°, ±60°) of the direction the daily vector-mean wind comes from, with the angle difference taken around the circle (350° and 10° are 20° apart). A ±45° **downwind** cone is kept as a placebo. On stagnant days (vector-mean wind < 2 km/h, 10.9% of training city-days) the direction is noise, so the cone keeps every fire in the radius. Every count is split by origin (fires detected in India or Pakistan), which is what lets us examine the cross-border claim, and fire radiative power (FRP, MW) is summed alongside the count. Automatic tests confirm that a north wind keeps fires to the north, that no cone holds more fires than its circle, and that wider cones hold at least as many fires as narrower ones."
   },
   {
    "t": "figure",
@@ -588,7 +588,7 @@
      "-0.04",
      "0.83",
      "0.91",
-     "-1.16",
+     "-1.15",
      "0.0"
     ],
     [
@@ -614,7 +614,7 @@
      "29.60",
      "24.96",
      "21.14",
-     "26.82",
+     "26.81",
      "1.64",
      "0.5"
     ],
@@ -685,7 +685,7 @@
      "Fires in upwind cone, 300 km (count)",
      "43.26",
      "4.00",
-     "177.00",
+     "176.99",
      "25.00",
      "9.79",
      "26.9"
@@ -845,7 +845,7 @@
      "19.0",
      "144",
      "6.26",
-     "0.42",
+     "0.43",
      "1,372"
     ],
     [
@@ -874,7 +874,7 @@
      "534",
      "12.4",
      "101",
-     "177.00",
+     "176.99",
      "14.57",
      "1,115"
     ],
@@ -1133,14 +1133,14 @@
      "Near border (PK)",
      "0.21",
      "-0.09",
-     "-0.01",
+     "0.00",
      "0.28",
      "0.15"
     ],
     [
      "Training Oct-Dec",
      "Far (PK)",
-     "0.23",
+     "0.24",
      "-0.05",
      "-0.04",
      "0.18",
@@ -1216,7 +1216,7 @@
   },
   {
    "t": "p",
-   "text": "The upwind-cone count is most related to smog **one day later** (median ρ = 0.24, against 0.16 on the same day, 0.12 after two days and 0.05 after three). The plain circle and the placebo stay near zero at every lag. At the median vector-mean wind of about 5 km/h, smoke covers roughly 120 km a day, so fires 100–300 km upwind arrive after one to two days. This supports lags of 1–3 days and a 1-day-ahead horizon as the most predictable."
+   "text": "The upwind-cone count is most related to smog **one day later** (median ρ = 0.24, against 0.16 on the same day, 0.11 after two days and 0.05 after three). The 0.24 differs from the 0.23 in Table 13 only because the 92-day window is set on the smog day here and on the fire day there. The plain circle and the placebo stay near zero at every lag. At the median vector-mean wind of about 5 km/h, smoke covers roughly 120 km a day, so fires 100–300 km upwind arrive after one to two days. This supports lags of 1–3 days and a 1-day-ahead horizon as the most predictable."
   },
   {
    "t": "h3",
@@ -1530,7 +1530,7 @@
     1500,
     1638
    ],
-   "note": null,
+   "note": "For all four versions the thresholds here are re-learned on every training October–March day, including the 44 flagged suspect days. Person A's thresholds, used for the master label, leave those days out, so the main version has 219 spike days here and 208 in the master label (Table 11).",
    "font": 8.5
   },
   {
@@ -1574,7 +1574,7 @@
      "3.9, 13.1"
     ],
     [
-     "H4 Cross-border (B)",
+     "H4 Cross-border (C)",
      "In Pakistani cities the India-origin upwind fire count is not associated with the next-day index once Pakistan-origin fires and weather are controlled for, and the association is the same in near-border and far cities: β_IN = 0 and β_IN×near = 0.",
      "India-origin upwind fires raise next-day smog in the near-border cities (Lahore, Sialkot) more than in far cities: β_IN + β_IN×near > 0 and β_IN×near > 0.",
      "13, 17, 11.6"
@@ -1610,28 +1610,28 @@
      "H1",
      "target_index_h1",
      "fire_cnt_up45_r300_all_log1p_z (+ lags 1-3 of fire_cnt_up45_r300_all); comparison: fire_cnt_r300_all_log1p_z; placebo: fire_cnt_down45_r300_all_log1p_z",
-     "harvest_season, month_02..month_12, city_* (10), temp_mean_c, temp_range_c, rh_mean_pct, precip_sum_mm, vec_len_kmh (those not used as X)",
+     "month_02..month_12, city_* (10), temp_mean_c, temp_range_c, rh_mean_pct, precip_sum_mm, vec_len_kmh (those not used as X)",
      "Nested OLS with city-clustered SE: does the cone count add explained variance over the plain radius count (partial F / delta R2)?"
     ],
     [
      "H2",
      "target_spike_h1",
      "stagnant, rh_mean_pct, rain_day, temp_range_c",
-     "harvest_season, month_*, city_*, fire_cnt_up45_r300_all_log1p_z",
+     "month_02..month_12, city_* (10), fire_cnt_up45_r300_all_log1p_z",
      "Logistic regression; odds ratios with city-clustered SE"
     ],
     [
      "H3",
      "target_index_h1",
      "fire_cnt_up45_r300_all_log1p_z x stagnant (interaction)",
-     "harvest_season, month_02..month_12, city_* (10), temp_mean_c, temp_range_c, rh_mean_pct, precip_sum_mm, vec_len_kmh (those not used as X)",
+     "month_02..month_12, city_* (10), temp_mean_c, temp_range_c, rh_mean_pct, precip_sum_mm, vec_len_kmh (those not used as X)",
      "OLS with the interaction term; one-sided test of the interaction coefficient"
     ],
     [
      "H4",
      "target_index_h1",
      "fire_cnt_up45_r300_in_log1p_z, fire_cnt_up45_r300_in_log1p_z x near_border (Pakistani cities only)",
-     "fire_cnt_up45_r300_pk_log1p_z, harvest_season, month_02..month_12, city_* (10), temp_mean_c, temp_range_c, rh_mean_pct, precip_sum_mm, vec_len_kmh (those not used as X)",
+     "fire_cnt_up45_r300_pk_log1p_z, month_02..month_12, city_* (6 Pakistani), temp_mean_c, temp_range_c, rh_mean_pct, precip_sum_mm, vec_len_kmh (those not used as X)",
      "OLS on the 7 Pakistani cities; India-origin slope in near-border cities and its difference from far cities"
     ],
     [
