@@ -1,0 +1,10 @@
+model,cost_per_1000_at_5to1,fn,fp,saving_vs_never_alert_pct,break_even_ratio_vs_never_alert,ratios_beating_persistence
+Majority class (= never alert),342.8351,89,0,0.0,,0.0
+Persistence,150.2311,34,25,56.1798,1.0,0.0
+LR full,128.6595,15,92,62.4719,1.0,18.0
+LR no-fire,112.4807,10,96,67.191,1.0,18.0
+LR weather-only,258.0894,21,230,24.7191,2.0,7.0
+DT full,228.8136,39,102,33.2584,1.0,8.0
+DT no-fire,220.339,30,136,35.7303,1.0,0.0
+DT weather-only,238.0586,12,249,30.5618,4.0,10.0
+Always alert,931.433,0,1209,-171.6854,,

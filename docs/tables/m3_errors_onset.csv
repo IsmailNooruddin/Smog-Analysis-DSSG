@@ -1,0 +1,19 @@
+model,outcome,day_type,count
+Persistence,TP,onset,0
+Persistence,TP,continuation,55
+Persistence,FN,onset,34
+Persistence,FN,continuation,0
+Persistence,FP,onset,0
+Persistence,FP,continuation,25
+LR full,TP,onset,19
+LR full,TP,continuation,55
+LR full,FN,onset,15
+LR full,FN,continuation,0
+LR full,FP,onset,69
+LR full,FP,continuation,23
+DT full,TP,onset,10
+DT full,TP,continuation,40
+DT full,FN,onset,24
+DT full,FN,continuation,15
+DT full,FP,onset,87
+DT full,FP,continuation,15

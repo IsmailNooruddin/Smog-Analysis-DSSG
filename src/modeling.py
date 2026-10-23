@@ -146,8 +146,12 @@ def make_lr(features):
         ("cont", StandardScaler(), cont),
         ("bin", "passthrough", binary),
     ], verbose_feature_names_out=False)
+    # liblinear, not saga: saga hit 5,000 iterations without converging at large C with balanced
+    # weights (8 s per fit); liblinear converges in < 0.2 s with the same fold PR-AUC (within 0.005).
+    # intercept_scaling = 10 keeps liblinear's penalty on the intercept negligible.
     return Pipeline([("prep", prep),
-                     ("model", LogisticRegression(solver="saga", max_iter=5000, random_state=42))])
+                     ("model", LogisticRegression(solver="liblinear", intercept_scaling=10,
+                                                  max_iter=5000, random_state=42))])
 
 
 def make_tree(features):

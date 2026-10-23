@@ -1,0 +1,3 @@
+split,first day,last day,city-days,share of rows (%),spikes,spike rate (%),suspect rows dropped
+train,2022-08-06,2023-08-31,4246,76.58730158730158,204,4.804521902967498,55
+validation,2023-09-04,2023-12-30,1298,23.41269841269841,89,6.8567026194144844,0
