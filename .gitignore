@@ -17,3 +17,6 @@ Dataset/Exported_AQ
 Dataset/Old_Exported_AQ
 # Fire outputs (rebuilt by fire.ipynb)
 Dataset/Exported_Fire
+
+# Node (docs/manuscript/render_docx.js needs `npm install`)
+node_modules/
