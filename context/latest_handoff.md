@@ -1,23 +1,26 @@
-# Handoff: Trans-Boundary Smog Prediction (Milestone 3, Phases 0–3 done → Phases 4–5 next)
+# Handoff: Trans-Boundary Smog Prediction (Milestone 3 complete → Milestone 4 next)
 
 This document is for an AI coding agent (any vendor) picking up the project cold. It explains what the project is,
 what is finished, where everything lives, which decisions were made and why, what the Milestone 3 results are, and
-exactly what is still open. Read it fully, then `context/milestone3_plan.md` (the agreed plan) and
-`context/milestone3.md` (the brief and rubric), before touching the code.
+what comes next. Read it fully, then `context/milestone3.md` (the brief and rubric), `context/milestone3_plan.md`
+(the original plan) and `context/milestone3_finish_plan.md` (the rubric fixes Q1–Q8), before touching the code.
 
-Last updated: 2026-10-24. State of `main` at writing: commit `fd1b67d`, plus the commit that updates this file.
-Milestone 3 deadline: **Sunday 25 Oct 2026, 23:59**.
+Last updated: 2026-10-25. State of `main` at writing: see the commit table in section 2.
+Milestone 3 deadline was **Sunday 25 Oct 2026, 23:59**; the package was finished and pushed on 25 Oct.
 
 ---
 
 ## 0. Where we are, in five lines
 
 1. Milestone 2 (data, EDA, hypotheses) is finished and handed in (`submission/`).
-2. Milestone 3 Phases 0–3 are done and pushed: dependencies, `src/modeling.py`, `src/evaluate.py`, and an executed
-   `modeling.ipynb` with 21 tables, 7 figures, saved models and tuned parameters.
-3. The user reviewed the Phase 3 headline results (section 9) before Phases 4–5.
-4. **Still to do:** Phase 4 (the `DECISIONS.md` section for Milestone 3) and Phase 5 (report Sections 7–12, rendering,
-   PDF, and the `submission/milestone3/` package). See section 11.
+2. Milestone 3 is finished: `src/modeling.py`, `src/evaluate.py`, an executed `modeling.ipynb` (58 cells, 25 tables,
+   7 figures, 10 saved models), the `DECISIONS.md` section (rows S1–S19), report Sections 7–12, and the
+   self-contained package `submission/milestone3/` (report DOCX + PDF, notebook, modules, data, models, README).
+3. After a rubric audit (`context/milestone3_finish_plan.md`) the headline AQ-history features became **margins over
+   the city spike threshold** (Q4); this changed the results in section 9 (the Phase 3 numbers are kept as the
+   raw-index sensitivity run, M3.9c).
+4. **Next:** Milestone 4 (advanced models, fairness audit, ethics) and the Week 14 out-of-time test on 2024. See
+   section 11.
 5. One commit per phase, straight to `main`, author `bilal <bilelayub@gmail.com>`, **no** `Co-Authored-By`,
    `Claude-Session` or "Generated with" lines.
 
@@ -61,6 +64,11 @@ aligned with SDG 3.9, 11.6 and 13. The course runs in milestones:
 | `87261f0` | Milestone 3 setup: modelling dependencies | `requirements.txt` (+ scikit-learn, statsmodels, joblib), `package.json`, `package-lock.json`, `.gitignore` (+ `node_modules/`) |
 | `c4b7cd5` | Add modelling and evaluation modules | `src/modeling.py`, `src/evaluate.py` (Phases 1 and 2 share one commit, as in the plan's commit list) |
 | `fd1b67d` | Milestone 3 modelling notebook with results, tables and figures | `modeling.ipynb` (executed), solver change in `src/modeling.py`, `Dataset/clean/m3_params.json`, `docs/tables/m3_*.csv` (21), `figures/fig_m3_*.png` (7), `models/*.joblib` (7) |
+| `018bfcd` | Update project handoff after Milestone 3 Phases 0–3 | this file |
+| `6ae1eb5` | Milestone 3 revisions: threshold-margin features, leakage check, group error rates, index regression | `src/*.py`, `modeling.ipynb` (58 cells), `m3_params.json`, `docs/tables/m3_*.csv` (25), figures, `models/*.joblib` (10), `context/milestone3_finish_plan.md` |
+| `f9efad7` | Decision log: Milestone 3 modelling choices | `DECISIONS.md` rows S1–S19 |
+| `a897ac1` | Milestone 3 report sections and submission package | `docs/manuscript/*` (builder `--milestone 3`, renderer argument 3, `manuscript_m3.json`), `requirements.txt` (scikit-learn ≥ 1.8), `submission/milestone3/` |
+| (this) | Update project handoff after Milestone 3 | this file |
 
 Earlier history worth knowing, oldest first: `5306bfe` (Role 1 fixes), `986d7d0` (Role 2 merge and analysis),
 `1071958` (manuscript, decision log), `dd2db4e`/`631c3b6` (review fixes), `70faa64` (Excel export, `submission/`),
@@ -75,25 +83,29 @@ air_quality.ipynb      Role 1, Person A (Ismail): AQ cleaning, Composite Smog In
 weather.ipynb          Role 1, Person B (Munir): weather, vector-mean wind, stagnation flag
 fire.ipynb             Role 1, Person C (Bilal): VIIRS filtering, Haversine/bearing, wind cones
 merge_analysis.ipynb   Role 2: merge → master table; analysis; hypotheses; Excel export (83 cells)
-modeling.ipynb         ★ Milestone 3: 46 cells, sections M3.1–M3.10, executed, ~4.5 min (reads only the master + role2_params.json)
+modeling.ipynb         ★ Milestone 3: 58 cells, sections M3.1–M3.10, executed, ~5 min (reads only the master + role2_params.json)
 src/config.py          ALL shared settings: cities, files, coordinates, window and split dates, city groups
 src/merge.py           Merge functions (every one takes a date window)
 src/eda.py             EDA helpers (summary_table, outlier_audit, spearman_by_city, rate_by_condition, contingency)
 src/plotting.py        One figure style: Okabe-Ito palette, cividis / RdBu_r, save() at 300 dpi
-src/modeling.py        ★ M3: load_model_frame, FEATURE_SETS, week_groups, purged_sgkf_splits, make_lr, make_tree,
-                         LR_GRID, DT_GRID, tune, oof_predict, choose_threshold, make_majority, persistence
-src/evaluate.py        ★ M3: binary_metrics, cv_metrics, block_bootstrap, cost_curve, error_breakdown, save_table
-models/                ★ M3: majority, lr_{full,weather_only,no_fire}, dt_{full,weather_only,no_fire}.joblib (56 KB total)
+src/modeling.py        ★ M3: load_model_frame (adds the margins), FEATURE_SETS, AQ_HISTORY(_RAW), FULL_RAW, week_groups,
+                         purged_sgkf_splits, make_lr, make_tree, make_ridge, LR/DT/RIDGE_GRID, tune(scoring=),
+                         oof_predict(method=), choose_threshold, make_majority, persistence
+src/evaluate.py        ★ M3: binary_metrics, group_error_rates, regression_metrics, cv_metrics, block_bootstrap,
+                         cost_curve, error_breakdown, save_table
+models/                ★ M3: majority, lr_*, dt_*, ridge_* ({full,weather_only,no_fire}).joblib (10 files)
+submission/milestone3/ ★ M3 package: report DOCX + PDF, modeling.ipynb, src/, models/, Dataset/clean/ (3 files), README
 Dataset/clean/         Role 1/2 outputs + master_daily.parquet (5,665 × 287), master_data_dictionary.csv,
                        aq_params.json, weather/fire z-score params, role2_params.json,
                        ★ m3_params.json (best hyperparameters, OOF thresholds, CV settings, feature sets),
                        Milestone2_Final_Master_and_EDA.xlsx
 figures/               fig_a*, fig_b*, fig_fire_*, fig_m1..m6 (Milestone 2); ★ fig_m3_1 … fig_m3_7 (Milestone 3)
-docs/tables/*.csv      Every report table at 4 decimals; ★ 21 files named m3_*.csv
-docs/manuscript/       build_manuscript.py (CSV → manuscript.json) + render_docx.js (JSON → .docx)
+docs/tables/*.csv      Every report table at 4 decimals; ★ 25 files named m3_*.csv
+docs/manuscript/       build_manuscript.py (CSV → manuscript.json; --milestone 3 → manuscript_m3.json) +
+                       render_docx.js (JSON → .docx; argument 3 → submission/milestone3/Milestone3_Report.docx)
 submission/            Milestone 2 hand-in package (Milestone2_Report.docx, notebook, Excel, README.md)
-DECISIONS.md           Every data removal/change with exact counts: sections F, A, W, M (★ M3 section to add, Phase 4)
-context/               milestone1/2/3.md briefs, Final Proposal.md, milestone3_plan.md, this file
+DECISIONS.md           Every data removal/change with exact counts: sections F, A, W, M, ★ S (Milestone 3, S1–S19)
+context/               milestone1/2/3.md briefs, Final Proposal.md, milestone3_plan.md, milestone3_finish_plan.md, this file
 package.json           npm dependency for render_docx.js (`npm install` restores node_modules/, which is gitignored)
 ```
 
@@ -108,7 +120,7 @@ python -m pip install -r requirements.txt
 python -m pip install docx2pdf            # Windows-only, PDF export via Word
 npm install                               # restores node_modules/ for render_docx.js
 # from the repository root:
-jupyter nbconvert --to notebook --execute --inplace modeling.ipynb     # ~4.5 min, 8 cores
+jupyter nbconvert --to notebook --execute --inplace modeling.ipynb     # ~5 min, 8 cores
 ```
 
 - `modeling.ipynb` reads **only** `Dataset/clean/master_daily.parquet` and `Dataset/clean/role2_params.json`. You do
@@ -212,9 +224,29 @@ Full column reference: `Dataset/clean/master_data_dictionary.csv`.
 | X7 | Extra tables beyond the plan: `m3_validation_counts`, `m3_cost_curve`, `m3_top_errors`, `m3_fn_context`, `m3_monthwise_thresholds` | Needed to back up specific report statements |
 | X8 | Persistence also scored in CV for the month-wise and h2/h3 runs (same purged folds) | Without it the CV numbers of those runs had no benchmark |
 
-### 8.3 Feature sets as implemented (`src/modeling.py`)
+### 8.3 Rubric fixes agreed after the audit (`context/milestone3_finish_plan.md`; all done)
 
-- `AQ_HISTORY` = `persist_index, index_lag1, index_lag2`
+| # | Decision | Where |
+|---|---|---|
+| Q1 | Leakage check: random stratified 80/20, plain StratifiedKFold, week-grouped without purge, ours; training rows only | M3.3 → `m3_leakage_check.csv`; report §8.2 |
+| Q2 | Preliminary disparity check: recall/FPR/precision by country (bootstrap CIs, PK − IN gap) and city | M3.7 → `m3_error_rates_group.csv`; report §10.4 |
+| Q3 | 5:1 is a stated assumption; break-even ratio is the robust result; health burden cited (Pandey et al. 2021) | M3.6 Markdown; report §10.1 |
+| Q4 | **AQ history = margin over the city threshold** (headline, fixed before results); raw index as sensitivity | `src/modeling.py`; M3.9c → `m3_aq_encoding.csv` |
+| Q5 | Milestone 2 Sections 1–6 unchanged except title, one abstract sentence, one §4 line, §6 paragraph (M3 build only) | `build_manuscript.py --milestone 3` |
+| Q6 | Self-contained package mirroring the repo layout | `submission/milestone3/` |
+| Q7 | Ridge regression of the continuous index vs persistence; fire ΔMAE | M3.9d → `m3_index_regression.csv` |
+| Q8 | Policy tied to Punjab EPD (Smog Commission page; Dawn 2024 closures) and CAQM GRAP (Tribune 2024) | report §11.3 |
+
+**Verified references added** (opened and checked in the session; Crossref/Europe PMC for the blocked publisher pages):
+Pedregosa et al. 2011 (JMLR 12(85)); Roberts et al. 2017 (Ecography 40(8) 913–929); Saito & Rehmsmeier 2015 (PLoS ONE
+10(3) e0118432); Seabold & Perktold 2010 (SciPy proceedings 92–96); Pandey et al. 2021 (Lancet Planet Health 5(1)
+e25–e38); Waqar & Gabol 2024 (Dawn); EPD Punjab Smog Commission page; Tribune News Service 2024 (GRAP). The official
+CAQM GRAP page could not be read (JavaScript site), so GRAP is cited from the Tribune report only.
+
+### 8.4 Feature sets as implemented (`src/modeling.py`)
+
+- `AQ_HISTORY` = `persist_margin, margin_lag1, margin_lag2` (index − `spike_threshold`); `AQ_HISTORY_RAW` =
+  `persist_index, index_lag1, index_lag2` (used only in `FULL_RAW`, M3.9c)
 - `FIRE` = `fire_cnt_up45_r300_all` + `_lag1, _lag2, _lag3` (raw counts; `log1p` inside the pipeline)
 - `WEATHER` = `stagnant, stagnant_lag1, rh_mean_pct, rain_day, temp_range_c, vec_len_kmh, temp_mean_c, wind_from_{n,ne,e,se,s,sw,w}`
   (left out: `wind_speed_mean_kmh`, ρ 0.85 with `vec_len_kmh`; temp min/max, r 0.91–0.98; `wind_from_nw`, X3)
@@ -229,7 +261,7 @@ Full column reference: `Dataset/clean/master_data_dictionary.csv`.
 
 ---
 
-## 9. Milestone 3 results (all from `docs/tables/m3_*.csv`; validation = Sep–Dec 2023)
+## 9. Milestone 3 results (all from `docs/tables/m3_*.csv`; validation = Sep–Dec 2023; margin encoding)
 
 ### 9.1 Data after the D12 drops (`m3_split_balance.csv`)
 
@@ -239,281 +271,158 @@ Full column reference: `Dataset/clean/master_data_dictionary.csv`.
 | Validation | 1,298 (23.4%) | 2023-09-04 → 2023-12-30 | 89 | 6.86% |
 
 Dropped: 33 skip rows, 11 validation rows without a target (31 Dec 2023), 22 training rows without `index_lag2`
-(first 2 days per city), 44 suspect feature-day rows and 11 suspect target-day rows (12 Dec 2022). That is 55
-suspect-related training rows in all, and none in validation. All validation spikes fall in Nov (12) and Dec (77).
+(first 2 days per city), 44 suspect feature-day rows and 11 suspect target-day rows (12 Dec 2022). All validation
+spikes fall in Nov (12) and Dec (77).
 
-**CV folds** (`m3_cv_folds.csv`): each fold holds out 11–12 weeks (825–869 rows), and the purge plus embargo remove
-330–495 fit rows. The test-fold spike rate averages 4.81% (SD 1.35, range 3.45–7.08) against 4.80% overall.
+**CV folds** (`m3_cv_folds.csv`): each fold holds out 11–12 weeks (825–869 rows); purge plus embargo remove
+**286–495** fit rows (the earlier handoff said 330; the CSV says 286). Test-fold spike rate 4.81% (SD 1.35, range
+3.45–7.08%) against 4.80% overall.
 
 ### 9.2 Tuned models and thresholds (`m3_params.json`, `m3_tuning_*.csv`)
 
 | Model | Best setting | CV PR-AUC | OOF threshold (5:1) |
 |---|---|---|---|
-| LR full | C = 100, L2, no weights | 0.6048 | 0.0999 |
-| LR no-fire | C = 19.31, L1, no weights | 0.6109 | 0.0927 |
+| LR full | C = 0.0268, **L1**, no weights | 0.6508 | 0.1280 |
+| LR no-fire | same | 0.6507 | 0.1280 |
 | LR weather-only | C = 0.0052, L2, no weights | 0.4319 | 0.1009 |
-| DT full | depth 6, leaf 50, balanced | 0.3495 | 0.6662 |
-| DT no-fire | depth 6, leaf 50, balanced | 0.3613 | 0.7073 |
+| DT full | depth 4, leaf 50, no weights | 0.5190 | 0.1988 |
+| DT no-fire | same | 0.5193 | 0.1988 |
 | DT weather-only | depth 3, leaf 10, no weights | 0.3368 | 0.1173 |
 | Majority | – | – | never alert |
-| Persistence (benchmark) | today's spike → tomorrow | 0.6362 (CV) | fixed rule |
+| Persistence | today's spike → tomorrow | 0.6362 (CV) | fixed rule |
 
-### 9.3 Validation metrics (`m3_metrics_validation.csv`, 95% block-bootstrap CIs over 18 weeks, 1,000 resamples)
+**The L1 LR full keeps only 2 of 42 coefficients:** `persist_margin` (OR 10.92 per SD) and `temp_mean_c` (0.70 per SD).
+Every fire, weather, month and city coefficient is 0, so LR full ≡ LR no-fire on validation. The LR curve is flat
+from C = 0.005 to 0.14 (0.643–0.651) and falls to 0.605 at C = 100; the DT peaks at depth 4.
+
+### 9.3 Validation metrics (`m3_metrics_validation.csv`, 95% block-bootstrap CIs over 18 weeks)
 
 | Model | PR-AUC [CI] | ROC-AUC | Recall | Precision | F1 | Specificity | Accuracy | Cost /1,000 at 5:1 |
 |---|---|---|---|---|---|---|---|---|
 | Majority class | – | – | 0.000 | – | 0.000 | 1.000 | 0.931 | 342.8 |
-| Persistence | **0.669** [0.344, 0.765] | 0.963 | 0.618 | 0.688 | 0.651 | 0.979 | 0.955 | 150.2 |
-| LR full | 0.634 [0.316, 0.730] | 0.961 | 0.831 | 0.446 | 0.580 | 0.924 | 0.918 | 128.7 |
-| LR no-fire | 0.647 [0.317, 0.740] | 0.963 | 0.888 | 0.451 | 0.598 | 0.921 | 0.918 | **112.5** |
+| Persistence | 0.669 [0.344, 0.765] | 0.963 | 0.618 | 0.688 | 0.651 | 0.979 | 0.955 | 150.2 |
+| LR full (= no-fire) | **0.695** [0.323, 0.790] | 0.966 | 0.865 | 0.456 | 0.597 | 0.924 | 0.920 | 117.1 |
 | LR weather-only | 0.388 | 0.855 | 0.764 | 0.228 | 0.351 | 0.810 | 0.807 | 258.1 |
-| DT full | 0.373 | 0.852 | 0.562 | 0.329 | 0.415 | 0.916 | 0.891 | 228.8 |
-| DT no-fire | 0.371 | 0.836 | 0.663 | 0.303 | 0.415 | 0.888 | 0.872 | 220.3 |
+| DT full | 0.590 [0.237, 0.716] | 0.953 | 0.820 | 0.521 | 0.638 | 0.945 | 0.936 | **113.3** |
+| DT no-fire | 0.585 | 0.953 | 0.820 | 0.521 | 0.638 | 0.945 | 0.936 | 113.3 |
 | DT weather-only | 0.226 | 0.837 | 0.865 | 0.236 | 0.371 | 0.794 | 0.799 | 238.1 |
 
-Confusion counts (TP/FP/TN/FN): persistence 55/25/1,184/34; LR full 74/92/1,117/15; DT full 50/102/1,107/39.
-CV (mean ± SD over 25 folds, `m3_metrics_cv.csv`): persistence PR-AUC 0.636 ± 0.141, cost 114.0; LR full
-0.605 ± 0.108, cost 93.8; majority accuracy 0.952, cost 240.6.
+Confusion (TP/FP/TN/FN): persistence 55/25/1,184/34; LR full 77/92/1,117/12; DT full 73/67/1,142/16.
+CV (25 folds): PR-AUC persistence 0.636 ± 0.141, LR full 0.651 ± 0.144, DT full 0.519 ± 0.135; cost 114.0 / 86.7 / 92.4.
 
-**Reading:** persistence ranks spikes as well as any model, but at the 5:1 alert decision LR is cheaper and catches
-far more spikes. Accuracy is misleading: the majority class beats every model on it while catching no spike.
+### 9.4 Leakage check (`m3_leakage_check.csv`, Q1; training rows only)
 
-### 9.4 Fire ablation (`m3_fire_ablation.csv`): fires add no next-day skill
+| Scheme | LR full PR-AUC | DT full PR-AUC |
+|---|---|---|
+| Random stratified 80/20 | 0.730 | 0.652 |
+| StratifiedKFold(5, shuffle) | 0.677 ± 0.089 | 0.616 ± 0.093 |
+| StratifiedGroupKFold(5) by week, no purge | 0.651 ± 0.158 | 0.539 ± 0.143 |
+| Ours (purged + embargoed 5 × 5) | 0.651 ± 0.144 | 0.519 ± 0.135 |
+| Reference: validation | 0.695 | 0.590 |
 
-| Comparison | ΔPR-AUC on validation [CI] | ΔROC-AUC [CI] | CV folds where the first model is better |
+Random splits overstate PR-AUC by 0.03–0.08 (LR) and 0.10–0.13 (DT). ROC-AUC barely moves. Validation sits above CV
+because December 2023 was very persistent (persistence 0.669 vs 0.636 in CV).
+
+### 9.5 Fire ablation and persistence comparison (`m3_fire_ablation.csv`)
+
+| Comparison | ΔPR-AUC validation [CI] | ΔROC-AUC [CI] | CV folds better |
 |---|---|---|---|
-| LR full − LR no-fire | −0.0130 [−0.0235, +0.0098] | −0.0020 [−0.0033, −0.0001] | 10/25 |
-| DT full − DT no-fire | +0.0018 [−0.0263, +0.0309] | +0.0162 [−0.0042, +0.0577] | 7/25 |
-| LR no-fire − LR weather-only | **+0.2590** [+0.0934, +0.3899] | +0.1079 | 25/25 |
-| LR full − persistence | −0.0349 [−0.0713, +0.0504] | −0.0022 | 8/25 |
-| DT full − persistence | −0.2962 [−0.4166, −0.1586] | −0.1112 | 0/25 |
+| LR full − LR no-fire | 0.000 (identical predictions) | 0.000 | 2/25 |
+| DT full − DT no-fire | +0.004 [−0.012, +0.017] | +0.0001 | 6/25 |
+| LR no-fire − LR weather-only | +0.307 [+0.188, +0.379] | +0.112 | 25/25 |
+| LR full − persistence | +0.026 [−0.020, +0.052] | **+0.0036 [+0.0009, +0.0059]** | 19/25 |
+| DT full − persistence | −0.079 [−0.114, −0.036] | −0.010 | 0/25 |
 
-The interpretation agreed for the report: fires may still cause smog (Milestone 2 found ρ ≈ 0.24 at lag 1), but
-their smoke is already in today's index, the strongest input. The month-wise label (9.8) gives the same null, so the
-result is not just an artefact of the fog-season label.
+Fires add no next-day skill; LR is level with or slightly ahead of persistence on ranking (ROC-AUC CI excludes 0,
+PR-AUC CI does not).
 
-### 9.5 Asymmetric cost (`m3_cost.csv`, `m3_cost_curve.csv`)
+### 9.6 Asymmetric cost (`m3_cost.csv`, `m3_cost_curve.csv`)
 
-- **At 5:1**, per 1,000 city-days: never alert 342.8; always alert 931.4; persistence 150.2 (34 FN, 25 FP);
-  LR full 128.7 (15 FN, 92 FP; 62.5% saving vs never alert); LR no-fire 112.5 (10 FN, 96 FP; 67.2%).
-- **The cost curve:** persistence is cheaper only at ratios 1 and 2. **LR full is cheaper at every ratio from 3 to 20**
-  (at 20:1 it costs 243.5 against 543.1). DT full beats persistence only from 13:1.
-- **The price:** LR full false-alarms on 7.6% of non-spike days, against 2.1% for persistence.
-- A qualitative FP/FN consequence table is in the M3.6 Markdown cell:
-  - FN = sensitive groups exposed without warning;
-  - FP = needless closures, lost wages, alert fatigue.
+- At 5:1 per 1,000 city-days: never alert 342.8; always alert 931.4; persistence 150.2 (34 FN, 25 FP); LR full 117.1
+  (12 FN, 92 FP; 65.8% saving); DT full 113.3 (16 FN, 67 FP; 67.0%).
+- **Break-even vs persistence = 2:1** for LR full and DT full (persistence cheaper only at 1:1). At 20:1: LR 255.8,
+  DT 275.8, persistence 543.1.
+- False-alarm rate: LR 7.6%, DT 5.5%, persistence 2.1% of clean days.
+- Q3 framing: 5:1 is a stated assumption; the health burden is cited from Pandey et al. 2021 (India 2019: 1.67 M
+  deaths, US$36.8 bn, 1.36% of GDP).
 
-### 9.6 Errors and edge cases (`m3_errors_onset.csv`, `m3_errors_city_month.csv`, `m3_top_errors.csv`, `m3_fn_context.csv`)
+### 9.7 Errors, edge cases, disparity (`m3_errors_*`, `m3_top_errors`, `m3_fn_context`, `m3_error_rates_group`)
 
-- **Onsets** (tomorrow a spike, today not):
-  - persistence catches 0 of 34 by construction;
-  - **LR full catches 19 of 34 (55.9%)** and all 55 continuation days;
-  - DT full catches 10 of 34 onsets and misses 15 continuations.
-- **LR false alarms by day type:** 69 on onset-type days and 23 on episode ends.
-- **By month:** LR misses 4 spikes in Nov and 11 in Dec; 74 of its 92 false alarms are in Dec.
-- **By city:**
-  - LR misses: Faisalabad 4, Rahim Yar Khan 4, Ferozepur 3, Amritsar 2, Multan 2;
-  - LR false alarms: Ferozepur 18, Faisalabad 15, Multan 12, Rahim Yar Khan 11;
-  - Lahore and Islamabad/Rawalpindi have very few errors of either kind.
-- **The 10 worst misses** are all late-December onsets with LR probability < 0.10 (for example Amritsar 25 Dec,
-  Faisalabad 12/23/25/28 Dec).
-- **Feature day of missed vs caught spikes:**
-  - stagnant: 0% vs 26%;
-  - humidity: 73.9% vs 80.0%;
-  - today's margin over the threshold: −0.38 vs +0.12;
-  - fires were *higher* on missed days (68 vs 53).
-- **The most confident false alarms** are episode ends just under the threshold (for example Rahim Yar Khan,
-  10 Dec: next-day index 0.23 against a threshold of 0.36).
+- Onsets: persistence 0/34; **LR full 22/34 (64.7%)**; DT full 18/34; both catch all 55 continuations.
+- LR misses: Nov 4, Dec 8; ≤ 3 per city. False alarms: 92 = 67 onset-type + 25 episode ends; RYK 16, Multan 14,
+  Faisalabad 13, Ferozepur 12, Jalandhar 11.
+- Missed vs caught spikes (feature day): margin −0.49 vs +0.12; stagnant 16.7% vs 22.1%; RH 73.7 vs 79.8%; fires
+  108.5 vs 47.4.
+- Disparity (Q2, LR full): recall PK 0.837 [0.750, 0.923], IN 0.900 [0.332, 0.969]; FPR 7.2% vs 8.3%; every PK − IN
+  gap CI includes 0. City FPR: RYK 16.7%, Multan 13.0%, Faisalabad 12.1%, Ferozepur 11.4%; Islamabad/Rawalpindi 1.7%.
 
-### 9.7 Drivers (`m3_odds_ratios.csv`, `m3_h2_logit.csv`, `m3_importance.csv`)
+### 9.8 Drivers (`m3_odds_ratios.csv`, `m3_h2_logit.csv`, `m3_importance.csv`)
 
-- **Grouped permutation importance** (drop in validation PR-AUC):
-  - LR full: AQ history 0.524, City 0.322, Rain 0.055, Month 0.023, Humidity 0.019; fires −0.011 (nothing);
-  - DT full: AQ history 0.281, Mean temperature 0.185.
-- **DT Gini importance:** `persist_index` 0.72, `temp_mean_c` 0.13, `temp_range_c` 0.05,
-  `fire_cnt_up45_r300_all_lag1` 0.04.
-- **LR full odds ratios** (per 1 SD for continuous columns, 0→1 for binaries):
-  - `persist_index` 49.2, `rain_day` 0.005;
-  - `temp_range_c` 1.93, `rh_mean_pct` 1.41, `stagnant` 1.38, `stagnant_lag1` 0.41, `vec_len_kmh` 0.78;
-  - fire lag 1 1.43 and lag 2 0.79 (they cancel);
-  - `wind_from_sw` 0.12.
-- **City dummies are huge** (Rahim Yar Khan 9,004; Islamabad 3,721; vs Lahore). This is a **threshold
-  correction, not a risk ranking**: the model reads one pooled index, but each city has its own threshold.
-  Say this explicitly in the report. A feature `persist_index − spike_threshold` would remove it (Milestone 4).
-- **Month dummies** for Mar–Aug are strongly negative (no spikes in those months, near-separation at C = 100).
-- **H2 (weather trap) is supported on every component.** Logit on 1,706 rain-free Sep–Feb training rows (204 spikes),
-  pseudo R² 0.258, city-clustered SE (11 clusters):
+- Permutation (validation ΔPR-AUC): LR full AQ history 0.612, mean temperature 0.042, everything else 0.
+  DT full AQ history 0.518. DT Gini: persist_margin 0.94, temp_mean 0.047, temp_range 0.008.
+- City ORs: all 0 with the margin (raw-index LR reached 9,004 for Rahim Yar Khan).
+- Weather-only LR ORs per SD: temp_mean 0.54, vec wind 0.75, RH 1.32, temp range 1.21; rain 0.83; stagnant 1.06.
+- **H2 unchanged** (it does not use AQ history): stagnant 3.24 [1.91, 5.48], RH 3.95 [2.03, 7.69], temperature range
+  2.22 [1.66, 2.95]; rain 0/1,057, Fisher p = 8.1 × 10⁻²⁷; n = 1,706, 204 spikes, pseudo R² 0.258.
+- Depth-3 tree (`fig_m3_7`): first split persist_margin ≤ 0; then margin and mean temperature; validation PR-AUC 0.564.
 
-  | Term | Odds ratio | 95% CI |
-  |---|---|---|
-  | stagnant | **3.24** | [1.91, 5.48] |
-  | RH, per SD | **3.95** | [2.03, 7.69] |
-  | temperature range, per SD | **2.22** | [1.66, 2.95] |
-  | mean temperature, per SD | 2.08 | [0.87, 5.00], p = 0.10 |
+### 9.9 Sensitivity (`m3_label_monthwise`, `m3_horizons`, `m3_aq_encoding`, `m3_index_regression`)
 
-  - Rain: 0 of 1,057 rain days vs 204 of 3,189 dry days are followed by a spike (one-sided Fisher p = 8.1 × 10⁻²⁷).
-  - The week-clustered check gives the same conclusions (temperature range p = 0.006).
-  - In the forecasting model, stagnation adds little permutation importance because today's index already absorbs
-    it (stagnant air today means smog today).
-- **Depth-3 tree** (`fig_m3_7`):
-  - first split: `persist_index ≤ 0.39`;
-  - then, on the high side, `temp_mean_c ≤ 18.88 °C` (81% spike share);
-  - validation PR-AUC 0.364, ROC-AUC 0.867.
+- Month-wise label: validation PR-AUC persistence 0.439, LR full 0.349, LR no-fire 0.331, DT full 0.247; CV
+  full − no-fire +0.001 → no robust fire effect.
+- Horizons (validation PR-AUC h1/h2/h3): persistence 0.669/0.553/0.445; LR full 0.695/0.597/0.486; CV agrees by small
+  margins (h2 0.453 vs 0.447; h3 0.383 vs 0.375). DT weather-only issues no alerts at h3.
+- AQ encoding (M3.9c): raw-index LR full C = 100 L2, CV 0.605, validation 0.634, cost 128.7; raw-index DT 0.373,
+  cost 228.8 (these are the old Phase 3 numbers).
+- Ridge index (M3.9d, alpha 0.32): validation MAE persistence 0.274, Ridge full 0.287 (Δ +0.013 [−0.004, +0.034]);
+  CV Ridge better in 22/25 folds. Fire ΔMAE −0.0011 [−0.0026, +0.0007]. H5 null not rejected for the index.
 
-### 9.8 Sensitivity (`m3_label_monthwise.csv`, `m3_horizons.csv`)
-
-- **Month-wise label:**
-  - train spike rate 11.4%; validation only 4.1% (Sep 0.3%, Oct 1.2%, Nov 5.5%, Dec 8.8%), because autumn 2023 was
-    cleaner than autumn 2022;
-  - validation PR-AUC: persistence 0.439 (CV 0.316), LR full 0.307 (CV 0.234), LR no-fire 0.325 (CV 0.231),
-    LR weather-only 0.090;
-  - **fire still adds nothing.**
-- **Horizons** (validation PR-AUC at h1 / h2 / h3):
-
-  | Model | h1 | h2 | h3 |
-  |---|---|---|---|
-  | Persistence | 0.669 | 0.553 | 0.445 |
-  | LR full | 0.634 | 0.575 | 0.480 |
-  | LR no-fire | 0.647 | 0.604 | 0.485 |
-
-  - CV does not confirm the h2/h3 LR advantage: LR full 0.298 and 0.229 against persistence 0.447 and 0.375. It reuses
-    the h1 hyperparameters → per-horizon tuning goes on the Milestone 4 roadmap.
-  - At h3 the DT full and DT weather-only models issue **no alerts** on validation (recall 0).
-
-### 9.9 Figures (all `figures/fig_m3_*.png`, 300 dpi, Okabe-Ito; colour = feature set, solid = LR, dashed = DT, black = persistence, grey = majority)
+### 9.10 Figures (`figures/fig_m3_*.png`)
 
 | File | Content |
 |---|---|
-| `fig_m3_1_cv_folds` | A: repeat-1 fold layout over the training calendar (fit / purged-embargoed / held out / dropped); B: spike rate per test fold |
-| `fig_m3_2_tuning` | CV PR-AUC vs C (LR) and vs depth (DT), 3 feature sets, ±1 SD bands |
-| `fig_m3_3_roc_pr` | Validation ROC and PR curves for 7 models; markers at the 5:1 operating points |
-| `fig_m3_4_cost_curve` | Validation cost per 1,000 city-days vs FN:FP ratio 1–20, with never/always-alert references |
-| `fig_m3_5_confusion` | 2×2 matrices (counts and %) for persistence, LR full, DT full |
-| `fig_m3_6_drivers` | A: LR full odds ratios (log scale, bars from OR = 1); B: grouped permutation importance, LR vs DT |
-| `fig_m3_7_tree` | Depth-3 decision tree |
+| `fig_m3_1_cv_folds` | Fold layout of repeat 1; spike rate per test fold |
+| `fig_m3_2_tuning` | CV PR-AUC vs C (LR) and depth (DT), 3 feature sets |
+| `fig_m3_3_roc_pr` | Validation ROC and PR curves, 5:1 operating points |
+| `fig_m3_4_cost_curve` | Validation cost vs FN:FP ratio 1–20 |
+| `fig_m3_5_confusion` | Confusion matrices: persistence, LR full, DT full |
+| `fig_m3_6_drivers` | A: weather-only LR ORs (bars) + LR full non-zero ORs (diamonds); B: grouped permutation importance |
+| `fig_m3_7_tree` | Depth-3 tree |
 
 ---
 
-## 10. Notebook map (`modeling.ipynb`, 46 cells)
+## 10. Notebook map (`modeling.ipynb`, 58 cells, ~5 min)
 
 | Section | Produces |
 |---|---|
-| Header + setup | imports, `MODELS`/`LABEL`/`COLOR`/`STYLE` dicts, asserts `role2_params` fire tag = `up45_r300` |
-| M3.1 Data and leakage guards | `m3_split_balance.csv`; `assert_train_only()` helper; why not a random split |
-| M3.2 CV design | `m3_cv_folds.csv`, `fig_m3_1` |
-| M3.3 Baselines + tuning | `m3_tuning_lr.csv`, `m3_tuning_dt.csv`, `fig_m3_2`, OOF predictions, thresholds, `m3_params.json`. Thresholds are fixed **before** any validation metric (stated in a Markdown cell) |
-| M3.4 Metrics | `m3_metrics_cv.csv`, `m3_metrics_validation.csv` (long: model, metric, estimate, ci_low, ci_high, n_weeks), `m3_validation_counts.csv`, `fig_m3_3`; persistence hand-count assert |
-| M3.5 Fire ablation | `m3_fire_ablation.csv` (paired bootstrap + per-fold CV differences) |
-| M3.6 Error cost | FP/FN consequence table (Markdown), `m3_cost.csv`, `m3_cost_curve.csv`, `fig_m3_4` |
-| M3.7 Confusion + edge cases | `m3_confusion.csv`, `m3_errors_onset.csv`, `m3_errors_city_month.csv`, `m3_top_errors.csv`, `m3_fn_context.csv`, `fig_m3_5` |
-| M3.8 Drivers | `m3_odds_ratios.csv`, `m3_h2_logit.csv`, `m3_importance.csv`, `fig_m3_6`, `fig_m3_7` |
-| M3.9 Sensitivity | `m3_monthwise_thresholds.csv`, `m3_label_monthwise.csv`, `m3_horizons.csv` |
-| M3.10 Artifacts | `models/*.joblib`, package versions, total run time (~259 s) |
+| Header + setup | imports, `MODELS`/`LABEL`/`COLOR`/`STYLE`, asserts the fire setting |
+| M3.1 | `m3_split_balance.csv`; `assert_train_only()`; margin encoding explained |
+| M3.2 | `m3_cv_folds.csv`, `fig_m3_1` |
+| M3.3 | tuning tables, `fig_m3_2`, OOF thresholds, `m3_params.json`; **leakage check** → `m3_leakage_check.csv` |
+| M3.4 | `m3_metrics_cv.csv`, `m3_metrics_validation.csv`, `m3_validation_counts.csv`, `fig_m3_3` |
+| M3.5 | `m3_fire_ablation.csv` |
+| M3.6 | sourced cost framing, `m3_cost.csv`, `m3_cost_curve.csv`, `fig_m3_4` |
+| M3.7 | `m3_confusion.csv`, `m3_errors_onset.csv`, `m3_errors_city_month.csv`, `m3_top_errors.csv`, `m3_fn_context.csv`, `fig_m3_5`; **disparity check** → `m3_error_rates_group.csv` |
+| M3.8 | `m3_odds_ratios.csv`, `m3_h2_logit.csv`, `m3_importance.csv`, `fig_m3_6`, `fig_m3_7` |
+| M3.9 | (a) `m3_monthwise_thresholds.csv`, `m3_label_monthwise.csv`; (b) `m3_horizons.csv`; (c) `m3_aq_encoding.csv`; (d) `m3_index_regression.csv` |
+| M3.10 | `models/*.joblib` (10), versions, run time |
 
-Every computational section is followed by a "What we found" Markdown cell with the numbers above.
-
----
-
-## 11. What is left: Phases 4 and 5 (from `context/milestone3_plan.md`)
-
-### Phase 4: `DECISIONS.md` section for Milestone 3 → commit "Decision log: Milestone 3 modelling choices"
-
-- Add a section after "Merge and analysis (Role 2)", in the same table style as F/A/W/M. Use numbered rows, e.g. `S1…`
-  (avoid clashing with the existing `M1–M10` ids).
-- List D3–D13 **and X1–X8** (section 8.2) with exact counts from section 9.1:
-  - 4,246 / 1,298 rows; 33 skip, 11 no target, 22 no lag, 44 + 11 suspect;
-  - best hyperparameters and thresholds from 9.2;
-  - the CV settings (5 × 5, seeds 0–4, purge 1 day, embargo 3 days, 330–495 rows removed per fold);
-  - calm ≡ stagnant (631/631); rain 0/1,057; Mar–Aug 0 spikes.
-
-### Phase 5: manuscript and submission package → commit "Milestone 3 report sections and submission package"
-
-**`docs/manuscript/build_manuscript.py`:**
-- Keep Sections 1–6 unchanged and add one sentence to the abstract.
-- Insert Sections 7–12 **before** the existing `h2("References")` call (currently line 409), so References move to
-  the end.
-- Read numbers **only** from `docs/tables/m3_*.csv`, so every number matches the notebook.
-- Add references and verify each one; the cloud session wrote them from memory:
-  - scikit-learn (Pedregosa et al. 2011, JMLR 12);
-  - Roberts et al. 2017, *Ecography*, on blocked CV for structured data;
-  - Saito & Rehmsmeier 2015, *PLOS ONE*, on PR vs ROC for imbalanced data.
-- Update Section 6 (Reproducibility) with `modeling.ipynb`, `src/modeling.py`, `src/evaluate.py` and `models/`.
-
-**Sections, about 5–6 pages in total:**
-- **7 Baseline Models and Justification.**
-  - Majority: the floor, and why accuracy misleads.
-  - Persistence: the benchmark.
-  - LR: interpretable odds ratios and calibrated probabilities.
-  - Shallow DT: non-linear trap rules that officials can read.
-- **8 Experimental Setup.**
-  - Chronological split, 76.6/23.4, with a 3-day gap.
-  - Why not random or plain stratified K-fold (ρ = 0.82 day to day; Islamabad = Rawalpindi; same-day weather).
-  - Purged and embargoed grouped CV, and the stratification check.
-  - Tuning grids, PR-AUC as the tuning metric, and the OOF threshold rule.
-  - Leakage guards.
-  - The solver note (X1).
-- **9 Results.** Metrics table (9.3), ROC/PR figure, fire ablation (9.4), month-wise label and horizons as short
-  sensitivity paragraphs.
-- **10 Asymmetric Error Cost Analysis.** FN/FP consequence table, cost at 5:1, cost curve (break-even 3:1 vs
-  persistence), confusion matrices, onset vs continuation, edge cases (9.6).
-- **11 Drivers and Initial Policy Takeaways.**
-  - The H2 table, permutation importance, the tree.
-  - **Explain the city-dummy artefact.**
-  - Policy points, Pakistan first, then cross-border:
-    - a next-day advisory driven by today's index plus a weather-trap check (stagnant, humid, rain-free,
-      large day-night range);
-    - rain as an all-clear signal;
-    - a ≥ 3:1 cost view justifies a model-based alert over persistence;
-    - fire control is a source-reduction policy whose benefit shows up in today's smog, not as extra next-day
-      forecast skill;
-    - the cross-border claim can't be settled from these baselines (H4 → Milestone 4).
-- **12 Limitations and Milestone 4 Roadmap.**
-  - Limitations:
-    - no model beats persistence on ranking;
-    - class imbalance, and one training winter;
-    - 18 validation weeks, 77 of 89 spikes in December;
-    - Islamabad/Rawalpindi duplicate series;
-    - the label-timing artefact (partly answered by the month-wise run);
-    - the city-threshold artefact;
-    - CAMS model data rather than monitors, and UTC+5 for India.
-  - Milestone 4 work:
-    - RF/GBM;
-    - a threshold-margin feature;
-    - per-horizon tuning;
-    - probability calibration;
-    - a fairness audit of error rates by city and PK vs IN (LR false alarms concentrate in Ferozepur, Faisalabad,
-      Multan and Rahim Yar Khan);
-    - the H1/H3/H4 tests;
-    - surface pressure;
-    - the 2024 out-of-time test.
-
-**`docs/manuscript/render_docx.js`:**
-- Add an optional CLI argument for the milestone, defaulting to 2 so the Milestone 2 build stays identical.
-- **Current behaviour to know:**
-  - it reads `docs/manuscript/manuscript.json`;
-  - it writes `Milestone2_Manuscript_Draft.docx` at the **repo root** (line 148);
-  - the footer text is hard-coded as "Trans-Boundary Smog Prediction, Milestone 02" (line 141).
-- Check how `submission/Milestone2_Report.docx` was produced before changing paths (probably a copy of that output).
-- With argument `3` it should write `submission/milestone3/Milestone3_Report.docx` with the footer "Milestone 03".
-- Note that `build_manuscript.py` writes a single `manuscript.json`. The Milestone 2 rebuild must still be possible,
-  for example by building the M3 sections only when a flag or argument is set.
-
-**PDF:**
-- `python -c "from docx2pdf import convert; convert('submission/milestone3/Milestone3_Report.docx')"`.
-- Fallback: Word → Save As PDF.
-- Check that the figures render and the total is about 16 pages.
-- Spot-check 5 numbers in the PDF against the CSVs.
-
-**`submission/milestone3/`:**
-- `Milestone3_Report.docx` and `.pdf`;
-- a copy of the executed `modeling.ipynb`;
-- `README.md` with how to run and a file map (modules, tables, figures, models, `m3_params.json`).
-
-**Final verification (from the plan):**
-- `git log -5 --format='%an <%ae>%n%b'` shows only bilal and no trailers.
-- `git branch -a` shows only `main`.
+Every computational section is followed by a "What we found" cell whose numbers match the CSVs (spot-checked).
 
 ---
+
+## 11. What is left
+
+Milestone 3 is complete. Next:
+- **Milestone 4:** RF/GBM on the same purged folds; per-horizon tuning; probability calibration; full fairness audit
+  (error-rate parity by city and country, per-group thresholds, ethics); H1, H3, H4 tests; surface pressure; ozone
+  weight check.
+- **Week 14:** move `WINDOW_START/END` and split dates in `src/config.py`, add the 2024 files, rerun all notebooks and
+  deliberately move the `SEALED_FROM` assert in `src/modeling.py`.
+- **Report builds:** `python docs/manuscript/build_manuscript.py --milestone 3` then `node docs/manuscript/render_docx.js 3`
+  (writes `submission/milestone3/Milestone3_Report.docx`); PDF with
+  `python -c "from docx2pdf import convert; convert('submission/milestone3/Milestone3_Report.docx')"`.
+  The default build (no argument) still produces the Milestone 2 report.
 
 ## 12. Rubric reminders
 
@@ -532,9 +441,11 @@ Brier and cost.
 The brief also asks to "document train/test split ratios and apply stratified sampling". Our answer:
 - the split is chronological, 76.6/23.4, by design;
 - stratification is applied inside the grouped CV (StratifiedGroupKFold);
-- the split balance is checked rather than forced.
+- the split balance is checked rather than forced;
+- the leakage check (report §8.2, Table 14) shows numerically why a random stratified split would overstate skill.
 
-Explain this in §8.
+The report is 19 pages (Sections 1–6 from Milestone 2, Sections 7–12 new, 21 tables, 13 figures); the 16–17 page
+target of the finish plan was not reached without dropping figures.
 
 **Figure rules (still in force):** a title, axes with units, a legend, the Okabe-Ito palette via `src/plotting.py`,
 and `P.save()` at 300 dpi. Every number in the report must come from `docs/tables/*.csv`.
@@ -558,6 +469,11 @@ and `P.save()` at 300 dpi. Every number in the report must come from `docs/table
 - **The AQ notebook** defines its own `TRAIN_START/END` and does not import `src/config.py`. This matters for Week 14.
 - **Report tables are at 4 decimals on purpose:** rounding twice from 3 decimals rounded some values the wrong way.
 - `requirements.txt` is UTF-8. An older UTF-16 Windows freeze existed, so don't restore it.
+- **`manuscript.json` holds absolute figure paths.** The committed Milestone 2 JSON was built on a cloud machine
+  (`/home/user/...`); rebuilding on the laptop changes only those paths (content verified identical), so don't
+  commit a path-only rebuild. `build_manuscript.py` now writes UTF-8 explicitly.
+- **The tuned LR is sparse.** With the margin encoding the L1 penalty keeps only 2 columns; driver analysis of
+  weather therefore uses the weather-only LR and the H2 Logit.
 - **Git warnings** "LF will be replaced by CRLF" on commit are normal on this machine.
 - **Week 14:**
   - change `WINDOW_START/END` and the split dates in `src/config.py`;
