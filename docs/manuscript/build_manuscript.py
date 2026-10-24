@@ -4,18 +4,29 @@ Tables are read from docs/tables/*.csv, which merge_analysis.ipynb writes, so th
 the report are the numbers the notebook printed. render_docx.js turns the JSON into Word, in the
 layout of the team's stream reports (Report_Weather.docx).
 
-Run from the repository root, after the four notebooks:
-    python docs/manuscript/build_manuscript.py
+With --milestone 3 it builds the Milestone 3 report instead: Sections 1-6 as in Milestone 2 (new
+title, one abstract sentence, one closing line in Section 4, an updated Section 6) plus Sections
+7-12, whose numbers come from the docs/tables/m3_*.csv files that modeling.ipynb writes.
+
+Run from the repository root, after the four notebooks (and modeling.ipynb for Milestone 3):
+    python docs/manuscript/build_manuscript.py               # Milestone 2
     node docs/manuscript/render_docx.js
+    python docs/manuscript/build_manuscript.py --milestone 3
+    node docs/manuscript/render_docx.js 3
 """
+import argparse
 import json
 from pathlib import Path
 
 import pandas as pd
 
+ap = argparse.ArgumentParser()
+ap.add_argument("--milestone", type=int, choices=[2, 3], default=2)
+M3 = ap.parse_args().milestone == 3
+
 ROOT = Path(__file__).resolve().parents[2]
 T = ROOT / "docs" / "tables"
-OUT = ROOT / "docs" / "manuscript" / "manuscript.json"
+OUT = ROOT / "docs" / "manuscript" / ("manuscript_m3.json" if M3 else "manuscript.json")
 
 blocks = []
 counters = {"table": 0, "figure": 0}
@@ -78,11 +89,505 @@ hm = tab("hypothesis_mapping", index_col=0)
 HEAD = "Training Oct-Dec (headline)"
 up_lag = lag[lag["setting"].str.startswith("Upwind")].set_index("lag_days")["median_rho"]
 
+
+# =====================================================================
+# Milestone 3 content (only with --milestone 3): Sections 7-12 and the small changes to Sections 1-6.
+# Every number comes from docs/tables/m3_*.csv, written by modeling.ipynb.
+# =====================================================================
+def pct(x, d=1):
+    return f(100 * x, d)
+
+
+def ci(est, lo, hi, d=3):
+    return f"{f(est, d)} [{f(lo, d)}, {f(hi, d)}]"
+
+
+if M3:
+    sb = tab("m3_split_balance", index_col=0)
+    cvf = tab("m3_cv_folds")
+    leak = tab("m3_leakage_check").set_index(["model", "scheme"])
+    mv = tab("m3_metrics_validation").set_index(["model", "metric"])
+    mcv = tab("m3_metrics_cv", index_col=0)
+    vcount = tab("m3_validation_counts", index_col=0)
+    abl = tab("m3_fire_ablation").set_index(["comparison", "metric"])
+    cost = tab("m3_cost", index_col=0)
+    curve = tab("m3_cost_curve")
+    cwide = curve.pivot(index="ratio", columns="model", values="cost_per_1000")
+    onset = tab("m3_errors_onset").set_index(["model", "outcome", "day_type"])["count"]
+    ecm = tab("m3_errors_city_month")
+    topr = tab("m3_top_errors")
+    fnc = tab("m3_fn_context", index_col=0)
+    grp = tab("m3_error_rates_group").set_index(["model", "level", "group", "metric"])
+    odds = tab("m3_odds_ratios")
+    h2t = tab("m3_h2_logit", index_col=0)
+    imp = tab("m3_importance")
+    mw = tab("m3_label_monthwise").set_index(["label", "model"])
+    hz = tab("m3_horizons").set_index(["horizon", "model"])
+    enc = tab("m3_aq_encoding").set_index(["encoding", "model"])
+    reg = tab("m3_index_regression")
+    tun = {"lr": tab("m3_tuning_lr"), "dt": tab("m3_tuning_dt")}
+
+    def V(model, metric, col="estimate"):
+        return mv.loc[(model, metric), col]
+
+    def best(fam, s):
+        t = tun[fam]
+        return t[(t.feature_set == s) & (t["rank"] == 1)].iloc[0]
+
+    def thr(model, ratio=5):
+        return curve[(curve.model == model) & (curve.ratio == ratio)]["threshold"].iloc[0]
+
+    def lr_setting(s):
+        b = best("lr", s)
+        return f"C = {f(b.C, 3)}, {b.penalty}, class weight {b.class_weight}"
+
+    def dt_setting(s):
+        b = best("dt", s)
+        return f"depth {int(b.max_depth)}, min. leaf {int(b.min_samples_leaf)}, class weight {b.class_weight}"
+
+    BE = min(r for r in cwide.index if cwide.loc[r, "LR full"] < cwide.loc[r, "Persistence"])   # break-even ratio
+    BE_DT = min(r for r in cwide.index if cwide.loc[r, "DT full"] < cwide.loc[r, "Persistence"])
+    nz = odds[(odds.feature_set == "full") & (odds.coef != 0)].set_index("feature")
+    n_full = int((odds.feature_set == "full").sum())
+    tr_, va_ = sb.loc["train"], sb.loc["validation"]
+
+    M3_ABSTRACT = (
+        " Milestone 3 adds baseline forecasts of a spike on the next day, scored with purged, week-grouped cross-validation and on an "
+        f"out-of-time validation season (September–December 2023): a sparse logistic regression on today's index margin over the city threshold "
+        f"and the mean temperature ranks spikes as well as persistence (PR-AUC {f(V('LR full', 'pr_auc'), 3)} against {f(V('Persistence', 'pr_auc'), 3)}) "
+        f"and gives cheaper alerts whenever a missed spike is weighted at least {BE} times a false alarm "
+        f"({f(V('LR full', 'cost_per_1000'), 1)} against {f(V('Persistence', 'cost_per_1000'), 1)} per 1,000 city-days at 5:1), "
+        "while upwind fires add no next-day skill once today's smog is known.")
+    M3_SECTION4_CLOSE = (
+        "**Status after Milestone 3.** Sections 7–12 answer two of the five hypotheses. H2 (weather trap) is supported on every component (Section 11.1). "
+        "H5 (forecast value) is answered for the next day: the models match persistence in ranking and beat it on alert cost, and fires add no skill "
+        "(Sections 9 and 10). H1, H3 and H4 are tested in Milestone 4.")
+
+
+def m3_reproducibility():
+    p("**Milestone 3.** modeling.ipynb (sections M3.1–M3.10) reads only the master table and role2_params.json and runs top to bottom in about five minutes "
+      "on 8 cores. It writes every table of Sections 7–12 to docs/tables/m3_*.csv, the figures to figures/fig_m3_*.png, the tuned hyperparameters and "
+      "alert thresholds to Dataset/clean/m3_params.json, and the ten fitted pipelines to models/*.joblib. The modelling code sits in two modules: "
+      "src/modeling.py (data access, feature sets, the purged cross-validation splitter, pipelines, tuning and thresholds) and src/evaluate.py (metrics, "
+      "week-block bootstrap, cost curve, error breakdown). All seeds are fixed, and two consecutive runs write byte-identical tables. "
+      "The decision log (DECISIONS.md, rows S1–S19) records every Milestone 3 choice with its row counts.")
+
+
+def m3_sections():
+    lrf, dtf, pers = "LR full", "DT full", "Persistence"
+    # =================================================================
+    # 7. Baseline models
+    # =================================================================
+    h1("7. Baseline Models and Justification")
+    p(f"The headline task is a binary forecast: will city *c* have a smog spike on day *t* + 1, given what is known on day *t*? Spikes are "
+      f"{f(tr_['spike rate (%)'], 2)}% of training city-days, so the models are judged on how well they find the rare positive days and on what their "
+      "errors cost. Four models, from the simplest to the most flexible, set the benchmarks (Table 13).")
+    table("Baseline models, their role, why they suit this problem, and the setting chosen by cross-validated PR-AUC (full feature set).",
+          ["Model", "Role", "Why for this problem", "Tuned setting (CV PR-AUC)"],
+          [["Majority class", "Floor", "Always predicts \"no spike\". Shows how misleading accuracy is when about 95% of days are clean.", "–"],
+           ["Persistence", "Benchmark", "Tomorrow repeats today. Today's index has ρ = 0.82 with tomorrow's (Section 3.3), so any forecast must beat this rule. "
+            "Its ranking score is today's margin over the city's spike threshold.", f"Fixed rule ({f(mcv.loc[pers, 'pr_auc_mean'], 3)})"],
+           ["Logistic regression (LR)", "Main baseline", "Additive and interpretable: odds ratios a health department can read, and probabilities that can be "
+            "thresholded for any cost ratio. L1/L2 regularisation copes with correlated weather columns.",
+            f"{lr_setting('full')} ({f(best('lr', 'full').cv_pr_auc_mean, 3)})"],
+           ["Decision tree (DT)", "Non-linear baseline", "Finds interactions (for example stagnant **and** humid) without specifying them, and can be drawn as a "
+            "flow chart for officials.", f"{dt_setting('full')} ({f(best('dt', 'full').cv_pr_auc_mean, 3)})"]],
+          [1500, 1100, 4700, 2492])
+    p("K-nearest neighbours was not used: distances on a mix of binary dummies and continuous weather columns are hard to justify, and it gives no "
+      "readable drivers. Random forests and gradient boosting are left for Milestone 4, so that the baselines stay interpretable. "
+      "**Feature sets.** LR and DT are each fitted on three sets. **Full** (42 columns) holds AQ history (today and lags 1–2), upwind fire counts (±45° cone, "
+      "300 km, day *t* and lags 1–3), weather (stagnant today and yesterday, humidity, rain day, temperature range, vector-mean wind, mean temperature, "
+      "7 wind sectors), and 11 month and 10 city dummies. **Weather-only** (35) drops AQ history and fire. **No-fire** (38) drops only the four fire "
+      "columns and is the ablation that tests the project's central claim. The calm sector is identical to the stagnant flag (631 of 631 days), so the "
+      "most frequent sector, north-west, is the wind reference instead.")
+    p("**AQ history as a margin over the city threshold.** The spike label is defined relative to each city's threshold, which runs from 0.36 (Rahim Yar Khan) "
+      "to 2.18 (Lahore). AQ history therefore enters as today's (and the two previous days') index **minus the city threshold**, so that a margin of 0 or "
+      "more means the day is a spike. With the raw pooled index, the city dummies had to act as threshold corrections and produced meaningless odds "
+      f"ratios (up to {f(enc.loc[('raw index (Phase 3)', lrf), 'lr_max_city_or'], 0)} for Rahim Yar Khan against Lahore). The margin encoding was "
+      "fixed as the headline before any result was seen; the raw-index version is kept as a sensitivity run (Section 9.3). The thresholds were "
+      "learned on training days in Milestone 2, so the margin adds no information beyond the label itself.")
+
+    # =================================================================
+    # 8. Experimental setup
+    # =================================================================
+    h1("8. Experimental Setup")
+    h2("8.1 Split and class balance")
+    p(f"The outer split is chronological, as in Milestone 2: training runs from {tr_['first day']} to {tr_['last day']} "
+      f"({int(tr_['city-days']):,} city-days, {f(tr_['share of rows (%)'], 1)}%), then a 3-day gap, then validation from {va_['first day']} to "
+      f"{va_['last day']} ({int(va_['city-days']):,} city-days, {f(va_['share of rows (%)'], 1)}%). Rows whose feature day or target day is one of the "
+      f"flagged suspect days ({int(tr_['suspect rows dropped'])} training rows), and rows without a target or an index lag, are dropped. Training "
+      f"then has {int(tr_['spikes'])} spikes ({f(tr_['spike rate (%)'], 2)}%) and validation {int(va_['spikes'])} ({f(va_['spike rate (%)'], 2)}%). "
+      "Validation is the out-of-time test: nothing is fitted, tuned or thresholded on it. Its spike rate is higher because it covers only September "
+      "to December and ends in the peak month, while training covers a whole year including the spike-free summer. Stratification is therefore "
+      "checked rather than forced on the outer split, and applied inside the cross-validation (Section 8.3).")
+    h2("8.2 Why not a random stratified split?")
+    a, b, c_, d_ = [k for k in leak.loc[lrf].index if not k.startswith("reference")]
+    ref = [k for k in leak.loc[lrf].index if k.startswith("reference")][0]
+
+    def lk(m, k, col):
+        r = leak.loc[(m, k)]
+        sd = r[f"{col}_sd"]
+        return f(r[f"{col}_mean"], 3) + ("" if pd.isna(sd) else f" ± {f(sd, 3)}")
+    p("Neighbouring days are near-copies (ρ = 0.82), Islamabad and Rawalpindi share one series, and all cities share the same weather on the same day. "
+      "A random split puts near-duplicates of every test row into the training part. Table 14 measures the effect on the training rows: the same "
+      "tuned pipelines are scored under a random stratified 80/20 split, plain stratified 5-fold CV, week-grouped 5-fold CV and our purged design.")
+    table("Leakage check on training rows: the same tuned pipelines scored under four splitting schemes (mean ± SD over folds). The last row is the "
+          "chronological validation score, for reference.",
+          ["Splitting scheme", "Folds", "LR full PR-AUC", "LR full ROC-AUC", "DT full PR-AUC", "DT full ROC-AUC"],
+          [[k[4:] if not k.startswith("reference") else "Chronological validation (Sep–Dec 2023)", int(leak.loc[(lrf, k), "n_folds"]),
+            lk(lrf, k, "pr_auc"), lk(lrf, k, "roc_auc"), lk(dtf, k, "pr_auc"), lk(dtf, k, "roc_auc")] for k in [a, b, c_, d_, ref]],
+          [3300, 700, 1450, 1450, 1450, 1442])
+    infl_lr = leak.loc[(lrf, a), "pr_auc_mean"] - leak.loc[(lrf, d_), "pr_auc_mean"]
+    infl_dt = leak.loc[(dtf, a), "pr_auc_mean"] - leak.loc[(dtf, d_), "pr_auc_mean"]
+    p(f"A random stratified split overstates PR-AUC by {f(infl_lr, 3)} for the LR and {f(infl_dt, 3)} for the tree, and plain stratified K-fold by "
+      f"{f(leak.loc[(lrf, b), 'pr_auc_mean'] - leak.loc[(lrf, d_), 'pr_auc_mean'], 3)} and "
+      f"{f(leak.loc[(dtf, b), 'pr_auc_mean'] - leak.loc[(dtf, d_), 'pr_auc_mean'], 3)}. Grouping by week does most of the correction; the purge and "
+      f"embargo remove a further {f(leak.loc[(dtf, c_), 'pr_auc_mean'] - leak.loc[(dtf, d_), 'pr_auc_mean'], 3)} for the tree. ROC-AUC, dominated "
+      "by the many easy clean days, barely moves. Validation sits above our CV because December 2023 was unusually persistent (persistence: "
+      f"{f(V(pers, 'pr_auc'), 3)} against {f(mcv.loc[pers, 'pr_auc_mean'], 3)} in CV), so the inflation is judged against grouped CV on the same rows.")
+    h2("8.3 Purged, grouped cross-validation")
+    p(f"Tuning, thresholds and CV scores use **purged, repeated StratifiedGroupKFold** on the training rows: 5 folds × 5 repeats (seeds 0–4) = "
+      f"{len(cvf)} folds (Roberts et al., 2017). The **group** is the calendar week shared by all 11 cities, so a week is never split between fitting "
+      "and scoring. **Stratification** on the spike label gives every fold its share of spikes. The **purge** drops fit rows whose target day falls "
+      "on a held-out day. The **embargo** drops fit rows up to three days after a held-out day, because their AQ history (back to *t* − 2) contains "
+      f"that day's index. Each fold holds out {int(cvf['test weeks'].min())}–{int(cvf['test weeks'].max())} weeks "
+      f"({int(cvf['test rows'].min())}–{int(cvf['test rows'].max())} rows), and the purge and embargo remove "
+      f"{int(cvf['purged/embargoed rows'].min())}–{int(cvf['purged/embargoed rows'].max())} fit rows. The test-fold spike rate averages "
+      f"{f(cvf['test spike rate (%)'].mean(), 2)}% (SD {f(cvf['test spike rate (%)'].std(), 2)}, range {f(cvf['test spike rate (%)'].min(), 2)}–"
+      f"{f(cvf['test spike rate (%)'].max(), 2)}%), against {f(tr_['spike rate (%)'], 2)}% overall (Figure 7).")
+    figure("figures/fig_m3_1_cv_folds.png",
+           "Purged, grouped 5 × 5 cross-validation inside the training period. (A) Fold layout of the first repeat over the training calendar: fit part, "
+           "rows removed by the purge and embargo, held-out weeks, and dropped days. (B) Spike rate of each of the 25 test folds against the rate over all "
+           "training rows. Produced by modeling.ipynb (Figure M3.1).", 5.6)
+    h2("8.4 Tuning, thresholds and leakage guards")
+    lr_t = tun["lr"]
+    lr_full_c = lr_t[(lr_t.feature_set == "full")].groupby("C", as_index=False)["cv_pr_auc_mean"].max()   # best setting at each C
+    p("Hyperparameters are chosen by grid search on the 25 purged folds, scored by **PR-AUC** (average precision), which is more informative than ROC-AUC "
+      "when positives are rare (Saito & Rehmsmeier, 2015). The LR grid has C from 0.001 to 100 (8 log-spaced values), L1 or L2, and class weights "
+      "none or balanced (32 settings). The tree grid has depth 2–8, minimum leaf size 10/25/50/100 and the same class weights (56 settings). "
+      f"The LR curve is flat between C = 0.005 and 0.14 (best CV PR-AUC {f(lr_full_c[(lr_full_c.C > 0.004) & (lr_full_c.C < 0.15)].cv_pr_auc_mean.min(), 3)}–"
+      f"{f(lr_full_c.cv_pr_auc_mean.max(), 3)}) and falls as the penalty weakens ({f(lr_full_c[lr_full_c.C == lr_full_c.C.max()].cv_pr_auc_mean.max(), 3)} "
+      "at C = 100), so the optimum lies inside the grid. The tree peaks at depth 4 (Figure 8). The best setting is refitted on all training rows.")
+    figure("figures/fig_m3_2_tuning.png",
+           "Hyperparameter tuning on the purged training folds: mean cross-validated PR-AUC (band ± 1 SD over 25 folds) against (A) the LR inverse "
+           "regularisation strength C and (B) the tree depth, for the three feature sets; at each value the best setting of the other hyperparameters is "
+           "shown. Produced by modeling.ipynb (Figure M3.2).", 4.8)
+    p(f"**Alert thresholds.** Each model's threshold minimises 5·FN + 1·FP on its out-of-fold training predictions (Section 10), and all thresholds are "
+      f"fixed before any validation metric is computed: alert when the spike probability is at least {pct(thr(lrf))}% (LR full) or {pct(thr(dtf))}% "
+      "(DT full). **Leakage guards.** Every transform (log1p of fire counts, standard scaling) sits inside the pipeline and is re-learned in each fold; "
+      "an assertion before every fit checks that only training rows reach it; the loader refuses any 2024 date; and fold groups are asserted disjoint. "
+      "The LR uses the liblinear solver, because saga failed to converge within 5,000 iterations at weak penalties; liblinear gives the same fold "
+      "scores within 0.005 in under 0.2 s per fit. All models use scikit-learn (Pedregosa et al., 2011).")
+
+    # =================================================================
+    # 9. Results
+    # =================================================================
+    h1("9. Results")
+    h2("9.1 Classification metrics")
+    order = ["Majority class", pers, lrf, "LR no-fire", "LR weather-only", dtf, "DT no-fire", "DT weather-only"]
+
+    def cell(m, k, d=3):
+        v = V(m, k)
+        return "–" if pd.isna(v) else f(v, d)
+    rows = [[m, cell(m, "accuracy"), cell(m, "precision"), cell(m, "recall"), cell(m, "specificity"), cell(m, "f1"), cell(m, "roc_auc"),
+             "–" if pd.isna(V(m, "pr_auc")) else ci(V(m, "pr_auc"), V(m, "pr_auc", "ci_low"), V(m, "pr_auc", "ci_high")),
+             f(V(m, "cost_per_1000"), 1)] for m in order]
+    table(f"Validation metrics (Sep–Dec 2023, {int(va_['city-days']):,} city-days, {int(va_['spikes'])} spikes) at each model's 5:1 threshold. "
+          f"PR-AUC with a 95% CI from a block bootstrap over the {int(mv['n_weeks'].iloc[0])} validation weeks (1,000 resamples). Cost = (5·FN + FP) "
+          "per 1,000 city-days.",
+          ["Model", "Accuracy", "Precision", "Recall", "Specificity", "F1", "ROC-AUC", "PR-AUC [95% CI]", "Cost"], rows,
+          [1650, 900, 900, 800, 1000, 700, 900, 1700, 700], font=7)
+    tp = lambda m, k: int(vcount.loc[m, k])
+    p(f"**Accuracy misleads.** The majority class scores {pct(V('Majority class', 'accuracy'))}% accuracy, more than LR full "
+      f"({pct(V(lrf, 'accuracy'))}%), yet catches no spike and has the highest cost. **Ranking.** LR full ranks spikes at least as well as persistence "
+      f"(PR-AUC {f(V(lrf, 'pr_auc'), 3)} against {f(V(pers, 'pr_auc'), 3)}; ROC-AUC {f(V(lrf, 'roc_auc'), 3)} against {f(V(pers, 'roc_auc'), 3)}), "
+      f"and the tree is behind ({f(V(dtf, 'pr_auc'), 3)}). **The alert decision.** At 5:1, LR full catches {tp(lrf, 'tp')} of {int(va_['spikes'])} spikes "
+      f"(recall {pct(V(lrf, 'recall'))}%) against {tp(pers, 'tp')} for persistence ({pct(V(pers, 'recall'))}%), at lower precision "
+      f"({pct(V(lrf, 'precision'))}% vs {pct(V(pers, 'precision'))}%). DT full has the lowest cost ({f(V(dtf, 'cost_per_1000'), 1)} per 1,000 city-days). "
+      f"Cross-validation agrees: PR-AUC {f(mcv.loc[pers, 'pr_auc_mean'], 3)} ± {f(mcv.loc[pers, 'pr_auc_sd'], 3)} for persistence, "
+      f"{f(mcv.loc[lrf, 'pr_auc_mean'], 3)} ± {f(mcv.loc[lrf, 'pr_auc_sd'], 3)} for LR full and {f(mcv.loc[dtf, 'pr_auc_mean'], 3)} ± "
+      f"{f(mcv.loc[dtf, 'pr_auc_sd'], 3)} for DT full; cost {f(mcv.loc[pers, 'cost_per_1000_mean'], 1)}, {f(mcv.loc[lrf, 'cost_per_1000_mean'], 1)} and "
+      f"{f(mcv.loc[dtf, 'cost_per_1000_mean'], 1)}. Without AQ history the models lose most of their skill (LR weather-only PR-AUC "
+      f"{f(V('LR weather-only', 'pr_auc'), 3)}). With 18 validation weeks and most spikes in December, every CI is wide.")
+    figure("figures/fig_m3_3_roc_pr.png",
+           "Validation ROC curves (A) and precision-recall curves (B) for persistence and the six tuned models; markers show the operating points at the "
+           "5:1 thresholds. Colour = feature set, solid = LR, dashed = DT, black = persistence. Produced by modeling.ipynb (Figure M3.3).", 5.2)
+
+    h2("9.2 Do upwind fires add skill?")
+
+    def ab(comp, k="pr_auc"):
+        r = abl.loc[(comp, k)]
+        return r
+    comps = [("LR full − LR no-fire", "Fire, LR"), ("DT full − DT no-fire", "Fire, DT"), ("LR no-fire − LR weather-only", "AQ history, LR"),
+             ("LR full − Persistence", "LR full vs persistence"), ("DT full − Persistence", "DT full vs persistence")]
+    table("Paired comparisons on validation (difference with 95% week-block bootstrap CI) and in the 25 CV folds (mean difference; folds where the "
+          "first model is better).",
+          ["Comparison", "Question", "ΔPR-AUC, validation", "ΔROC-AUC, validation", "ΔPR-AUC, CV mean", "CV folds better"],
+          [[c.replace("Persistence", "persistence"), q, ci(ab(c).validation_diff, ab(c).ci_low, ab(c).ci_high),
+            ci(ab(c, "roc_auc").validation_diff, ab(c, "roc_auc").ci_low, ab(c, "roc_auc").ci_high, 4),
+            f(ab(c).cv_diff_mean, 4), f"{int(ab(c).cv_folds_a_better)} of 25"] for c, q in comps],
+          [2300, 1500, 1800, 1900, 1200, 1092])
+    p("**Fires add no next-day skill once today's smog is known.** The L1 penalty of the tuned LR sets all four fire coefficients to zero, so LR full and "
+      f"LR no-fire give identical validation predictions; across the CV refits the full model is better in only {int(ab('LR full − LR no-fire').cv_folds_a_better)} "
+      f"of 25 folds. The tree shows the same null (ΔPR-AUC {f(ab('DT full − DT no-fire').validation_diff, 3)}). AQ history is what matters "
+      f"(ΔPR-AUC {f(ab('LR no-fire − LR weather-only').validation_diff, 3)}, better in all 25 folds). Against persistence, LR full gains a little: "
+      f"ΔPR-AUC {f(ab('LR full − Persistence').validation_diff, 3)} with a CI that includes 0, but ΔROC-AUC "
+      f"{f(ab('LR full − Persistence', 'roc_auc').validation_diff, 4)} with a CI above 0, and better in {int(ab('LR full − Persistence').cv_folds_a_better)} "
+      "of 25 folds. This does not show that fires do not cause smog: Milestone 2 found that cone fires track next-day smog (ρ ≈ 0.23), but whatever "
+      "smoke they add is already in today's index, the strongest input.")
+
+    h2("9.3 Sensitivity checks")
+    mwl = "month-wise P90"
+    rr = reg.set_index(["kind", "name", "metric"])
+    raw_lr = enc.loc[("raw index (Phase 3)", lrf)]
+    raw_dt, mar_dt = enc.loc[("raw index (Phase 3)", dtf)], enc.loc[("threshold margin (headline)", dtf)]
+    sens = [["Month-wise spike label (city × month P90)", "PR-AUC, validation (CV)",
+             *[f"{f(mw.loc[(mwl, m), 'val_pr_auc'], 3)} ({f(mw.loc[(mwl, m), 'cv_pr_auc_mean'], 3)})" for m in [pers, lrf, "LR no-fire", dtf]]]]
+    for h in (2, 3):
+        sens.append([f"Horizon *t* + {h}, h1 hyperparameters", "PR-AUC, validation (CV)",
+                     *[f"{f(hz.loc[(h, m), 'val_pr_auc'], 3)} ({f(hz.loc[(h, m), 'cv_pr_auc_mean'], 3)})" for m in [pers, lrf, "LR no-fire", dtf]]])
+    sens.append(["Raw index instead of the margin (retuned)", "PR-AUC, validation (CV)", f(V(pers, "pr_auc"), 3),
+                 f"{f(raw_lr.val_pr_auc, 3)} ({f(raw_lr.cv_pr_auc, 3)})", "–", f"{f(raw_dt.val_pr_auc, 3)} ({f(raw_dt.cv_pr_auc, 3)})"])
+    sens.append(["Continuous index, Ridge regression", "MAE, validation (CV)",
+                 *[f"{f(rr.loc[('model', n, 'mae'), 'validation'], 3)} ({f(rr.loc[('model', n, 'mae'), 'cv_mean'], 3)})"
+                   for n in ["Persistence (index)", "Ridge full", "Ridge no-fire"]], "–"])
+    table("Sensitivity runs. Columns give persistence and the full, no-fire and tree models (for the index regression: Ridge with the full and no-fire "
+          "sets). For PR-AUC higher is better, for MAE lower.",
+          ["Run", "Metric", "Persistence", "LR (Ridge) full", "LR (Ridge) no-fire", "DT full"], sens, [2900, 1500, 1350, 1400, 1450, 1192])
+    d_fire = rr.loc[("difference", "Ridge full − Ridge no-fire", "mae")]
+    d_pers = rr.loc[("difference", "Ridge full − Persistence (index)", "mae")]
+    bullets([
+        "**Month-wise label** (about 10% spikes in every month, so October–November fire episodes count as much as December fog): persistence "
+        f"still leads, and fire adds nothing robust (full − no-fire {f(mw.loc[(mwl, lrf), 'cv_pr_auc_mean'] - mw.loc[(mwl, 'LR no-fire'), 'cv_pr_auc_mean'], 3)} "
+        f"in CV). Autumn 2023 was cleaner than 2022: only {pct(mw.loc[(mwl, pers), 'val_spike_rate'])}% of validation days pass the 2022 thresholds.",
+        "**Horizons:** skill fades from *t* + 1 to *t* + 3; LR stays slightly ahead of persistence in validation and CV, and fire never helps.",
+        f"**Raw-index encoding:** worse for both models, above all the tree ({f(raw_dt.val_pr_auc, 3)} against {f(mar_dt.val_pr_auc, 3)}), which "
+        "with the margin needs one split where it needed many city × index splits.",
+        f"**Continuous index:** Ridge full is not better than persistence on validation (ΔMAE {f(d_pers.validation, 3)} [{f(d_pers.ci_low, 3)}, "
+        f"{f(d_pers.ci_high, 3)}]; better in {int(d_pers.cv_folds_a_better)} of 25 CV folds), and fire adds nothing on this more sensitive target "
+        f"(ΔMAE {f(d_fire.validation, 4)} [{f(d_fire.ci_low, 4)}, {f(d_fire.ci_high, 4)}]). For H5 the null (ΔMAE ≥ 0) is not rejected for the index."])
+
+    # =================================================================
+    # 10. Asymmetric error cost
+    # =================================================================
+    h1("10. Asymmetric Error Cost Analysis")
+    h2("10.1 What each error costs, and to whom")
+    table("The two errors of a next-day smog alert.",
+          ["Error", "Who bears it", "Consequence", "Reversible?"],
+          [["False negative: a spike day without an alert", "Children, the elderly, asthma and heart patients, outdoor and daily-wage workers, hospitals",
+            "Unprotected exposure at PM2.5 levels several times the WHO guideline (WHO, 2021); respiratory and cardiac admissions; school days lost to illness",
+            "No: the exposure has happened"],
+           ["False positive: an alert on a normal day", "Schools, brick kilns, transport, traders and daily-wage workers",
+            "A needless school closure or activity restriction, lost income, and alert fatigue that weakens trust in the next real warning",
+            "Mostly: one day of disruption"]],
+          [2000, 2600, 3700, 1492])
+    p("We weight a missed spike as **five** false alarms (FN:FP = 5:1). This ratio is a **stated policy assumption, not an estimate**: we found no verified "
+      "study that prices one missed smog day against one unnecessary advisory day in Punjab. The health side is large: in India in 2019, air pollution was "
+      "linked to 1.67 million deaths (17.8% of all deaths) and to lost output of US$36.8 billion, 1.36% of GDP (Pandey et al., 2021). Because the ratio "
+      "is uncertain, the robust result is the **break-even ratio**, the smallest ratio at which a model alert is cheaper than persistence, read from a "
+      "cost curve over every ratio from 1 to 20. At each ratio the threshold is re-chosen on the out-of-fold training predictions, never on validation.")
+    h2("10.2 Expected cost and the break-even ratio")
+    cost_rows = []
+    for m in ["Majority class (= never alert)", pers, lrf, dtf, "LR weather-only", "Always alert"]:
+        r = cost.loc[m]
+        n_beat = r["ratios_beating_persistence"]
+        cost_rows.append([m, int(r.fn), int(r.fp), f(r.cost_per_1000_at_5to1, 1), f(r.saving_vs_never_alert_pct, 1),
+                          "–" if pd.isna(n_beat) or m == pers else f"{int(n_beat)} of 20"])
+    table("Validation error cost at 5:1 (per 1,000 city-days) and the number of cost ratios (1 to 20) at which the model is cheaper than persistence.",
+          ["Policy", "Missed spikes (FN)", "False alarms (FP)", "Cost at 5:1", "Saving vs never alert (%)", "Ratios cheaper than persistence"],
+          cost_rows, [2600, 1300, 1300, 1200, 1700, 1692])
+    p(f"At 5:1, never alerting costs {f(cost.loc['Majority class (= never alert)', 'cost_per_1000_at_5to1'], 1)} per 1,000 city-days; persistence "
+      f"cuts this to {f(cost.loc[pers, 'cost_per_1000_at_5to1'], 1)}, LR full to {f(cost.loc[lrf, 'cost_per_1000_at_5to1'], 1)} and DT full to "
+      f"{f(cost.loc[dtf, 'cost_per_1000_at_5to1'], 1)}. **The break-even ratio is {BE}:1** for LR full and {BE_DT}:1 for DT full (Figure 10): persistence "
+      f"is cheaper only when a missed spike costs less than {BE} false alarms, and the gap widens with the ratio (at 20:1, "
+      f"{f(cwide.loc[20, lrf], 1)} for LR full against {f(cwide.loc[20, pers], 1)} for persistence). A health department only has to judge a missed "
+      f"smog day at least {BE} times as costly as an unnecessary advisory for a model alert to beat \"tomorrow = today\". The price is more false alarms: "
+      f"{pct(1 - V(lrf, 'specificity'))}% of clean days for LR full and {pct(1 - V(dtf, 'specificity'))}% for DT full, against "
+      f"{pct(1 - V(pers, 'specificity'))}% for persistence.")
+    figure("figures/fig_m3_4_cost_curve.png",
+           "Expected validation cost per 1,000 city-days against the FN:FP cost ratio; thresholds re-chosen on out-of-fold training predictions at each "
+           "ratio. Grey lines: never alert (= majority class) and always alert; dashed vertical line: the 5:1 headline. Produced by modeling.ipynb "
+           "(Figure M3.4).", 3.9)
+    h2("10.3 Confusion matrices and edge cases")
+    figure("figures/fig_m3_5_confusion.png",
+           "Validation confusion matrices at the 5:1 threshold for persistence, LR full and DT full (counts and shares of all city-days; colour on a log "
+           "scale). Produced by modeling.ipynb (Figure M3.5).", 5.0)
+    o_ = lambda m, k, t: int(onset.loc[(m, k, t)])
+    on_total = o_(pers, "FN", "onset")
+    lr_err = ecm[ecm.model == lrf]
+    by_city = lr_err.groupby("city")[["fn", "fp"]].sum()
+    by_month = lr_err.groupby("month")[["spikes", "fn", "fp"]].sum()
+    fp_city = by_city.fp.sort_values(ascending=False)
+    fn_ = topr[topr.kind.str.startswith("FN")]
+    fp_ = topr[topr.kind.str.startswith("FP")]
+    p(f"**Onsets are where a model adds value.** On an onset day (tomorrow a spike, today not) persistence fails by construction: it misses all {on_total} "
+      f"onsets. LR full catches {o_(lrf, 'TP', 'onset')} of {on_total} ({pct(o_(lrf, 'TP', 'onset') / on_total)}%) and DT full "
+      f"{o_(dtf, 'TP', 'onset')}; both catch all {o_(lrf, 'TP', 'continuation')} continuation days. **When and where.** All validation spikes fall in "
+      f"November ({int(by_month.loc['2023-11', 'spikes'])}) and December ({int(by_month.loc['2023-12', 'spikes'])}). LR's {int(by_city.fn.sum())} "
+      f"misses are spread out (no city above {int(by_city.fn.max())}). Its {int(by_city.fp.sum())} false alarms fall on onset-type days "
+      f"({o_(lrf, 'FP', 'onset')}) and on episode ends ({o_(lrf, 'FP', 'continuation')}), and concentrate in "
+      + ", ".join(f"{c} ({int(v)})" for c, v in fp_city.head(4).items()) + ".")
+    p(f"**Edge cases.** The ten worst misses are all onset days, mostly in December (for example {fn_.iloc[0].city}, {fn_.iloc[0].date}), with LR "
+      f"probabilities of at most {f(fn_.lr_full_probability.max(), 3)} against a threshold of {f(thr(lrf), 3)}. On the feature day of the missed spikes, "
+      f"today's index sat {f(-fnc.loc['FN', 'today_margin'], 2)} units below the city threshold (caught spikes: {f(fnc.loc['TP', 'today_margin'], 2)} "
+      f"above), fewer days were stagnant ({pct(fnc.loc['FN', 'stagnant'])}% vs {pct(fnc.loc['TP', 'stagnant'])}%), humidity was lower "
+      f"({f(fnc.loc['FN', 'rh_mean_pct'], 1)}% vs {f(fnc.loc['TP', 'rh_mean_pct'], 1)}%), and upwind fires were *higher* "
+      f"({f(fnc.loc['FN', 'fire_cnt_up45_r300_all'], 1)} vs {f(fnc.loc['TP', 'fire_cnt_up45_r300_all'], 1)} detections): sudden jumps that today's "
+      f"conditions do not announce. The most confident false alarms are episode ends where the next-day index stays high but just below the "
+      f"threshold (for example {fp_.iloc[0].city}, {fp_.iloc[0].date}: next-day index {f(fp_.iloc[0].target_index_h1, 2)}).")
+    h2("10.4 Preliminary disparity check: Pakistan and India")
+
+    def gr(m, level, g, k, d=3):
+        r = grp.loc[(m, level, g, k)]
+        return ci(r.estimate, r.ci_low, r.ci_high, d) if k != "spikes" and k != "alerts" else str(int(r.estimate))
+    grows = []
+    for m in [pers, lrf]:
+        for g in ["Pakistan (7 cities)", "India (4 cities)"]:
+            grows.append([m, g, gr(m, "country", g, "spikes"), gr(m, "country", g, "alerts"), gr(m, "country", g, "recall"),
+                          gr(m, "country", g, "fpr"), gr(m, "country", g, "precision")])
+        grows.append([m, "Gap PK − IN", "–", "–", gr(m, "country gap", "PK − IN", "recall"), gr(m, "country gap", "PK − IN", "fpr"),
+                      gr(m, "country gap", "PK − IN", "precision")])
+    table("Validation error rates by country at the 5:1 threshold, with 95% week-block bootstrap CIs. FPR = share of clean days with a false alarm.",
+          ["Model", "Group", "Spikes", "Alerts", "Recall", "FPR", "Precision"], grows, [1300, 1700, 700, 700, 1800, 1800, 1792], font=7)
+    cg = lambda g, k: grp.loc[(lrf, "city", g, k), "estimate"]
+    cities = sorted({k[2] for k in grp.index if k[0] == lrf and k[1] == "city"}, key=lambda c: -cg(c, "fpr"))
+    p("The brief asks about potential bias. Our groups are countries and cities, not people, so this is a first check of whether the alert serves "
+      f"both sides of the border equally. LR full warns of {pct(grp.loc[(lrf, 'country', 'Pakistan (7 cities)', 'recall'), 'estimate'])}% of "
+      f"Pakistani and {pct(grp.loc[(lrf, 'country', 'India (4 cities)', 'recall'), 'estimate'])}% of Indian spikes, with false-alarm rates of "
+      f"{pct(grp.loc[(lrf, 'country', 'Pakistan (7 cities)', 'fpr'), 'estimate'])}% and {pct(grp.loc[(lrf, 'country', 'India (4 cities)', 'fpr'), 'estimate'])}%; "
+      "every country gap has a CI that includes 0. Between cities the burden is uneven: false alarms hit "
+      + ", ".join(f"{c} ({pct(cg(c, 'fpr'), 0)}%)" for c in cities[:4])
+      + f" of clean days, against {pct(cg('Islamabad', 'fpr'), 0)}% in Islamabad and Rawalpindi and {pct(cg('Lahore', 'fpr'), 0)}% in Lahore. "
+      "These rates rest on 0 to "
+      f"{int(max(cg(c, 'spikes') for c in cities))} spikes per city and are descriptive; the full fairness audit is planned for Milestone 4.")
+
+    # =================================================================
+    # 11. Drivers and policy
+    # =================================================================
+    h1("11. Drivers and Initial Policy Takeaways")
+    h2("11.1 The weather trap (H2)")
+    h2_rows = []
+    names = {"stagnant": "Stagnant air (vector wind < 2 km/h), 0 → 1", "rh_mean_pct_sd": "Relative humidity, per 1 SD",
+             "temp_range_c_sd": "Temperature range, per 1 SD", "temp_mean_c_sd": "Mean temperature, per 1 SD (control)"}
+    for t, lab in names.items():
+        r = h2t.loc[t]
+        h2_rows.append([lab, f(r.odds_ratio, 2), f"{f(r.or_ci_low_city, 2)}–{f(r.or_ci_high_city, 2)}",
+                        "< 0.001" if r.p_one_sided_city < 0.001 else f(r.p_one_sided_city, 3),
+                        f"{f(r.or_ci_low_week, 2)}–{f(r.or_ci_high_week, 2)}"])
+    rain = h2t.loc[[i for i in h2t.index if i.startswith("rain_day")][0]]
+    h2_rows.append(["Rain day (Fisher exact test, all training rows)", "0", "–",
+                    "< 0.0001" if rain.p_one_sided_city < 0.0001 else f(rain.p_one_sided_city, 4), "–"])
+    table(f"H2 weather-trap test: Logit of a spike tomorrow on rain-free training days in September–February (n = {int(h2t.n.iloc[0]):,}, "
+          f"{int(h2t.spikes.iloc[0])} spikes, pseudo R² {f(h2t.pseudo_r2.iloc[0], 2)}), controlling for mean temperature, month and city; standard errors "
+          f"clustered by city ({int(h2t.clusters_city.iloc[0])} clusters), with a week-clustered check (statsmodels; Seabold & Perktold, 2010). "
+          f"Rain: {rain.note}.",
+          ["Term", "Odds ratio", "95% CI (city)", "One-sided p", "95% CI (week)"], h2_rows, [3800, 1100, 1500, 1500, 1892])
+    p("**H2 is supported on every component.** Stagnant air, humidity and a large day–night temperature range each raise the odds of a spike the next "
+      "day, and no training rain day was followed by a spike. Two features of the data shaped the test: rain and the months March to August have no "
+      "spikes at all, so an unpenalised Logit has no finite estimate for them. Rain is therefore tested exactly, and the Logit uses rain-free days of "
+      "the months that have spikes. With 11 city clusters (10 independent air-quality series) the clustered errors are approximate; the week-clustered "
+      "version gives the same conclusions.")
+    h2("11.2 What drives the forecast")
+    pi_ = imp[imp.method.str.startswith("permutation")].set_index(["model", "group"])["mean"]
+    gini = imp[imp.method.str.startswith("Gini")].set_index("group")["mean"]
+    wo = odds[odds.feature_set == "weather_only"].set_index("feature")
+    p(f"**The forecast rests on today's margin, with temperature second.** The L1 penalty of LR full keeps only {len(nz)} of its {n_full} columns: today's "
+      f"margin over the city threshold (odds ratio {f(nz.loc['persist_margin', 'odds_ratio'], 1)} per SD) and the mean temperature "
+      f"({f(nz.loc['temp_mean_c', 'odds_ratio'], 2)} per SD: colder days raise the risk). Shuffling AQ history costs "
+      f"{f(pi_.loc[(lrf, 'AQ history (today, lags 1–2)')], 3)} of validation PR-AUC, and shuffling mean temperature "
+      f"{f(pi_.loc[(lrf, 'Mean temperature')], 3)}; every other group costs nothing (Figure {counters['figure'] + 1}). The tree agrees: its Gini importance is "
+      f"{f(gini.loc['AQ history (today, lags 1–2)'], 2)} for AQ history and {f(gini.loc['Mean temperature'], 3)} for mean temperature. Without AQ history, "
+      f"the weather-only LR shows the trap pattern of H2: mean temperature {f(wo.loc['temp_mean_c', 'odds_ratio'], 2)}, vector wind "
+      f"{f(wo.loc['vec_len_kmh', 'odds_ratio'], 2)}, humidity {f(wo.loc['rh_mean_pct', 'odds_ratio'], 2)} and temperature range "
+      f"{f(wo.loc['temp_range_c', 'odds_ratio'], 2)} per SD, rain day {f(wo.loc['rain_day', 'odds_ratio'], 2)}. The weather trap is real, but it acts "
+      "mostly through today's smog: stagnant, humid, rain-free days make today's index high, and the forecast reads that index.")
+    figure("figures/fig_m3_6_drivers.png",
+           "Drivers of the next-day spike forecast. (A) Odds ratios of the weather-only LR (bars; per 1 SD for continuous columns, 0 → 1 for binary ones) "
+           "and the two non-zero odds ratios of LR full (diamonds); log scale, 1 = no effect. (B) Drop in validation PR-AUC when a group of columns is "
+           "shuffled (±1 SD over 30 repeats), LR full and DT full. Produced by modeling.ipynb (Figure M3.6).", 5.8)
+    p(f"**City effects are gone.** With the raw index, LR's city odds ratios reached {f(raw_lr.lr_max_city_or, 0)} (Rahim Yar Khan against Lahore), a "
+      "correction for the city-specific thresholds rather than a risk ranking. With the margin encoding every city coefficient is 0, so no city is "
+      f"flagged as riskier once its own threshold is accounted for. **The tree as a flow chart** (Figure {counters['figure'] + 1}): the first split asks whether today is "
+      "a spike (margin ≤ 0); the next splits use the margin again and the mean temperature, so that colder days close to the threshold carry a "
+      "higher risk, and days well above it are mostly followed by another spike.")
+    figure("figures/fig_m3_7_tree.png",
+           "Depth-3 decision tree for a spike tomorrow, fitted on the training rows with the tuned leaf size and class weights. Value = shares of no-spike "
+           "and spike days; blue = mostly spike. Margin = index minus city threshold. Produced by modeling.ipynb (Figure M3.7).", 5.6)
+    h2("11.3 Initial policy takeaways")
+    bullets([
+        "**A next-day, city-specific smog alert (Pakistan first).** Punjab's Environment Protection Department already has a smog policy and standing "
+        "instructions for episodes of poor air quality (Environment Protection Department, n.d.), and in November 2024 the provincial government closed "
+        "schools across several divisions and moved them online for days at a time (Waqar & Gabol, 2024). An alert built from today's index margin and "
+        "temperature gives one day's notice, city by city, and catches onsets that a \"tomorrow = today\" rule misses by construction.",
+        f"**Use the cost view to set the alert level.** A model alert beats persistence whenever a missed spike is judged at least {BE} times as costly as "
+        "an unnecessary advisory. Officials can choose their ratio and read the threshold off the cost curve, instead of taking our 5:1.",
+        "**A weather-trap checklist.** Stagnant, humid, rain-free days with a large day–night range and cold temperatures raise next-day risk (H2). "
+        "Rain is a strong all-clear signal: no training rain day was followed by a spike, so advisories can be lifted after rain.",
+        "**Fire control is source reduction, not a forecasting tool.** Fires did not add next-day skill once today's smog was known. Their smoke "
+        "shows up in today's index, so the benefit of fire control appears as lower smog levels, not as extra forecast lead time.",
+        "**Cross-border.** India's Graded Response Action Plan for Delhi-NCR is triggered by daily air-quality levels and, in the severe band "
+        "(AQI 401–450), mandates hybrid learning up to Class V (Tribune News Service, 2024). The model warns Pakistani and Indian Punjab cities "
+        "equally well (Section 10.4), so a shared next-day alert across the border is feasible. Whether India-origin smoke drives Pakistani smog (H4) "
+        "cannot be settled from these baselines and is tested in Milestone 4.",
+        "**Equity before deployment.** False alarms fall unevenly (Rahim Yar Khan, Multan, Faisalabad, Ferozepur). Repeated needless closures there "
+        "would cost the same communities most, so per-city thresholds should be checked before any operational use."])
+
+    # =================================================================
+    # 12. Limitations and roadmap
+    # =================================================================
+    h1("12. Limitations and Milestone 4 Roadmap")
+    bullets([
+        "**Persistence is a strong benchmark.** LR full ranks spikes only slightly better than persistence (the PR-AUC CI includes 0), and for the "
+        "continuous index no model beats persistence on validation. The models gain mainly at the alert decision.",
+        f"**Class imbalance and one training winter.** Spikes are {f(tr_['spike rate (%)'], 1)}% of training days and come from a single winter; "
+        "every threshold and hyperparameter rests on it.",
+        f"**A short validation season.** 18 weeks, with {int(by_month.loc['2023-12', 'spikes'])} of {int(va_['spikes'])} spikes in December, give "
+        "wide CIs, and December 2023 was unusually persistent.",
+        "**Dependent series and model data.** Islamabad and Rawalpindi share one CAMS series; air quality is CAMS model output, not monitor data; "
+        "one UTC+5 clock is used for India.",
+        "**Label timing.** The Milestone 2 label puts spikes in December–January, after the burning peak; the month-wise label (Section 9.3) answers "
+        "this only in part.",
+        "**Uneven false alarms by city** (Section 10.4), and observed rather than forecast weather on day *t*."])
+    p("**Milestone 4 roadmap.**")
+    bullets([
+        "**Advanced models:** random forest and gradient boosting on the same purged folds, with per-horizon tuning for *t* + 2 and *t* + 3.",
+        "**Probability calibration** (reliability curves, isotonic or Platt scaling), so that alert probabilities can be read at face value.",
+        "**Fairness audit:** error-rate parity by city and by country, per-group thresholds, and the cost each group bears; an ethical review of who "
+        "carries false alarms and missed warnings.",
+        "**Remaining hypotheses:** H1 (cone vs radius), H3 (fire × stagnation) and H4 (cross-border) with city-clustered regressions.",
+        "**Data:** surface pressure re-exported for the same coordinates; a check of the ozone weight in the index.",
+        "**Week 14:** retrain with 2024 H1 added and test out of time on 2024 H2, with every setting kept as saved."])
+
+
+if M3:
+    M3_REFS = [
+        "Environment Protection Department, Government of the Punjab (n.d.). Smog Commission reports, including the Policy and Action Plan for Control, "
+        "Mitigation, Advisory, and Protective Measures in Extreme Weather Conditions of Dense Smog in Punjab and the Standing Instructions for "
+        "Management of Episodes of Poor Air Quality (2018). https://epd.punjab.gov.pk/smog_commission_reports",
+        "Pandey, A., Brauer, M., Cropper, M. L., et al. (2021). Health and economic impact of air pollution in the states of India: the Global Burden of "
+        "Disease Study 2019. The Lancet Planetary Health, 5(1), e25–e38. https://doi.org/10.1016/S2542-5196(20)30298-9",
+        "Pedregosa, F., Varoquaux, G., Gramfort, A., et al. (2011). Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, "
+        "12(85), 2825–2830.",
+        "Roberts, D. R., Bahn, V., Ciuti, S., et al. (2017). Cross-validation strategies for data with temporal, spatial, hierarchical, or phylogenetic "
+        "structure. Ecography, 40(8), 913–929. https://doi.org/10.1111/ecog.02881",
+        "Saito, T., & Rehmsmeier, M. (2015). The precision-recall plot is more informative than the ROC plot when evaluating binary classifiers on "
+        "imbalanced datasets. PLoS ONE, 10(3), e0118432. https://doi.org/10.1371/journal.pone.0118432",
+        "Seabold, S., & Perktold, J. (2010). Statsmodels: Econometric and statistical modeling with Python. Proceedings of the 9th Python in Science "
+        "Conference, 92–96. https://doi.org/10.25080/Majora-92bf1922-011",
+        "Tribune News Service (2024, December 15). GRAP rules revised: Nod to hybrid learning till Class V in severe AQI. The Tribune. "
+        "https://www.tribuneindia.com/news/delhi/grap-rules-revised-nod-to-hybrid-learning-till-class-v-in-severe-aqi/",
+        "Waqar, A., & Gabol, I. (2024, November 12). Punjab govt orders closure of all schools as province tackles hazardous air quality. Dawn. "
+        "https://www.dawn.com/news/1871888"]
+
 # =====================================================================
 # Front matter
 # =====================================================================
-blocks.append({"t": "title", "text": "Crop Fires, Weather Traps and Smog across Punjab: Data Preparation and Exploratory Analysis"})
-blocks.append({"t": "subtitle", "text": "Trans-Boundary Smog Prediction: Milestone 02, Draft Sections II and III, Merged Master Dataset"})
+if M3:
+    blocks.append({"t": "title", "text": "Crop Fires, Weather Traps and Smog across Punjab: Data, Exploratory Analysis and Baseline Forecasts"})
+    blocks.append({"t": "subtitle", "text": "Trans-Boundary Smog Prediction: Milestone 03, Baseline Models, Leakage-Free Validation and Error-Cost Analysis"})
+else:
+    blocks.append({"t": "title", "text": "Crop Fires, Weather Traps and Smog across Punjab: Data Preparation and Exploratory Analysis"})
+    blocks.append({"t": "subtitle", "text": "Trans-Boundary Smog Prediction: Milestone 02, Draft Sections II and III, Merged Master Dataset"})
 blocks.append({"t": "authors", "text": "Munir Tariq (10067)  |  Ismail Nooruddin (09958)  |  Bilal Ayub (09716)  |  "
                                          "Data Science for Social Good, Habib University  |  October 2026"})
 
@@ -96,7 +601,8 @@ p("Every winter, smoke from crop-residue burning and city emissions is trapped o
   "(median Spearman ρ = 0.23 over the Pakistani cities in the harvest season), while a plain 300 km circle (−0.06) and a downwind placebo cone (0.01) do not. "
   "Second, the association is strongest one day after the fires. Third, stagnant and humid days roughly triple the next-day spike rate, and no rain day was followed by a spike. "
   "Fourth, spikes occur mainly in December and January, after the October–November burning peak, so fires alone do not make a spike: the weather must trap the smoke. "
-  "Five formal hypotheses, mapped to columns of the master dataset, set up the modelling in Milestone 3.")
+  "Five formal hypotheses, mapped to columns of the master dataset, set up the modelling in Milestone 3."
+  + (M3_ABSTRACT if M3 else ""))
 
 # =====================================================================
 # 1. Project alignment
@@ -387,6 +893,8 @@ p("**Analytical plan.** Consecutive days of a city are correlated, and Islamabad
   "1,012 of them in October–December 2023) against persistence (persist_index, persist_spike) and a weather-only model. Because spikes are rare (5.2%), results are "
   "reported as PR-AUC, recall and precision as well as ROC-AUC and the Brier score, and as MAE for the index. Because the spike label falls mainly in December–January, "
   "after the burning peak, Milestone 3 will also report results for the continuous index and compare a label with month-specific thresholds.")
+if M3:
+    p(M3_SECTION4_CLOSE)
 
 # =====================================================================
 # 5. Limitations and 6. Reproducibility
@@ -405,6 +913,9 @@ p("The notebooks air_quality.ipynb (A), weather.ipynb (B), fire.ipynb (C) and me
   "settings file. The last cell of merge_analysis.ipynb writes the workbook Milestone2_Final_Master_and_EDA.xlsx: its first sheet is the master table (5,665 × 287), and "
   "its Contents sheet lists the other sheets (data dictionary, missing values for every column, decisions log, saved parameters, encoding example, the final table of each "
   "stream, and every EDA table of this report) together with the table or figure that uses each one.")
+if M3:
+    m3_reproducibility()
+    m3_sections()
 
 h2("References")
 refs = ["Hersbach, H., et al. (2020). The ERA5 global reanalysis. Quarterly Journal of the Royal Meteorological Society, 146(730), 1999–2049.",
@@ -416,8 +927,10 @@ refs = ["Hersbach, H., et al. (2020). The ERA5 global reanalysis. Quarterly Jour
         "Wilson, E. B. (1927). Probable inference, the law of succession, and statistical inference. Journal of the American Statistical Association, 22(158), 209–212.",
         "World Health Organization (2021). WHO global air quality guidelines: particulate matter (PM2.5 and PM10), ozone, nitrogen dioxide, sulfur dioxide and carbon monoxide. Geneva: WHO.",
         "Zippenfenig, P. (2023). Open-Meteo.com Weather API [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.7970649"]
+if M3:
+    refs = sorted(refs + M3_REFS, key=lambda r: r.lower())
 blocks.append({"t": "refs", "items": refs})
 
 OUT.parent.mkdir(parents=True, exist_ok=True)
-OUT.write_text(json.dumps({"blocks": blocks}, ensure_ascii=False, indent=1))
+OUT.write_text(json.dumps({"blocks": blocks}, ensure_ascii=False, indent=1), encoding="utf-8")
 print(f"{OUT}: {len(blocks)} blocks, {counters['table']} tables, {counters['figure']} figures")

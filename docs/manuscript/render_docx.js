@@ -1,6 +1,7 @@
 // Renders docs/manuscript/manuscript.json (made by build_manuscript.py) into
 // Milestone2_Manuscript_Draft.docx at the repository root.
-// Run from the repository root:  node docs/manuscript/render_docx.js
+// With the argument 3 it renders manuscript_m3.json into submission/milestone3/Milestone3_Report.docx.
+// Run from the repository root:  node docs/manuscript/render_docx.js [2|3]
 // Needs the 'docx' npm package (npm install docx).
 const fs = require("fs");
 const path = require("path");
@@ -10,7 +11,15 @@ const {
 } = require("docx");
 
 const ROOT = path.resolve(__dirname, "..", "..");
-const model = JSON.parse(fs.readFileSync(path.join(__dirname, "manuscript.json"), "utf8"));
+const MILESTONE = process.argv[2] || "2";
+const SETTINGS = {
+  "2": { json: "manuscript.json", out: path.join(ROOT, "Milestone2_Manuscript_Draft.docx"),
+         footer: "Trans-Boundary Smog Prediction, Milestone 02", title: "Trans-Boundary Smog Prediction: Milestone 2 report" },
+  "3": { json: "manuscript_m3.json", out: path.join(ROOT, "submission", "milestone3", "Milestone3_Report.docx"),
+         footer: "Trans-Boundary Smog Prediction, Milestone 03", title: "Trans-Boundary Smog Prediction: Milestone 3 report" },
+}[MILESTONE];
+if (!SETTINGS) throw new Error("milestone must be 2 or 3, got " + MILESTONE);
+const model = JSON.parse(fs.readFileSync(path.join(__dirname, SETTINGS.json), "utf8"));
 // Layout follows the team's stream reports (Report_Weather.docx): US Letter, Arial, numbered blue headings
 const FONT = "Arial";
 const NAVY = "1F3864";
@@ -117,7 +126,7 @@ for (const b of model.blocks) {
 
 const doc = new Document({
   creator: "Munir Tariq, Ismail Nooruddin, Bilal Ayub",
-  title: "Trans-Boundary Smog Prediction: Milestone 2 report",
+  title: SETTINGS.title,
   styles: {
     default: { document: { run: { font: FONT, size: 19 } } },
     paragraphStyles: [
@@ -138,14 +147,15 @@ const doc = new Document({
   sections: [{
     properties: { page: { size: { width: 12240, height: 15840 }, margin: { top: 1000, bottom: 950, left: 1224, right: 1224 } } },
     footers: { default: new Footer({ children: [new Paragraph({ alignment: AlignmentType.CENTER,
-      children: [new TextRun({ text: "Trans-Boundary Smog Prediction, Milestone 02   |   Page ", size: 15, color: "7F7F7F" }),
+      children: [new TextRun({ text: SETTINGS.footer + "   |   Page ", size: 15, color: "7F7F7F" }),
                  new TextRun({ children: [PageNumber.CURRENT], size: 15, color: "7F7F7F" })] })] }) },
     children,
   }],
 });
 
 Packer.toBuffer(doc).then((buf) => {
-  const out = path.join(ROOT, "Milestone2_Manuscript_Draft.docx");
+  const out = SETTINGS.out;
+  fs.mkdirSync(path.dirname(out), { recursive: true });
   fs.writeFileSync(out, buf);
   console.log("wrote", out);
 });

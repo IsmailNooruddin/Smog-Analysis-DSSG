@@ -1,0 +1,1862 @@
+{
+ "blocks": [
+  {
+   "t": "title",
+   "text": "Crop Fires, Weather Traps and Smog across Punjab: Data, Exploratory Analysis and Baseline Forecasts"
+  },
+  {
+   "t": "subtitle",
+   "text": "Trans-Boundary Smog Prediction: Milestone 03, Baseline Models, Leakage-Free Validation and Error-Cost Analysis"
+  },
+  {
+   "t": "authors",
+   "text": "Munir Tariq (10067)  |  Ismail Nooruddin (09958)  |  Bilal Ayub (09716)  |  Data Science for Social Good, Habib University  |  October 2026"
+  },
+  {
+   "t": "h2",
+   "text": "Abstract"
+  },
+  {
+   "t": "p",
+   "text": "Every winter, smoke from crop-residue burning and city emissions is trapped over the Punjab plain shared by Pakistan and India. This report describes how three independent data streams were cleaned and merged into one master dataset, and what the first analysis of that dataset shows. Hourly Open-Meteo air quality (CAMS model output), hourly Open-Meteo weather and 1.28 million NASA VIIRS fire detections were aligned to one UTC+5 clock and joined one-to-one into a table of 5,665 city-days (11 cities, 4 August 2022 to 31 December 2023) and 287 columns, with no missing predictor value. The target is a Composite Smog Index built from six standardised pollutants, with a city-specific spike label. On the training period, four results stand out. First, fires inside a ±45° upwind cone within 300 km track next-day smog (median Spearman ρ = 0.23 over the Pakistani cities in the harvest season), while a plain 300 km circle (−0.06) and a downwind placebo cone (0.01) do not. Second, the association is strongest one day after the fires. Third, stagnant and humid days roughly triple the next-day spike rate, and no rain day was followed by a spike. Fourth, spikes occur mainly in December and January, after the October–November burning peak, so fires alone do not make a spike: the weather must trap the smoke. Five formal hypotheses, mapped to columns of the master dataset, set up the modelling in Milestone 3. Milestone 3 adds baseline forecasts of a spike on the next day, scored with purged, week-grouped cross-validation and on an out-of-time validation season (September–December 2023): a sparse logistic regression on today's index margin over the city threshold and the mean temperature ranks spikes as well as persistence (PR-AUC 0.695 against 0.669) and gives cheaper alerts whenever a missed spike is weighted at least 2 times a false alarm (117.1 against 150.2 per 1,000 city-days at 5:1), while upwind fires add no next-day skill once today's smog is known."
+  },
+  {
+   "t": "h1",
+   "text": "1. Project Alignment and Master Dataset Overview"
+  },
+  {
+   "t": "p",
+   "text": "The project predicts hazardous smog spikes in Pakistani Punjab cities one to three days in advance from upwind crop-fire detections and from weather conditions that trap pollution. **Research question:** which fire and weather predictors, available on day *t*, explain Composite Smog Index spikes on days *t* + 1 to *t* + 3, and how much better than a persistence baseline and a weather-only baseline can they forecast those spikes? The work supports SDG 3 (targets 3.9 and 3.d: illness from air pollution and early warning), SDG 11 (target 11.6: urban air quality) and SDG 13 (regional climate action); the cross-border analysis also relates to SDG 17 (cooperation between countries). Following the instructor's feedback, the proposal's fixed target score (ROC-AUC above 0.88) has been dropped: the aim is to identify sound predictors and report the best honest performance."
+  },
+  {
+   "t": "table",
+   "caption": "**Table 1.** Team members, disciplinary background and Milestone 2 roles.",
+   "header": [
+    "Member",
+    "ID",
+    "Background",
+    "Role 1 (own data stream)",
+    "Role 2 (merged data)"
+   ],
+   "rows": [
+    [
+     "Munir Tariq",
+     "10067",
+     "Computer Science (minor: Social Development and Policy)",
+     "Person B: weather and wind",
+     "Leads the merge; master overview, summary tables, correlations, weather traps"
+    ],
+    [
+     "Ismail Nooruddin",
+     "09958",
+     "Computer Science",
+     "Person A: air quality and target",
+     "Group-by and contingency tables, index figure, index weight check"
+    ],
+    [
+     "Bilal Ayub",
+     "09716",
+     "Computer Science",
+     "Person C: NASA VIIRS fire",
+     "Cone and radius sensitivity, cross-border check"
+    ]
+   ],
+   "widths": [
+    1500,
+    650,
+    2400,
+    2000,
+    3242
+   ],
+   "note": null,
+   "font": 8
+  },
+  {
+   "t": "table",
+   "caption": "**Table 2.** Overview of the master analytical dataset (Dataset/clean/master_daily.parquet; first sheet of the submitted workbook).",
+   "header": [
+    "Item",
+    "Description"
+   ],
+   "rows": [
+    [
+     "Size",
+     "5,665 rows × 287 columns; no missing value in any predictor"
+    ],
+    [
+     "Observational unit",
+     "1 row = 1 city on 1 local (UTC+5) day; keys: city, country, date"
+    ],
+    [
+     "Cities (11)",
+     "Pakistan: Lahore, Faisalabad, Multan, Rawalpindi, Sialkot, Rahim Yar Khan, Islamabad. Indian Punjab: Amritsar, Ferozepur, Ludhiana, Jalandhar"
+    ],
+    [
+     "Period and split",
+     "2022-08-04 to 2023-12-31 (515 days). Training 4 Aug 2022 to 31 Aug 2023 (4,323 city-days); 3-day gap; validation 4 Sep to 31 Dec 2023 (1,309 city-days)"
+    ],
+    [
+     "Sources (3)",
+     "Open-Meteo Air Quality API, hourly, CAMS model output (Person A); Open-Meteo Historical Weather API, hourly, reanalysis-based (Person B); NASA FIRMS archive, VIIRS 375 m active fires from NOAA-20, point detections (Person C)"
+    ],
+    [
+     "Columns by origin",
+     "Air quality 52; weather 58; fire 128; keys, targets, lags, baselines, dummies and split built in the merge 49"
+    ],
+    [
+     "Targets",
+     "Composite Smog Index and spike label on days t+1, t+2 and t+3 (target_index_h1..h3, target_spike_h1..h3)"
+    ],
+    [
+     "Sealed data",
+     "All 2024 files, kept for the final out-of-time test and never read in this milestone"
+    ]
+   ],
+   "widths": [
+    2200,
+    7592
+   ],
+   "note": null,
+   "font": 8
+  },
+  {
+   "t": "h1",
+   "text": "2. Data and Preprocessing (Draft Section II)"
+  },
+  {
+   "t": "h2",
+   "text": "2.1 Collection audit"
+  },
+  {
+   "t": "p",
+   "text": "Each stream was collected and cleaned by one team member in its own notebook, then handed over as a clean daily table with its saved settings (Table 3). Air quality and weather were exported per city centre from Open-Meteo as hourly files in GMT. Both are gridded model estimates rather than station readings, so they suit comparisons between days and cities. Fire detections were downloaded from the NASA FIRMS archive as one file per country and year."
+  },
+  {
+   "t": "table",
+   "caption": "**Table 3.** Raw data collected for each stream and the main audit findings.",
+   "header": [
+    "Stream",
+    "Collection",
+    "Raw records",
+    "Audit findings"
+   ],
+   "rows": [
+    [
+     "Air quality (A)",
+     "Open-Meteo Air Quality API; 11 city files (10 CSV, Ludhiana XLSX), hourly, GMT; CAMS model output on a grid of about 0.4°",
+     "453,192 hourly rows",
+     "No duplicate or skipped hours. No pollutant value before 4 Aug 2022 in any city. Islamabad and Rawalpindi identical (same grid cell)."
+    ],
+    [
+     "Weather (B)",
+     "Open-Meteo Historical Weather API; 11 city files (10 CSV, Ludhiana XLSX), hourly, GMT",
+     "433,728 hourly rows",
+     "No missing value, duplicate or skipped hour. No surface-pressure column in the export."
+    ],
+    [
+     "Fire (C)",
+     "NASA FIRMS archive; VIIRS 375 m (NOAA-20); 4 files (India and Pakistan, 2022 and 2023); 2024 files sealed",
+     "1,284,773 detections",
+     "No duplicates; one satellite; times in UTC; acquisition time read as text to keep leading zeros."
+    ]
+   ],
+   "widths": [
+    1300,
+    3500,
+    1500,
+    3492
+   ],
+   "note": null,
+   "font": 8
+  },
+  {
+   "t": "h2",
+   "text": "2.2 Alignment, reshaping and merge"
+  },
+  {
+   "t": "p",
+   "text": "All raw times are in GMT. Each stream added 5 hours to the full timestamp **before** taking the calendar date, so that evening hours fall on the correct local day (26,626 fire detections moved to the next date). The same UTC+5 clock was used for the Indian cities so that all streams share day boundaries. The reshaping steps were: stacking the 11 city files of each stream (concat); aggregating hourly rows to one row per city-day (group-by with mean, maximum, total and vector-mean rules); building a long table of fire counts for every city, cone, radius and origin (602,250 rows) and pivoting the chosen settings into columns; and joining the three streams. City names come from one shared dictionary, so the keys are spelled identically in every table."
+  },
+  {
+   "t": "p",
+   "text": "The merge started from an empty calendar of 11 cities × 515 days (5,665 rows), so that a missing day in any stream would remain visible. Air quality, weather and fire were then left-joined on city, country and date with a one-to-one check; the row count stayed at 5,665 after every join and every row found a partner. Lags of 1 to 3 days and the targets for days t+1 to t+3 were computed **within each city**, so that the last days of one city cannot leak into the first days of the next. Table 4 traces every row from the raw files to the master table."
+  },
+  {
+   "t": "table",
+   "caption": "**Table 4.** Row bookkeeping from the raw files to the master table (each step is logged in the workbook sheet Decisions_Log).",
+   "header": [
+    "Stream",
+    "Steps and row counts"
+   ],
+   "rows": [
+    [
+     "Air quality",
+     "453,192 hourly rows → 191,153 in 2022–2023 → 135,905 after removing the empty Jan–Aug 2022 block → 5,665 city-days (each with ≥ 18 valid hours)"
+    ],
+    [
+     "Weather",
+     "433,728 hourly rows → 188,393 in 2022–2023 → 7,852 city-days → 5,665 in the modelling window"
+    ],
+    [
+     "Fire",
+     "1,284,773 detections → 287,323 in the study box (26–37°N, 68–79°E) → 279,968 vegetation fires → 238,796 with nominal or high confidence → 238,756 on 2022–2023 local dates → 8,030 city-days (days without fires = 0) → 5,665 in the window"
+    ],
+    [
+     "Master",
+     "calendar 5,665 → air-quality join 5,665 → weather join 5,665 → fire join 5,665 (all rows matched); 287 columns"
+    ]
+   ],
+   "widths": [
+    1300,
+    8492
+   ],
+   "note": null,
+   "font": 8
+  },
+  {
+   "t": "h2",
+   "text": "2.3 Missing data and selection bias"
+  },
+  {
+   "t": "table",
+   "caption": "**Table 5.** Missing values by stage (counts and percentages for all 287 columns are in the workbook sheet Missing_All_Columns).",
+   "header": [
+    "Where",
+    "What is missing",
+    "Count (%)",
+    "Decision"
+   ],
+   "rows": [
+    [
+     "Air quality, raw 2022–2023",
+     "All pollutants, one continuous block from 6 Jan to 4 Aug 2022, same hours in every city",
+     "55,248 of 191,153 hourly rows (28.9%)",
+     "Not imputed; the modelling window starts on 4 Aug 2022 for all streams"
+    ],
+    [
+     "Weather, raw",
+     "Any variable",
+     "0 of 433,728 rows",
+     "Nothing to impute"
+    ],
+    [
+     "Fire, daily grid",
+     "Days without any detection",
+     "–",
+     "Coded 0 (a real zero), never missing"
+    ],
+    [
+     "Master, predictors",
+     "Any of the 278 key, predictor and dummy columns",
+     "0",
+     "–"
+    ],
+    [
+     "Master, targets and lags",
+     "Targets for days t+1 to t+3; index lags 1 to 3",
+     "11 / 22 / 33 rows (0.19% / 0.39% / 0.58%)",
+     "Target day in sealed 2024, or lag day before 4 Aug 2022: left missing and excluded per horizon"
+    ]
+   ],
+   "widths": [
+    1700,
+    3000,
+    2000,
+    3092
+   ],
+   "note": null,
+   "font": 8
+  },
+  {
+   "t": "p",
+   "text": "**Why no imputation.** The air-quality gap is not random: the source has no pollutant values before August 2022 in any city. Filling seven months by interpolation would invent the seasonal pattern the model must learn, so those rows were removed from every stream (listwise deletion of the block). In total 278 of the 287 master columns have no missing value."
+  },
+  {
+   "t": "p",
+   "text": "**Selection bias.** (i) The training period contains only **one** harvest season (October–December 2022), so every seasonal estimate rests on one winter; the final test therefore retrains with the first half of 2024 and tests on the second half. (ii) On 13–16 December 2022 every pollutant is near zero in all cities at once, a likely source error. These 44 city-days are flagged (suspect_day = 1) and kept as rows: removing them would break each city's unbroken daily calendar, which the lags and targets rely on, and the flag lets Milestone 3 drop them in one step. They are already left out of the air-quality scaling and the spike thresholds. Their effect is reported: the index has a skewness of −1.15 on training days with them and +0.26 without them. (iii) The satellite cannot see fires under thick cloud or fog, which is common on the worst smog days, so fire–smog associations are likely underestimated. (iv) Islamabad and Rawalpindi share one air-quality series, so there are 10 independent air-quality series, not 11."
+  },
+  {
+   "t": "h2",
+   "text": "2.4 Transformations, scaling and the target"
+  },
+  {
+   "t": "p",
+   "text": "Variables with strong right skew were transformed with log(1 + x), which keeps zero values at zero (Table 6, Figure 1)."
+  },
+  {
+   "t": "table",
+   "caption": "**Table 6.** Skewness before and after log(1 + x), training period. Air-quality rows leave out the 44 flagged days, so they differ slightly from Table 9 (PM2.5 1.91, CO 3.17 with them).",
+   "header": [
+    "Variable",
+    "Skew, raw",
+    "Skew, log(1 + x)",
+    "Note"
+   ],
+   "rows": [
+    [
+     "PM2.5 daily mean (µg/m³)",
+     "1.95",
+     "0.37",
+     "10 of 13 air-quality columns had skew > 1 and were logged"
+    ],
+    [
+     "CO daily mean (µg/m³)",
+     "3.18",
+     "0.37",
+     ""
+    ],
+    [
+     "Rain total (mm)",
+     "6.46",
+     "1.79",
+     "61% of days have 0 mm, so the skew stays above 1"
+    ],
+    [
+     "Fires in the upwind cone, 300 km",
+     "9.79",
+     "0.64",
+     "26.9% zero days"
+    ],
+    [
+     "India-origin fires in the cone",
+     "10.65",
+     "1.99",
+     "61.2% zero days"
+    ]
+   ],
+   "widths": [
+    3000,
+    1300,
+    1600,
+    3892
+   ],
+   "note": null,
+   "font": 8
+  },
+  {
+   "t": "figure",
+   "path": "C:\\Users\\Bilel\\Documents\\Fall_2026\\DSFSG\\project\\Smog-Analysis-DSSG\\figures\\fig_a1_pm25_log_transform.png",
+   "caption": "**Figure 1.** Daily mean PM2.5 across the 11 cities on training days, (a) before and (b) after the log(1 + x) transform; dashed line = mean, solid line = median. The long right tail disappears after the transform. Produced by air_quality.ipynb (flagged December days left out).",
+   "width_in": 5.0
+  },
+  {
+   "t": "p",
+   "text": "**Standardisation.** Continuous predictors and pollutants were converted to z-scores, z = (x − mean)/SD, after the log transform where applied, using the mean and SD of the **training period only**. One set of parameters per variable is used for all cities, so real differences between cities remain, and the parameters are saved for reuse on 2024. Min-Max scaling was not used: a few extreme fire and rain days would squeeze almost every other day towards 0."
+  },
+  {
+   "t": "p",
+   "text": "**Target.** Composite Smog Index = 0.40·z(PM2.5) + 0.12·[z(PM10) + z(NO2) + z(SO2) + z(O3) + z(CO)], computed from daily means. A **spike** is a day whose index is at or above the 90th percentile of that city's training October–March days. The thresholds run from 0.36 (Rahim Yar Khan) to 2.18 (Lahore) and give 297 spike city-days (5.2%) in the window."
+  },
+  {
+   "t": "h2",
+   "text": "2.5 Categorical encoding"
+  },
+  {
+   "t": "p",
+   "text": "Nominal variables were converted into 0/1 dummy columns, with one category dropped as the reference so that a regression with an intercept stays identifiable (Table 7). A numeric code (for example 0 to 7 for wind sectors) would impose a false order. The notebook confirms that every row belongs to exactly one category of each variable and that the eight wind-sector dummies are all 0 on exactly the 631 stagnant city-days. The workbook sheet Encoding_Example shows real rows next to their dummies."
+  },
+  {
+   "t": "table",
+   "caption": "**Table 7.** Nominal variables converted to 0/1 dummy columns.",
+   "header": [
+    "Variable",
+    "Dummy columns",
+    "Reference category"
+   ],
+   "rows": [
+    [
+     "City (11 categories)",
+     "city_faisalabad … city_jalandhar (10)",
+     "Lahore"
+    ],
+    [
+     "Country; border group",
+     "is_india; near_border (Lahore, Sialkot)",
+     "Pakistan; other cities"
+    ],
+    [
+     "Month (12 categories)",
+     "month_02 … month_12 (11); harvest_season (Oct–Dec) for group summaries",
+     "January"
+    ],
+    [
+     "Wind-from sector (8 + calm)",
+     "wind_from_n, _ne, _e, _se, _s, _sw, _w, _nw (8)",
+     "Calm (stagnant) days"
+    ],
+    [
+     "Already binary",
+     "stagnant, rain_day, smog_spike, suspect_day, outlier flags",
+     "–"
+    ]
+   ],
+   "widths": [
+    2400,
+    4900,
+    2492
+   ],
+   "note": null,
+   "font": 8
+  },
+  {
+   "t": "h2",
+   "text": "2.6 Spatial fire features"
+  },
+  {
+   "t": "p",
+   "text": "For each city, the great-circle distance and the compass bearing to every fire within 300 km were computed. A fire is **upwind** when its bearing lies within the cone half-angle (±30°, ±45° or ±60°) of the direction the daily wind comes from; a ±45° **downwind** cone is kept as a placebo. On stagnant days (daily vector-mean wind below 2 km/h, 10.9% of training city-days) the wind direction is unreliable, so the cone keeps every fire in the radius. Every count is split by origin (fires detected in India or in Pakistan), which makes the cross-border question testable (Figure 2). Automatic tests confirm that a north wind keeps fires to the north and that no cone holds more fires than its circle. The default setting, the ±45° upwind cone at 300 km, was chosen on the training harvest season only (Section 3.3)."
+  },
+  {
+   "t": "figure",
+   "path": "C:\\Users\\Bilel\\Documents\\Fall_2026\\DSFSG\\project\\Smog-Analysis-DSSG\\figures\\fig_fire_study_area.png",
+   "caption": "**Figure 2.** Crop-fire detections (NASA VIIRS NOAA-20, vegetation fires, nominal or high confidence) around the 11 study cities, October–November 2023. Blue = India-origin, orange = Pakistan-origin. The circle is the 150 km radius around Lahore; the wedges are the ±30°, ±45° and ±60° upwind cones for Lahore's wind on 29 October 2023. Produced by fire.ipynb.",
+   "width_in": 4.1
+  },
+  {
+   "t": "h2",
+   "text": "2.7 Summary of preprocessing decisions"
+  },
+  {
+   "t": "table",
+   "caption": "**Table 8.** Preprocessing decisions, alternatives considered and justification.",
+   "header": [
+    "Decision",
+    "Alternative",
+    "Justification"
+   ],
+   "rows": [
+    [
+     "Add 5 h (UTC+5) before taking the date, for all cities",
+     "Keep GMT dates; +5:30 for India",
+     "Day boundaries must match across streams; one clock keeps the cross-border design consistent"
+    ],
+    [
+     "Modelling window from 4 Aug 2022",
+     "Impute the empty air-quality block",
+     "Seven months of invented pollution would create the pattern the model must learn"
+    ],
+    [
+     "Lags and targets within each city",
+     "Shift the whole table",
+     "Prevents one city's last days leaking into the next city's first days"
+    ],
+    [
+     "log(1 + x) for skewed variables",
+     "No transform",
+     "Removes the long right tail and keeps zeros at zero"
+    ],
+    [
+     "Z-scores from the training period, one set for all cities",
+     "Fit on all data; one set per city",
+     "Prevents leakage from validation and test data; keeps real city differences"
+    ],
+    [
+     "Keep outliers and add flags",
+     "Delete, cap or winsorise",
+     "Extreme days are the smog episodes and fire outbreaks the project studies"
+    ],
+    [
+     "Dummy columns with a reference category",
+     "Numeric codes",
+     "Categories are nominal; codes would imply a false order"
+    ],
+    [
+     "Upwind cone ±45° at 300 km",
+     "Plain radius; 150 km",
+     "Highest median correlation with next-day smog on training data; the plain circle carries no signal"
+    ]
+   ],
+   "widths": [
+    2900,
+    2300,
+    4592
+   ],
+   "note": null,
+   "font": 8
+  },
+  {
+   "t": "h1",
+   "text": "3. Exploratory Data Analysis (Draft Section III)"
+  },
+  {
+   "t": "p",
+   "text": "Unless stated otherwise, statistics use the 4,323 training city-days (1,012 in October–December 2022). The validation period is not analysed until Milestone 3, and 2024 is never used. All figures have a title, axes labelled with units, a legend where several series are shown, and a colour-blind-safe palette."
+  },
+  {
+   "t": "h2",
+   "text": "3.1 Univariate analysis"
+  },
+  {
+   "t": "table",
+   "caption": "**Table 9.** Summary statistics of the key variables, training period (n = 4,323 city-days).",
+   "header": [
+    "Variable (unit)",
+    "Mean",
+    "Median",
+    "SD",
+    "IQR",
+    "Skew",
+    "Zero days (%)"
+   ],
+   "rows": [
+    [
+     "Composite Smog Index (z units)",
+     "-0.03",
+     "-0.04",
+     "0.83",
+     "0.91",
+     "-1.15",
+     "0.0"
+    ],
+    [
+     "PM2.5 daily mean (µg/m³)",
+     "54.36",
+     "46.15",
+     "30.79",
+     "29.02",
+     "1.91",
+     "0.0"
+    ],
+    [
+     "CO daily mean (µg/m³)",
+     "854.72",
+     "616.50",
+     "735.93",
+     "658.38",
+     "3.17",
+     "0.0"
+    ],
+    [
+     "Temperature range (°C)",
+     "11.26",
+     "11.30",
+     "3.11",
+     "4.70",
+     "0.02",
+     "0.0"
+    ],
+    [
+     "Relative humidity (%)",
+     "64.81",
+     "66.88",
+     "15.46",
+     "22.75",
+     "-0.48",
+     "0.0"
+    ],
+    [
+     "Rain total (mm)",
+     "2.17",
+     "0.00",
+     "6.26",
+     "0.90",
+     "6.46",
+     "61.2"
+    ],
+    [
+     "Vector-mean wind (km/h)",
+     "5.53",
+     "5.02",
+     "3.22",
+     "4.23",
+     "1.01",
+     "0.0"
+    ],
+    [
+     "Fires in upwind cone, 300 km (count)",
+     "43.26",
+     "4.00",
+     "176.99",
+     "25.00",
+     "9.79",
+     "26.9"
+    ],
+    [
+     "India-origin fires in cone (count)",
+     "25.28",
+     "0.00",
+     "153.44",
+     "3.00",
+     "10.65",
+     "61.2"
+    ],
+    [
+     "Fires within 300 km, no cone (count)",
+     "162.70",
+     "35.00",
+     "430.99",
+     "97.50",
+     "4.74",
+     "4.9"
+    ]
+   ],
+   "widths": [
+    3300,
+    1050,
+    1050,
+    1050,
+    1050,
+    1000,
+    1292
+   ],
+   "note": null,
+   "font": 8
+  },
+  {
+   "t": "p",
+   "text": "**Resistant and non-resistant measures.** The weather variables are nearly symmetric (temperature range: mean 11.26 °C, median 11.30 °C, skew 0.02), so the mean and SD describe them well. The pollutants are moderately right-skewed (PM2.5 mean 54.4 µg/m³ against a median of 46.1 µg/m³). Fire counts and rain are zero-inflated and extremely skewed: fires in the cone have a mean of 43.3 but a median of 4, India-origin fires reach the cone on only 39% of days, and rain has a median of 0 mm against a mean of 2.2 mm. For these variables the median and IQR describe a typical day, while the mean describes the total load; the SD (4 to 51 times the IQR for the fire counts) is driven by a handful of days. Daily mean PM2.5 is above the WHO 24-hour guideline of 15 µg/m³ on 99.4% of training city-days outside the flagged days; as these are model estimates, this is an indication rather than an official exceedance count."
+  },
+  {
+   "t": "h2",
+   "text": "3.2 Outlier diagnostic"
+  },
+  {
+   "t": "table",
+   "caption": "**Table 10.** Outliers by the z-score rule (|z| > 3) and the quartile rule (beyond Q1 − 1.5·IQR or Q3 + 1.5·IQR), training period. Masked = extra points the z-rule finds once the first-pass z-outliers are removed. SD inflation = SD of all days relative to the SD without the IQR outliers.",
+   "header": [
+    "Variable (unit)",
+    "z-rule",
+    "IQR rule",
+    "IQR (%)",
+    "Masked",
+    "SD, all",
+    "SD w/o IQR outliers",
+    "SD inflation (%)"
+   ],
+   "rows": [
+    [
+     "Composite Smog Index (z units)",
+     "33",
+     "110",
+     "2.5",
+     "22",
+     "0.83",
+     "0.68",
+     "23"
+    ],
+    [
+     "PM2.5 daily mean (µg/m³)",
+     "96",
+     "292",
+     "6.8",
+     "63",
+     "30.79",
+     "19.93",
+     "54"
+    ],
+    [
+     "CO daily mean (µg/m³)",
+     "82",
+     "241",
+     "5.6",
+     "80",
+     "735.93",
+     "430.77",
+     "71"
+    ],
+    [
+     "Temperature range (°C)",
+     "2",
+     "2",
+     "0.0",
+     "0",
+     "3.11",
+     "3.11",
+     "0"
+    ],
+    [
+     "Relative humidity (%)",
+     "0",
+     "1",
+     "0.0",
+     "0",
+     "15.46",
+     "15.45",
+     "0"
+    ],
+    [
+     "Rain total (mm)",
+     "89",
+     "823",
+     "19.0",
+     "144",
+     "6.26",
+     "0.43",
+     "1,372"
+    ],
+    [
+     "Vector-mean wind (km/h)",
+     "51",
+     "94",
+     "2.2",
+     "20",
+     "3.22",
+     "2.85",
+     "13"
+    ],
+    [
+     "Fires in upwind cone, 300 km (count)",
+     "63",
+     "534",
+     "12.4",
+     "101",
+     "176.99",
+     "14.57",
+     "1,115"
+    ],
+    [
+     "India-origin fires in cone (count)",
+     "58",
+     "745",
+     "17.2",
+     "85",
+     "153.44",
+     "1.53",
+     "9,955"
+    ],
+    [
+     "Fires within 300 km, no cone (count)",
+     "122",
+     "492",
+     "11.4",
+     "129",
+     "430.99",
+     "53.23",
+     "710"
+    ]
+   ],
+   "widths": [
+    3000,
+    800,
+    900,
+    850,
+    850,
+    1000,
+    1250,
+    1142
+   ],
+   "note": null,
+   "font": 8
+  },
+  {
+   "t": "p",
+   "text": "**Masking.** The quartile rule flags far more days than the z-rule in every skewed variable (rain 823 against 89; fires in the cone 534 against 63; PM2.5 292 against 96). Extreme days inflate the SD, which widens the 3-SD limit and hides other extreme days: removing the first-pass z-outliers and applying the rule again finds 144 more rain days, 101 more fire days and 63 more PM2.5 days. **Variance inflation.** Without the quartile-rule outliers, the SD of rain falls from 6.26 to 0.43 mm and that of fires in the cone from 177 to 14.6, so for zero-inflated variables the SD consists mostly of the outliers. On the log scale, fires in the cone have no quartile-rule outliers at all. **Decision.** No outlier was deleted, capped or winsorised: they are real smog episodes, storms and fire outbreaks, the events the project predicts. Each stream carries 0/1 flag columns instead."
+  },
+  {
+   "t": "h2",
+   "text": "3.3 Bivariate and multivariate analysis"
+  },
+  {
+   "t": "p",
+   "text": "**When do spikes happen?** Table 11 groups the training days by season, wind, rain and country. By month, spikes are concentrated in **December (26.1% of city-days) and January (22.9%)**, against 2.3% in October and 4.2% in November, while fires in the cone peak in October and November (57,087 and 50,062 detections). The wheat-burning season of May 2023 (30,235 cone detections) produced **no** spike. Fires alone therefore do not make a spike: the smoke must be trapped by winter weather (Figure 3)."
+  },
+  {
+   "t": "table",
+   "caption": "**Table 11.** Mean Composite Smog Index and share of spike days by group, training period.",
+   "header": [
+    "Grouping",
+    "Group",
+    "City-days",
+    "Mean index",
+    "Median index",
+    "Spike days (%)"
+   ],
+   "rows": [
+    [
+     "Season",
+     "Jan-Sep",
+     "3,311",
+     "-0.16",
+     "-0.18",
+     "2.9"
+    ],
+    [
+     "Season",
+     "Oct-Dec (harvest)",
+     "1,012",
+     "0.39",
+     "0.44",
+     "11.0"
+    ],
+    [
+     "Wind",
+     "ventilated",
+     "3,853",
+     "-0.06",
+     "-0.06",
+     "4.3"
+    ],
+    [
+     "Wind",
+     "stagnant (< 2 km/h)",
+     "470",
+     "0.19",
+     "0.12",
+     "8.7"
+    ],
+    [
+     "Rain",
+     "no rain (< 1 mm)",
+     "3,252",
+     "0.05",
+     "0.04",
+     "6.2"
+    ],
+    [
+     "Rain",
+     "rain day",
+     "1,071",
+     "-0.27",
+     "-0.23",
+     "0.5"
+    ],
+    [
+     "Country",
+     "India",
+     "1,572",
+     "-0.04",
+     "-0.10",
+     "4.6"
+    ],
+    [
+     "Country",
+     "Pakistan",
+     "2,751",
+     "-0.02",
+     "-0.02",
+     "4.9"
+    ]
+   ],
+   "widths": [
+    1300,
+    2700,
+    1300,
+    1400,
+    1500,
+    1592
+   ],
+   "note": null,
+   "font": 8
+  },
+  {
+   "t": "figure",
+   "path": "C:\\Users\\Bilel\\Documents\\Fall_2026\\DSFSG\\project\\Smog-Analysis-DSSG\\figures\\fig_a3_index_over_time.png",
+   "caption": "**Figure 3.** Composite Smog Index over time (7-day centred average; no unit, 0 = average training day) for Lahore, Faisalabad, Rahim Yar Khan and Amritsar, 4 August 2022 to 31 December 2023. Grey bands mark October–December; dashed and dotted lines mark the end of training and the start of validation. The break in December 2022 is the flagged suspect days. Produced by air_quality.ipynb.",
+   "width_in": 5.6
+  },
+  {
+   "t": "p",
+   "text": "**Contingency tables.** On the training harvest days, 27.3% of days after a stagnant day were spikes, against 9.4% after a ventilated day (χ² = 24.4, odds ratio 3.61, 95% CI 2.15–6.06). After a day with at least one fire in the cone, 12.0% of next days were spikes, against 2.6% after a day with none (χ² = 8.3, odds ratio 5.11, 95% CI 1.60–16.37). Consecutive days of a city are not independent, so these p-values (< 0.01) overstate certainty and the tables describe association only."
+  },
+  {
+   "t": "figure",
+   "path": "C:\\Users\\Bilel\\Documents\\Fall_2026\\DSFSG\\project\\Smog-Analysis-DSSG\\figures\\fig_m2_correlation_harvest.png",
+   "caption": "**Figure 4.** Spearman rank correlations between the next-day Composite Smog Index, today's index, fire counts (±45° upwind cone at 300 km, by origin, and the plain 300 km circle) and daily weather, 1,012 training harvest city-days. Temperature range = daily max − min (°C); rain = daily total (mm); vector-mean wind = length of the averaged wind vector (km/h). Diverging scale centred on 0. Produced by merge_analysis.ipynb.",
+   "width_in": 3.9
+  },
+  {
+   "t": "p",
+   "text": "**Correlations (Figure 4).** Today's index is by far the strongest correlate of tomorrow's (ρ = 0.82), which makes persistence the baseline every model must beat. Among the predictors, wind speed (−0.38), fires in the upwind cone (0.34), humidity (0.32), vector-mean wind (−0.31), temperature range (0.30) and rain (−0.29) relate to the next-day index, while the plain 300 km circle is weaker (0.19). Wind speed and vector-mean wind are nearly redundant (0.85), as are mean, minimum and maximum temperature (r = 0.91–0.98), so models will use one of each pair."
+  },
+  {
+   "t": "p",
+   "text": "**Fire cone and radius (Figure 5).** In the harvest season the cone matters more than the circle. At 300 km the ±45° upwind cone gives a median ρ of 0.23 (positive in all 7 Pakistani cities), the plain circle -0.06 and the downwind placebo 0.01: a large circle counts as many fires downwind as upwind and so carries no signal. Inside the cone, ρ grows with the radius, so the smoke that matters is regional. The ±30° and ±60° cones give similar values; with 92 days per city a correlation has a standard error of about 0.10, so ±45° was kept as the middle setting. Over the full training year every 300 km setting looks good (0.16–0.35), **including the placebo**, because fires and smog share a seasonal cycle; this is why the selection used the harvest season only. The cone count is most related to smog **one day later** (median ρ = 0.24, against 0.16 on the same day, 0.11 after two days and 0.05 after three; the window here is set on the smog day, hence the small difference from 0.23). At the median vector-mean wind of about 5 km/h, smoke travels roughly 120 km a day, consistent with a one-to-two-day delay."
+  },
+  {
+   "t": "figure",
+   "path": "C:\\Users\\Bilel\\Documents\\Fall_2026\\DSFSG\\project\\Smog-Analysis-DSSG\\figures\\fig_m1_cone_radius_sensitivity.png",
+   "caption": "**Figure 5.** Median Spearman correlation between the fire count on day t and the Composite Smog Index on day t + 1, for every cone and radius, computed within each city. Top: training harvest season (92 days per city), used to choose the setting (black box). Bottom: full training year (393 days per city), where the shared seasonal cycle inflates every setting, including the placebo. Near border = Lahore, Sialkot; Far = Multan, Rahim Yar Khan, Islamabad, Rawalpindi. Produced by merge_analysis.ipynb.",
+   "width_in": 5.7
+  },
+  {
+   "t": "p",
+   "text": "**Weather traps (Figure 6).** Stagnant days are followed by a spike 27.3% of the time (9.4% otherwise) and humid days 22.0% (8.5%). No rain day was followed by a spike (0 of 72). When stagnation, no rain and high humidity coincide, 45% of next days are spikes (9 of 20, risk ratio 4.4). The temperature-range proxy points the other way from the work plan: none of the 61 small-range days was followed by a spike, while large-range days (> 13.6 °C) were followed by 15.4% (risk ratio 1.77). A small day–night range signals cloud or rain, which mix and wash the air, whereas surface inversions form on clear, calm nights with strong cooling, so a **large** range is used as the inversion proxy."
+  },
+  {
+   "t": "figure",
+   "path": "C:\\Users\\Bilel\\Documents\\Fall_2026\\DSFSG\\project\\Smog-Analysis-DSSG\\figures\\fig_m6_weather_trap.png",
+   "caption": "**Figure 6.** Share of next days that are smog spikes when today has each weather condition (filled circles, 95% Wilson intervals) and on all other days (hollow diamonds), training harvest season. Dashed line: rate over all harvest days (11.0%); n = city-days with the condition. Produced by merge_analysis.ipynb.",
+   "width_in": 5.4
+  },
+  {
+   "t": "p",
+   "text": "**Cross-border check.** Only Lahore (54 days with India-origin fires in the cone), Sialkot (45) and Faisalabad (40) receive India-origin fires often enough to test the cross-border claim; in Multan, Rahim Yar Khan, Islamabad and Rawalpindi this happens on 1 to 18 days only. In Sialkot, India-origin fires go with higher next-day smog (ρ = 0.33, against 0.10 for Pakistan-origin fires); in Lahore it is the other way round (-0.04 against 0.23), although 70% of the fires in Lahore's cone are Indian. The cross-border signal is therefore mixed and rests on one season; hypothesis H4 tests it with controls."
+  },
+  {
+   "t": "p",
+   "text": "**Robustness of the index weights.** Rebuilding the index with equal weights, without ozone or without PM10 ranks the days almost identically (Spearman ρ ≥ 0.979). Dropping ozone changes the most spike labels (68 city-days, against 208 training spikes in the main index), because winter ozone moves opposite to NO2. The main weights are kept and the ozone sensitivity is listed as a limitation."
+  },
+  {
+   "t": "h1",
+   "text": "4. Hypotheses and Analytical Plan"
+  },
+  {
+   "t": "p",
+   "text": "Each hypothesis starts from a pattern in Section 3 and is mapped to columns of the master dataset (Table 12). The response is always measured on day t + 1 (t + 1 to t + 3 for H5) and uses only information known on day t. The full mapping, with the planned test for each hypothesis, is in the workbook sheet Hypothesis_Mapping."
+  },
+  {
+   "t": "table",
+   "caption": "**Table 12.** Formal hypotheses with variable mapping (Y = response, X = main predictors) and the SDG targets they inform. Owners in brackets.",
+   "header": [
+    "ID",
+    "Hypotheses",
+    "Response (Y)",
+    "Predictors (X)",
+    "Controls",
+    "SDG"
+   ],
+   "rows": [
+    [
+     "H1 Cone vs radius (C)",
+     "**H0:** adding the upwind-cone fire count to a model with the plain 300 km count and the controls does not improve the explanation of the next-day index (β_cone = 0). **H1:** the cone count is positively associated with the next-day index beyond the plain count (β_cone > 0).",
+     "target_index_h1",
+     "fire_cnt_up45_r300_all_log1p_z (+ lags 1-3 of fire_cnt_up45_r300_all); comparison: fire_cnt_r300_all_log1p_z; placebo: fire_cnt_down45_r300_all_log1p_z",
+     "C",
+     "11.6, 13"
+    ],
+    [
+     "H2 Weather trap (B)",
+     "**H0:** stagnation, humidity, absence of rain and a large temperature range do not change the odds of a next-day spike (OR = 1). **H1:** each raises the odds (OR > 1).",
+     "target_spike_h1",
+     "stagnant, rh_mean_pct, rain_day, temp_range_c",
+     "month_02..month_12, city_* (10), fire_cnt_up45_r300_all_log1p_z",
+     "3.9, 11.6"
+    ],
+    [
+     "H3 Fire × stagnation (A)",
+     "**H0:** the fire effect on the next-day index is the same on stagnant and ventilated days (β_fire×stagnant = 0). **H1:** it is stronger on stagnant days (β_fire×stagnant > 0).",
+     "target_index_h1",
+     "fire_cnt_up45_r300_all_log1p_z x stagnant (interaction)",
+     "C",
+     "3.9, 13.1"
+    ],
+    [
+     "H4 Cross-border (C)",
+     "**H0:** in Pakistani cities, India-origin upwind fires are not associated with the next-day index once Pakistan-origin fires and weather are controlled, and the association is the same near the border and far from it (β_IN = 0, β_IN×near = 0). **H1:** India-origin fires raise next-day smog, more in Lahore and Sialkot than in far cities (β_IN×near > 0).",
+     "target_index_h1",
+     "fire_cnt_up45_r300_in_log1p_z, fire_cnt_up45_r300_in_log1p_z x near_border (Pakistani cities only)",
+     "C with city_* for the 6 Pakistani cities, plus fire_cnt_up45_r300_pk_log1p_z",
+     "13, 17, 11.6"
+    ],
+    [
+     "H5 Forecast value (A)",
+     "**H0:** a model with the fire and weather features does not beat persistence or a weather-only model on validation (ΔPR-AUC ≤ 0, ΔMAE ≥ 0). **H1:** it beats both for at least one horizon of 1 to 3 days.",
+     "target_spike_h1, target_spike_h2, target_spike_h3 (and target_index_h1..h3)",
+     "all engineered features (fire, weather, lags, encodings)",
+     "baselines: persist_spike / persist_index, and a weather-only model",
+     "3.d, 3.9"
+    ]
+   ],
+   "widths": [
+    1050,
+    3250,
+    1250,
+    2000,
+    1550,
+    692
+   ],
+   "note": "C = month_02..month_12, city_* (10), temp_mean_c, temp_range_c, rh_mean_pct, precip_sum_mm, vec_len_kmh, excluding any column already used as X.",
+   "font": 7
+  },
+  {
+   "t": "p",
+   "text": "**Analytical plan.** Consecutive days of a city are correlated, and Islamabad and Rawalpindi share air-quality values, so H1–H4 use regressions with city-clustered standard errors or a block bootstrap: logistic regression for the spike label and linear regression for the index, with interaction terms for H3 and H4. Non-linear effects will be checked with gradient-boosted trees and permutation importance. For H5, models are compared on the validation season (1,309 city-days, 1,012 of them in October–December 2023) against persistence (persist_index, persist_spike) and a weather-only model. Because spikes are rare (5.2%), results are reported as PR-AUC, recall and precision as well as ROC-AUC and the Brier score, and as MAE for the index. Because the spike label falls mainly in December–January, after the burning peak, Milestone 3 will also report results for the continuous index and compare a label with month-specific thresholds."
+  },
+  {
+   "t": "p",
+   "text": "**Status after Milestone 3.** Sections 7–12 answer two of the five hypotheses. H2 (weather trap) is supported on every component (Section 11.1). H5 (forecast value) is answered for the next day: the models match persistence in ranking and beat it on alert cost, and fires add no skill (Sections 9 and 10). H1, H3 and H4 are tested in Milestone 4."
+  },
+  {
+   "t": "h1",
+   "text": "5. Limitations"
+  },
+  {
+   "t": "bullets",
+   "items": [
+    "**Model-based air quality.** Open-Meteo air quality is CAMS model output on a coarse grid, not monitor data; neighbouring cities can share values (Islamabad = Rawalpindi).",
+    "**One training winter.** Every learned threshold, scaling parameter and the cone choice rest on one harvest season (92 days per city); differences in ρ of about 0.1 are within noise.",
+    "**No pressure and no direct inversion measure.** Surface pressure was not in the exported files; temperature range and stagnation are proxies.",
+    "**Satellite fire detection.** VIIRS misses fires under thick cloud or fog and between its overpasses; counts are detections, not fires.",
+    "**Simplifications.** Each city is one point, the cone uses one daily wind direction, one UTC+5 clock is used for India (IST is UTC+5:30), and observed weather stands in for forecast weather.",
+    "**Dependence.** City-days are not independent (multi-day episodes, shared regional weather), so group comparisons and contingency p-values are descriptive."
+   ]
+  },
+  {
+   "t": "h1",
+   "text": "6. Reproducibility and Deliverables"
+  },
+  {
+   "t": "p",
+   "text": "The notebooks air_quality.ipynb (A), weather.ipynb (B), fire.ipynb (C) and merge_analysis.ipynb (Role 2) run top to bottom with Restart and Run All, in this order, from the project root, and keep all their printed outputs and figures. They share one settings file (src/config.py: cities, coordinates, dates, file names) and helper modules for the merge, the EDA and one figure style. Every setting is learned on the training period and saved, so the final run on 2024 only changes the dates in the settings file. The last cell of merge_analysis.ipynb writes the workbook Milestone2_Final_Master_and_EDA.xlsx: its first sheet is the master table (5,665 × 287), and its Contents sheet lists the other sheets (data dictionary, missing values for every column, decisions log, saved parameters, encoding example, the final table of each stream, and every EDA table of this report) together with the table or figure that uses each one."
+  },
+  {
+   "t": "p",
+   "text": "**Milestone 3.** modeling.ipynb (sections M3.1–M3.10) reads only the master table and role2_params.json and runs top to bottom in about five minutes on 8 cores. It writes every table of Sections 7–12 to docs/tables/m3_*.csv, the figures to figures/fig_m3_*.png, the tuned hyperparameters and alert thresholds to Dataset/clean/m3_params.json, and the ten fitted pipelines to models/*.joblib. The modelling code sits in two modules: src/modeling.py (data access, feature sets, the purged cross-validation splitter, pipelines, tuning and thresholds) and src/evaluate.py (metrics, week-block bootstrap, cost curve, error breakdown). All seeds are fixed, and two consecutive runs write byte-identical tables. The decision log (DECISIONS.md, rows S1–S19) records every Milestone 3 choice with its row counts."
+  },
+  {
+   "t": "h1",
+   "text": "7. Baseline Models and Justification"
+  },
+  {
+   "t": "p",
+   "text": "The headline task is a binary forecast: will city *c* have a smog spike on day *t* + 1, given what is known on day *t*? Spikes are 4.80% of training city-days, so the models are judged on how well they find the rare positive days and on what their errors cost. Four models, from the simplest to the most flexible, set the benchmarks (Table 13)."
+  },
+  {
+   "t": "table",
+   "caption": "**Table 13.** Baseline models, their role, why they suit this problem, and the setting chosen by cross-validated PR-AUC (full feature set).",
+   "header": [
+    "Model",
+    "Role",
+    "Why for this problem",
+    "Tuned setting (CV PR-AUC)"
+   ],
+   "rows": [
+    [
+     "Majority class",
+     "Floor",
+     "Always predicts \"no spike\". Shows how misleading accuracy is when about 95% of days are clean.",
+     "–"
+    ],
+    [
+     "Persistence",
+     "Benchmark",
+     "Tomorrow repeats today. Today's index has ρ = 0.82 with tomorrow's (Section 3.3), so any forecast must beat this rule. Its ranking score is today's margin over the city's spike threshold.",
+     "Fixed rule (0.636)"
+    ],
+    [
+     "Logistic regression (LR)",
+     "Main baseline",
+     "Additive and interpretable: odds ratios a health department can read, and probabilities that can be thresholded for any cost ratio. L1/L2 regularisation copes with correlated weather columns.",
+     "C = 0.027, L1, class weight none (0.651)"
+    ],
+    [
+     "Decision tree (DT)",
+     "Non-linear baseline",
+     "Finds interactions (for example stagnant **and** humid) without specifying them, and can be drawn as a flow chart for officials.",
+     "depth 4, min. leaf 50, class weight none (0.519)"
+    ]
+   ],
+   "widths": [
+    1500,
+    1100,
+    4700,
+    2492
+   ],
+   "note": null,
+   "font": 8
+  },
+  {
+   "t": "p",
+   "text": "K-nearest neighbours was not used: distances on a mix of binary dummies and continuous weather columns are hard to justify, and it gives no readable drivers. Random forests and gradient boosting are left for Milestone 4, so that the baselines stay interpretable. **Feature sets.** LR and DT are each fitted on three sets. **Full** (42 columns) holds AQ history (today and lags 1–2), upwind fire counts (±45° cone, 300 km, day *t* and lags 1–3), weather (stagnant today and yesterday, humidity, rain day, temperature range, vector-mean wind, mean temperature, 7 wind sectors), and 11 month and 10 city dummies. **Weather-only** (35) drops AQ history and fire. **No-fire** (38) drops only the four fire columns and is the ablation that tests the project's central claim. The calm sector is identical to the stagnant flag (631 of 631 days), so the most frequent sector, north-west, is the wind reference instead."
+  },
+  {
+   "t": "p",
+   "text": "**AQ history as a margin over the city threshold.** The spike label is defined relative to each city's threshold, which runs from 0.36 (Rahim Yar Khan) to 2.18 (Lahore). AQ history therefore enters as today's (and the two previous days') index **minus the city threshold**, so that a margin of 0 or more means the day is a spike. With the raw pooled index, the city dummies had to act as threshold corrections and produced meaningless odds ratios (up to 9,004 for Rahim Yar Khan against Lahore). The margin encoding was fixed as the headline before any result was seen; the raw-index version is kept as a sensitivity run (Section 9.3). The thresholds were learned on training days in Milestone 2, so the margin adds no information beyond the label itself."
+  },
+  {
+   "t": "h1",
+   "text": "8. Experimental Setup"
+  },
+  {
+   "t": "h2",
+   "text": "8.1 Split and class balance"
+  },
+  {
+   "t": "p",
+   "text": "The outer split is chronological, as in Milestone 2: training runs from 2022-08-06 to 2023-08-31 (4,246 city-days, 76.6%), then a 3-day gap, then validation from 2023-09-04 to 2023-12-30 (1,298 city-days, 23.4%). Rows whose feature day or target day is one of the flagged suspect days (55 training rows), and rows without a target or an index lag, are dropped. Training then has 204 spikes (4.80%) and validation 89 (6.86%). Validation is the out-of-time test: nothing is fitted, tuned or thresholded on it. Its spike rate is higher because it covers only September to December and ends in the peak month, while training covers a whole year including the spike-free summer. Stratification is therefore checked rather than forced on the outer split, and applied inside the cross-validation (Section 8.3)."
+  },
+  {
+   "t": "h2",
+   "text": "8.2 Why not a random stratified split?"
+  },
+  {
+   "t": "p",
+   "text": "Neighbouring days are near-copies (ρ = 0.82), Islamabad and Rawalpindi share one series, and all cities share the same weather on the same day. A random split puts near-duplicates of every test row into the training part. Table 14 measures the effect on the training rows: the same tuned pipelines are scored under a random stratified 80/20 split, plain stratified 5-fold CV, week-grouped 5-fold CV and our purged design."
+  },
+  {
+   "t": "table",
+   "caption": "**Table 14.** Leakage check on training rows: the same tuned pipelines scored under four splitting schemes (mean ± SD over folds). The last row is the chronological validation score, for reference.",
+   "header": [
+    "Splitting scheme",
+    "Folds",
+    "LR full PR-AUC",
+    "LR full ROC-AUC",
+    "DT full PR-AUC",
+    "DT full ROC-AUC"
+   ],
+   "rows": [
+    [
+     "random stratified 80/20 split",
+     "1",
+     "0.730",
+     "0.976",
+     "0.652",
+     "0.942"
+    ],
+    [
+     "StratifiedKFold(5, shuffle), no groups",
+     "5",
+     "0.677 ± 0.089",
+     "0.974 ± 0.009",
+     "0.616 ± 0.093",
+     "0.967 ± 0.017"
+    ],
+    [
+     "StratifiedGroupKFold(5) by week, no purge/embargo",
+     "5",
+     "0.651 ± 0.158",
+     "0.972 ± 0.010",
+     "0.539 ± 0.143",
+     "0.933 ± 0.041"
+    ],
+    [
+     "purged + embargoed 5 × 5 StratifiedGroupKFold (ours)",
+     "25",
+     "0.651 ± 0.144",
+     "0.972 ± 0.010",
+     "0.519 ± 0.135",
+     "0.943 ± 0.033"
+    ],
+    [
+     "Chronological validation (Sep–Dec 2023)",
+     "1",
+     "0.695",
+     "0.967",
+     "0.590",
+     "0.953"
+    ]
+   ],
+   "widths": [
+    3300,
+    700,
+    1450,
+    1450,
+    1450,
+    1442
+   ],
+   "note": null,
+   "font": 8
+  },
+  {
+   "t": "p",
+   "text": "A random stratified split overstates PR-AUC by 0.079 for the LR and 0.133 for the tree, and plain stratified K-fold by 0.026 and 0.097. Grouping by week does most of the correction; the purge and embargo remove a further 0.020 for the tree. ROC-AUC, dominated by the many easy clean days, barely moves. Validation sits above our CV because December 2023 was unusually persistent (persistence: 0.669 against 0.636 in CV), so the inflation is judged against grouped CV on the same rows."
+  },
+  {
+   "t": "h2",
+   "text": "8.3 Purged, grouped cross-validation"
+  },
+  {
+   "t": "p",
+   "text": "Tuning, thresholds and CV scores use **purged, repeated StratifiedGroupKFold** on the training rows: 5 folds × 5 repeats (seeds 0–4) = 25 folds (Roberts et al., 2017). The **group** is the calendar week shared by all 11 cities, so a week is never split between fitting and scoring. **Stratification** on the spike label gives every fold its share of spikes. The **purge** drops fit rows whose target day falls on a held-out day. The **embargo** drops fit rows up to three days after a held-out day, because their AQ history (back to *t* − 2) contains that day's index. Each fold holds out 11–12 weeks (825–869 rows), and the purge and embargo remove 286–495 fit rows. The test-fold spike rate averages 4.81% (SD 1.35, range 3.45–7.08%), against 4.80% overall (Figure 7)."
+  },
+  {
+   "t": "figure",
+   "path": "C:\\Users\\Bilel\\Documents\\Fall_2026\\DSFSG\\project\\Smog-Analysis-DSSG\\figures\\fig_m3_1_cv_folds.png",
+   "caption": "**Figure 7.** Purged, grouped 5 × 5 cross-validation inside the training period. (A) Fold layout of the first repeat over the training calendar: fit part, rows removed by the purge and embargo, held-out weeks, and dropped days. (B) Spike rate of each of the 25 test folds against the rate over all training rows. Produced by modeling.ipynb (Figure M3.1).",
+   "width_in": 5.6
+  },
+  {
+   "t": "h2",
+   "text": "8.4 Tuning, thresholds and leakage guards"
+  },
+  {
+   "t": "p",
+   "text": "Hyperparameters are chosen by grid search on the 25 purged folds, scored by **PR-AUC** (average precision), which is more informative than ROC-AUC when positives are rare (Saito & Rehmsmeier, 2015). The LR grid has C from 0.001 to 100 (8 log-spaced values), L1 or L2, and class weights none or balanced (32 settings). The tree grid has depth 2–8, minimum leaf size 10/25/50/100 and the same class weights (56 settings). The LR curve is flat between C = 0.005 and 0.14 (best CV PR-AUC 0.647–0.651) and falls as the penalty weakens (0.606 at C = 100), so the optimum lies inside the grid. The tree peaks at depth 4 (Figure 8). The best setting is refitted on all training rows."
+  },
+  {
+   "t": "figure",
+   "path": "C:\\Users\\Bilel\\Documents\\Fall_2026\\DSFSG\\project\\Smog-Analysis-DSSG\\figures\\fig_m3_2_tuning.png",
+   "caption": "**Figure 8.** Hyperparameter tuning on the purged training folds: mean cross-validated PR-AUC (band ± 1 SD over 25 folds) against (A) the LR inverse regularisation strength C and (B) the tree depth, for the three feature sets; at each value the best setting of the other hyperparameters is shown. Produced by modeling.ipynb (Figure M3.2).",
+   "width_in": 4.8
+  },
+  {
+   "t": "p",
+   "text": "**Alert thresholds.** Each model's threshold minimises 5·FN + 1·FP on its out-of-fold training predictions (Section 10), and all thresholds are fixed before any validation metric is computed: alert when the spike probability is at least 12.8% (LR full) or 19.9% (DT full). **Leakage guards.** Every transform (log1p of fire counts, standard scaling) sits inside the pipeline and is re-learned in each fold; an assertion before every fit checks that only training rows reach it; the loader refuses any 2024 date; and fold groups are asserted disjoint. The LR uses the liblinear solver, because saga failed to converge within 5,000 iterations at weak penalties; liblinear gives the same fold scores within 0.005 in under 0.2 s per fit. All models use scikit-learn (Pedregosa et al., 2011)."
+  },
+  {
+   "t": "h1",
+   "text": "9. Results"
+  },
+  {
+   "t": "h2",
+   "text": "9.1 Classification metrics"
+  },
+  {
+   "t": "table",
+   "caption": "**Table 15.** Validation metrics (Sep–Dec 2023, 1,298 city-days, 89 spikes) at each model's 5:1 threshold. PR-AUC with a 95% CI from a block bootstrap over the 18 validation weeks (1,000 resamples). Cost = (5·FN + FP) per 1,000 city-days.",
+   "header": [
+    "Model",
+    "Accuracy",
+    "Precision",
+    "Recall",
+    "Specificity",
+    "F1",
+    "ROC-AUC",
+    "PR-AUC [95% CI]",
+    "Cost"
+   ],
+   "rows": [
+    [
+     "Majority class",
+     "0.931",
+     "–",
+     "0.000",
+     "1.000",
+     "0.000",
+     "–",
+     "–",
+     "342.8"
+    ],
+    [
+     "Persistence",
+     "0.955",
+     "0.688",
+     "0.618",
+     "0.979",
+     "0.651",
+     "0.963",
+     "0.669 [0.344, 0.765]",
+     "150.2"
+    ],
+    [
+     "LR full",
+     "0.920",
+     "0.456",
+     "0.865",
+     "0.924",
+     "0.597",
+     "0.967",
+     "0.695 [0.323, 0.790]",
+     "117.1"
+    ],
+    [
+     "LR no-fire",
+     "0.920",
+     "0.456",
+     "0.865",
+     "0.924",
+     "0.597",
+     "0.967",
+     "0.695 [0.323, 0.790]",
+     "117.1"
+    ],
+    [
+     "LR weather-only",
+     "0.807",
+     "0.228",
+     "0.764",
+     "0.810",
+     "0.351",
+     "0.855",
+     "0.388 [0.040, 0.531]",
+     "258.1"
+    ],
+    [
+     "DT full",
+     "0.936",
+     "0.521",
+     "0.820",
+     "0.945",
+     "0.638",
+     "0.953",
+     "0.590 [0.237, 0.716]",
+     "113.3"
+    ],
+    [
+     "DT no-fire",
+     "0.936",
+     "0.521",
+     "0.820",
+     "0.945",
+     "0.638",
+     "0.953",
+     "0.585 [0.237, 0.724]",
+     "113.3"
+    ],
+    [
+     "DT weather-only",
+     "0.799",
+     "0.236",
+     "0.865",
+     "0.794",
+     "0.371",
+     "0.837",
+     "0.226 [0.049, 0.392]",
+     "238.1"
+    ]
+   ],
+   "widths": [
+    1650,
+    900,
+    900,
+    800,
+    1000,
+    700,
+    900,
+    1700,
+    700
+   ],
+   "note": null,
+   "font": 7
+  },
+  {
+   "t": "p",
+   "text": "**Accuracy misleads.** The majority class scores 93.1% accuracy, more than LR full (92.0%), yet catches no spike and has the highest cost. **Ranking.** LR full ranks spikes at least as well as persistence (PR-AUC 0.695 against 0.669; ROC-AUC 0.967 against 0.963), and the tree is behind (0.590). **The alert decision.** At 5:1, LR full catches 77 of 89 spikes (recall 86.5%) against 55 for persistence (61.8%), at lower precision (45.6% vs 68.8%). DT full has the lowest cost (113.3 per 1,000 city-days). Cross-validation agrees: PR-AUC 0.636 ± 0.141 for persistence, 0.651 ± 0.144 for LR full and 0.519 ± 0.135 for DT full; cost 114.0, 86.7 and 92.4. Without AQ history the models lose most of their skill (LR weather-only PR-AUC 0.388). With 18 validation weeks and most spikes in December, every CI is wide."
+  },
+  {
+   "t": "figure",
+   "path": "C:\\Users\\Bilel\\Documents\\Fall_2026\\DSFSG\\project\\Smog-Analysis-DSSG\\figures\\fig_m3_3_roc_pr.png",
+   "caption": "**Figure 9.** Validation ROC curves (A) and precision-recall curves (B) for persistence and the six tuned models; markers show the operating points at the 5:1 thresholds. Colour = feature set, solid = LR, dashed = DT, black = persistence. Produced by modeling.ipynb (Figure M3.3).",
+   "width_in": 5.2
+  },
+  {
+   "t": "h2",
+   "text": "9.2 Do upwind fires add skill?"
+  },
+  {
+   "t": "table",
+   "caption": "**Table 16.** Paired comparisons on validation (difference with 95% week-block bootstrap CI) and in the 25 CV folds (mean difference; folds where the first model is better).",
+   "header": [
+    "Comparison",
+    "Question",
+    "ΔPR-AUC, validation",
+    "ΔROC-AUC, validation",
+    "ΔPR-AUC, CV mean",
+    "CV folds better"
+   ],
+   "rows": [
+    [
+     "LR full − LR no-fire",
+     "Fire, LR",
+     "0.000 [0.000, 0.000]",
+     "0.0000 [0.0000, 0.0000]",
+     "0.0000",
+     "2 of 25"
+    ],
+    [
+     "DT full − DT no-fire",
+     "Fire, DT",
+     "0.004 [-0.012, 0.017]",
+     "0.0001 [-0.0003, 0.0004]",
+     "-0.0003",
+     "6 of 25"
+    ],
+    [
+     "LR no-fire − LR weather-only",
+     "AQ history, LR",
+     "0.307 [0.188, 0.379]",
+     "0.1117 [0.0516, 0.3170]",
+     "0.2189",
+     "25 of 25"
+    ],
+    [
+     "LR full − persistence",
+     "LR full vs persistence",
+     "0.026 [-0.020, 0.052]",
+     "0.0036 [0.0009, 0.0059]",
+     "0.0145",
+     "19 of 25"
+    ],
+    [
+     "DT full − persistence",
+     "DT full vs persistence",
+     "-0.079 [-0.114, -0.036]",
+     "-0.0098 [-0.0408, 0.0019]",
+     "-0.1172",
+     "0 of 25"
+    ]
+   ],
+   "widths": [
+    2300,
+    1500,
+    1800,
+    1900,
+    1200,
+    1092
+   ],
+   "note": null,
+   "font": 8
+  },
+  {
+   "t": "p",
+   "text": "**Fires add no next-day skill once today's smog is known.** The L1 penalty of the tuned LR sets all four fire coefficients to zero, so LR full and LR no-fire give identical validation predictions; across the CV refits the full model is better in only 2 of 25 folds. The tree shows the same null (ΔPR-AUC 0.004). AQ history is what matters (ΔPR-AUC 0.307, better in all 25 folds). Against persistence, LR full gains a little: ΔPR-AUC 0.026 with a CI that includes 0, but ΔROC-AUC 0.0036 with a CI above 0, and better in 19 of 25 folds. This does not show that fires do not cause smog: Milestone 2 found that cone fires track next-day smog (ρ ≈ 0.23), but whatever smoke they add is already in today's index, the strongest input."
+  },
+  {
+   "t": "h2",
+   "text": "9.3 Sensitivity checks"
+  },
+  {
+   "t": "table",
+   "caption": "**Table 17.** Sensitivity runs. Columns give persistence and the full, no-fire and tree models (for the index regression: Ridge with the full and no-fire sets). For PR-AUC higher is better, for MAE lower.",
+   "header": [
+    "Run",
+    "Metric",
+    "Persistence",
+    "LR (Ridge) full",
+    "LR (Ridge) no-fire",
+    "DT full"
+   ],
+   "rows": [
+    [
+     "Month-wise spike label (city × month P90)",
+     "PR-AUC, validation (CV)",
+     "0.439 (0.316)",
+     "0.349 (0.254)",
+     "0.331 (0.253)",
+     "0.247 (0.195)"
+    ],
+    [
+     "Horizon *t* + 2, h1 hyperparameters",
+     "PR-AUC, validation (CV)",
+     "0.553 (0.447)",
+     "0.597 (0.453)",
+     "0.597 (0.453)",
+     "0.468 (0.292)"
+    ],
+    [
+     "Horizon *t* + 3, h1 hyperparameters",
+     "PR-AUC, validation (CV)",
+     "0.445 (0.375)",
+     "0.486 (0.383)",
+     "0.486 (0.384)",
+     "0.372 (0.230)"
+    ],
+    [
+     "Raw index instead of the margin (retuned)",
+     "PR-AUC, validation (CV)",
+     "0.669",
+     "0.634 (0.605)",
+     "–",
+     "0.372 (0.349)"
+    ],
+    [
+     "Continuous index, Ridge regression",
+     "MAE, validation (CV)",
+     "0.274 (0.291)",
+     "0.287 (0.277)",
+     "0.288 (0.277)",
+     "–"
+    ]
+   ],
+   "widths": [
+    2900,
+    1500,
+    1350,
+    1400,
+    1450,
+    1192
+   ],
+   "note": null,
+   "font": 8
+  },
+  {
+   "t": "bullets",
+   "items": [
+    "**Month-wise label** (about 10% spikes in every month, so October–November fire episodes count as much as December fog): persistence still leads, and fire adds nothing robust (full − no-fire 0.001 in CV). Autumn 2023 was cleaner than 2022: only 4.1% of validation days pass the 2022 thresholds.",
+    "**Horizons:** skill fades from *t* + 1 to *t* + 3; LR stays slightly ahead of persistence in validation and CV, and fire never helps.",
+    "**Raw-index encoding:** worse for both models, above all the tree (0.372 against 0.590), which with the margin needs one split where it needed many city × index splits.",
+    "**Continuous index:** Ridge full is not better than persistence on validation (ΔMAE 0.013 [-0.004, 0.034]; better in 22 of 25 CV folds), and fire adds nothing on this more sensitive target (ΔMAE -0.0011 [-0.0026, 0.0007]). For H5 the null (ΔMAE ≥ 0) is not rejected for the index."
+   ]
+  },
+  {
+   "t": "h1",
+   "text": "10. Asymmetric Error Cost Analysis"
+  },
+  {
+   "t": "h2",
+   "text": "10.1 What each error costs, and to whom"
+  },
+  {
+   "t": "table",
+   "caption": "**Table 18.** The two errors of a next-day smog alert.",
+   "header": [
+    "Error",
+    "Who bears it",
+    "Consequence",
+    "Reversible?"
+   ],
+   "rows": [
+    [
+     "False negative: a spike day without an alert",
+     "Children, the elderly, asthma and heart patients, outdoor and daily-wage workers, hospitals",
+     "Unprotected exposure at PM2.5 levels several times the WHO guideline (WHO, 2021); respiratory and cardiac admissions; school days lost to illness",
+     "No: the exposure has happened"
+    ],
+    [
+     "False positive: an alert on a normal day",
+     "Schools, brick kilns, transport, traders and daily-wage workers",
+     "A needless school closure or activity restriction, lost income, and alert fatigue that weakens trust in the next real warning",
+     "Mostly: one day of disruption"
+    ]
+   ],
+   "widths": [
+    2000,
+    2600,
+    3700,
+    1492
+   ],
+   "note": null,
+   "font": 8
+  },
+  {
+   "t": "p",
+   "text": "We weight a missed spike as **five** false alarms (FN:FP = 5:1). This ratio is a **stated policy assumption, not an estimate**: we found no verified study that prices one missed smog day against one unnecessary advisory day in Punjab. The health side is large: in India in 2019, air pollution was linked to 1.67 million deaths (17.8% of all deaths) and to lost output of US$36.8 billion, 1.36% of GDP (Pandey et al., 2021). Because the ratio is uncertain, the robust result is the **break-even ratio**, the smallest ratio at which a model alert is cheaper than persistence, read from a cost curve over every ratio from 1 to 20. At each ratio the threshold is re-chosen on the out-of-fold training predictions, never on validation."
+  },
+  {
+   "t": "h2",
+   "text": "10.2 Expected cost and the break-even ratio"
+  },
+  {
+   "t": "table",
+   "caption": "**Table 19.** Validation error cost at 5:1 (per 1,000 city-days) and the number of cost ratios (1 to 20) at which the model is cheaper than persistence.",
+   "header": [
+    "Policy",
+    "Missed spikes (FN)",
+    "False alarms (FP)",
+    "Cost at 5:1",
+    "Saving vs never alert (%)",
+    "Ratios cheaper than persistence"
+   ],
+   "rows": [
+    [
+     "Majority class (= never alert)",
+     "89",
+     "0",
+     "342.8",
+     "0.0",
+     "0 of 20"
+    ],
+    [
+     "Persistence",
+     "34",
+     "25",
+     "150.2",
+     "56.2",
+     "–"
+    ],
+    [
+     "LR full",
+     "12",
+     "92",
+     "117.1",
+     "65.8",
+     "19 of 20"
+    ],
+    [
+     "DT full",
+     "16",
+     "67",
+     "113.3",
+     "67.0",
+     "19 of 20"
+    ],
+    [
+     "LR weather-only",
+     "21",
+     "230",
+     "258.1",
+     "24.7",
+     "7 of 20"
+    ],
+    [
+     "Always alert",
+     "0",
+     "1209",
+     "931.4",
+     "-171.7",
+     "–"
+    ]
+   ],
+   "widths": [
+    2600,
+    1300,
+    1300,
+    1200,
+    1700,
+    1692
+   ],
+   "note": null,
+   "font": 8
+  },
+  {
+   "t": "p",
+   "text": "At 5:1, never alerting costs 342.8 per 1,000 city-days; persistence cuts this to 150.2, LR full to 117.1 and DT full to 113.3. **The break-even ratio is 2:1** for LR full and 2:1 for DT full (Figure 10): persistence is cheaper only when a missed spike costs less than 2 false alarms, and the gap widens with the ratio (at 20:1, 255.8 for LR full against 543.1 for persistence). A health department only has to judge a missed smog day at least 2 times as costly as an unnecessary advisory for a model alert to beat \"tomorrow = today\". The price is more false alarms: 7.6% of clean days for LR full and 5.5% for DT full, against 2.1% for persistence."
+  },
+  {
+   "t": "figure",
+   "path": "C:\\Users\\Bilel\\Documents\\Fall_2026\\DSFSG\\project\\Smog-Analysis-DSSG\\figures\\fig_m3_4_cost_curve.png",
+   "caption": "**Figure 10.** Expected validation cost per 1,000 city-days against the FN:FP cost ratio; thresholds re-chosen on out-of-fold training predictions at each ratio. Grey lines: never alert (= majority class) and always alert; dashed vertical line: the 5:1 headline. Produced by modeling.ipynb (Figure M3.4).",
+   "width_in": 3.9
+  },
+  {
+   "t": "h2",
+   "text": "10.3 Confusion matrices and edge cases"
+  },
+  {
+   "t": "figure",
+   "path": "C:\\Users\\Bilel\\Documents\\Fall_2026\\DSFSG\\project\\Smog-Analysis-DSSG\\figures\\fig_m3_5_confusion.png",
+   "caption": "**Figure 11.** Validation confusion matrices at the 5:1 threshold for persistence, LR full and DT full (counts and shares of all city-days; colour on a log scale). Produced by modeling.ipynb (Figure M3.5).",
+   "width_in": 5.0
+  },
+  {
+   "t": "p",
+   "text": "**Onsets are where a model adds value.** On an onset day (tomorrow a spike, today not) persistence fails by construction: it misses all 34 onsets. LR full catches 22 of 34 (64.7%) and DT full 18; both catch all 55 continuation days. **When and where.** All validation spikes fall in November (12) and December (77). LR's 12 misses are spread out (no city above 3). Its 92 false alarms fall on onset-type days (67) and on episode ends (25), and concentrate in Rahim Yar Khan (16), Multan (14), Faisalabad (13), Ferozepur (12)."
+  },
+  {
+   "t": "p",
+   "text": "**Edge cases.** The ten worst misses are all onset days, mostly in December (for example Amritsar, 2023-12-25), with LR probabilities of at most 0.125 against a threshold of 0.128. On the feature day of the missed spikes, today's index sat 0.49 units below the city threshold (caught spikes: 0.12 above), fewer days were stagnant (16.7% vs 22.1%), humidity was lower (73.7% vs 79.8%), and upwind fires were *higher* (108.5 vs 47.4 detections): sudden jumps that today's conditions do not announce. The most confident false alarms are episode ends where the next-day index stays high but just below the threshold (for example Ferozepur, 2023-12-27: next-day index 1.22)."
+  },
+  {
+   "t": "h2",
+   "text": "10.4 Preliminary disparity check: Pakistan and India"
+  },
+  {
+   "t": "table",
+   "caption": "**Table 20.** Validation error rates by country at the 5:1 threshold, with 95% week-block bootstrap CIs. FPR = share of clean days with a false alarm.",
+   "header": [
+    "Model",
+    "Group",
+    "Spikes",
+    "Alerts",
+    "Recall",
+    "FPR",
+    "Precision"
+   ],
+   "rows": [
+    [
+     "Persistence",
+     "Pakistan (7 cities)",
+     "49",
+     "44",
+     "0.571 [0.342, 0.756]",
+     "0.021 [0.006, 0.036]",
+     "0.636 [0.462, 0.714]"
+    ],
+    [
+     "Persistence",
+     "India (4 cities)",
+     "40",
+     "36",
+     "0.675 [0.200, 0.766]",
+     "0.021 [0.002, 0.052]",
+     "0.750 [0.375, 0.875]"
+    ],
+    [
+     "Persistence",
+     "Gap PK − IN",
+     "–",
+     "–",
+     "-0.104 [-0.291, 0.372]",
+     "0.000 [-0.021, 0.015]",
+     "-0.114 [-0.333, 0.276]"
+    ],
+    [
+     "LR full",
+     "Pakistan (7 cities)",
+     "49",
+     "97",
+     "0.837 [0.750, 0.923]",
+     "0.072 [0.030, 0.116]",
+     "0.423 [0.273, 0.509]"
+    ],
+    [
+     "LR full",
+     "India (4 cities)",
+     "40",
+     "72",
+     "0.900 [0.332, 0.969]",
+     "0.083 [0.028, 0.150]",
+     "0.500 [0.076, 0.710]"
+    ],
+    [
+     "LR full",
+     "Gap PK − IN",
+     "–",
+     "–",
+     "-0.063 [-0.145, 0.471]",
+     "-0.011 [-0.044, 0.013]",
+     "-0.077 [-0.270, 0.244]"
+    ]
+   ],
+   "widths": [
+    1300,
+    1700,
+    700,
+    700,
+    1800,
+    1800,
+    1792
+   ],
+   "note": null,
+   "font": 7
+  },
+  {
+   "t": "p",
+   "text": "The brief asks about potential bias. Our groups are countries and cities, not people, so this is a first check of whether the alert serves both sides of the border equally. LR full warns of 83.7% of Pakistani and 90.0% of Indian spikes, with false-alarm rates of 7.2% and 8.3%; every country gap has a CI that includes 0. Between cities the burden is uneven: false alarms hit Rahim Yar Khan (17%), Multan (13%), Faisalabad (12%), Ferozepur (11%) of clean days, against 2% in Islamabad and Rawalpindi and 3% in Lahore. These rates rest on 0 to 22 spikes per city and are descriptive; the full fairness audit is planned for Milestone 4."
+  },
+  {
+   "t": "h1",
+   "text": "11. Drivers and Initial Policy Takeaways"
+  },
+  {
+   "t": "h2",
+   "text": "11.1 The weather trap (H2)"
+  },
+  {
+   "t": "table",
+   "caption": "**Table 21.** H2 weather-trap test: Logit of a spike tomorrow on rain-free training days in September–February (n = 1,706, 204 spikes, pseudo R² 0.26), controlling for mean temperature, month and city; standard errors clustered by city (11 clusters), with a week-clustered check (statsmodels; Seabold & Perktold, 2010). Rain: 0 of 1057 rain days vs 204 of 3189 dry days precede a spike.",
+   "header": [
+    "Term",
+    "Odds ratio",
+    "95% CI (city)",
+    "One-sided p",
+    "95% CI (week)"
+   ],
+   "rows": [
+    [
+     "Stagnant air (vector wind < 2 km/h), 0 → 1",
+     "3.24",
+     "1.91–5.48",
+     "< 0.001",
+     "1.99–5.28"
+    ],
+    [
+     "Relative humidity, per 1 SD",
+     "3.95",
+     "2.03–7.69",
+     "< 0.001",
+     "2.67–5.85"
+    ],
+    [
+     "Temperature range, per 1 SD",
+     "2.22",
+     "1.66–2.95",
+     "< 0.001",
+     "1.25–3.92"
+    ],
+    [
+     "Mean temperature, per 1 SD (control)",
+     "2.08",
+     "0.87–5.00",
+     "0.050",
+     "0.63–6.91"
+    ],
+    [
+     "Rain day (Fisher exact test, all training rows)",
+     "0",
+     "–",
+     "< 0.0001",
+     "–"
+    ]
+   ],
+   "widths": [
+    3800,
+    1100,
+    1500,
+    1500,
+    1892
+   ],
+   "note": null,
+   "font": 8
+  },
+  {
+   "t": "p",
+   "text": "**H2 is supported on every component.** Stagnant air, humidity and a large day–night temperature range each raise the odds of a spike the next day, and no training rain day was followed by a spike. Two features of the data shaped the test: rain and the months March to August have no spikes at all, so an unpenalised Logit has no finite estimate for them. Rain is therefore tested exactly, and the Logit uses rain-free days of the months that have spikes. With 11 city clusters (10 independent air-quality series) the clustered errors are approximate; the week-clustered version gives the same conclusions."
+  },
+  {
+   "t": "h2",
+   "text": "11.2 What drives the forecast"
+  },
+  {
+   "t": "p",
+   "text": "**The forecast rests on today's margin, with temperature second.** The L1 penalty of LR full keeps only 2 of its 42 columns: today's margin over the city threshold (odds ratio 10.9 per SD) and the mean temperature (0.70 per SD: colder days raise the risk). Shuffling AQ history costs 0.612 of validation PR-AUC, and shuffling mean temperature 0.042; every other group costs nothing (Figure 12). The tree agrees: its Gini importance is 0.94 for AQ history and 0.047 for mean temperature. Without AQ history, the weather-only LR shows the trap pattern of H2: mean temperature 0.54, vector wind 0.75, humidity 1.32 and temperature range 1.21 per SD, rain day 0.83. The weather trap is real, but it acts mostly through today's smog: stagnant, humid, rain-free days make today's index high, and the forecast reads that index."
+  },
+  {
+   "t": "figure",
+   "path": "C:\\Users\\Bilel\\Documents\\Fall_2026\\DSFSG\\project\\Smog-Analysis-DSSG\\figures\\fig_m3_6_drivers.png",
+   "caption": "**Figure 12.** Drivers of the next-day spike forecast. (A) Odds ratios of the weather-only LR (bars; per 1 SD for continuous columns, 0 → 1 for binary ones) and the two non-zero odds ratios of LR full (diamonds); log scale, 1 = no effect. (B) Drop in validation PR-AUC when a group of columns is shuffled (±1 SD over 30 repeats), LR full and DT full. Produced by modeling.ipynb (Figure M3.6).",
+   "width_in": 5.8
+  },
+  {
+   "t": "p",
+   "text": "**City effects are gone.** With the raw index, LR's city odds ratios reached 9,004 (Rahim Yar Khan against Lahore), a correction for the city-specific thresholds rather than a risk ranking. With the margin encoding every city coefficient is 0, so no city is flagged as riskier once its own threshold is accounted for. **The tree as a flow chart** (Figure 13): the first split asks whether today is a spike (margin ≤ 0); the next splits use the margin again and the mean temperature, so that colder days close to the threshold carry a higher risk, and days well above it are mostly followed by another spike."
+  },
+  {
+   "t": "figure",
+   "path": "C:\\Users\\Bilel\\Documents\\Fall_2026\\DSFSG\\project\\Smog-Analysis-DSSG\\figures\\fig_m3_7_tree.png",
+   "caption": "**Figure 13.** Depth-3 decision tree for a spike tomorrow, fitted on the training rows with the tuned leaf size and class weights. Value = shares of no-spike and spike days; blue = mostly spike. Margin = index minus city threshold. Produced by modeling.ipynb (Figure M3.7).",
+   "width_in": 5.6
+  },
+  {
+   "t": "h2",
+   "text": "11.3 Initial policy takeaways"
+  },
+  {
+   "t": "bullets",
+   "items": [
+    "**A next-day, city-specific smog alert (Pakistan first).** Punjab's Environment Protection Department already has a smog policy and standing instructions for episodes of poor air quality (Environment Protection Department, n.d.), and in November 2024 the provincial government closed schools across several divisions and moved them online for days at a time (Waqar & Gabol, 2024). An alert built from today's index margin and temperature gives one day's notice, city by city, and catches onsets that a \"tomorrow = today\" rule misses by construction.",
+    "**Use the cost view to set the alert level.** A model alert beats persistence whenever a missed spike is judged at least 2 times as costly as an unnecessary advisory. Officials can choose their ratio and read the threshold off the cost curve, instead of taking our 5:1.",
+    "**A weather-trap checklist.** Stagnant, humid, rain-free days with a large day–night range and cold temperatures raise next-day risk (H2). Rain is a strong all-clear signal: no training rain day was followed by a spike, so advisories can be lifted after rain.",
+    "**Fire control is source reduction, not a forecasting tool.** Fires did not add next-day skill once today's smog was known. Their smoke shows up in today's index, so the benefit of fire control appears as lower smog levels, not as extra forecast lead time.",
+    "**Cross-border.** India's Graded Response Action Plan for Delhi-NCR is triggered by daily air-quality levels and, in the severe band (AQI 401–450), mandates hybrid learning up to Class V (Tribune News Service, 2024). The model warns Pakistani and Indian Punjab cities equally well (Section 10.4), so a shared next-day alert across the border is feasible. Whether India-origin smoke drives Pakistani smog (H4) cannot be settled from these baselines and is tested in Milestone 4.",
+    "**Equity before deployment.** False alarms fall unevenly (Rahim Yar Khan, Multan, Faisalabad, Ferozepur). Repeated needless closures there would cost the same communities most, so per-city thresholds should be checked before any operational use."
+   ]
+  },
+  {
+   "t": "h1",
+   "text": "12. Limitations and Milestone 4 Roadmap"
+  },
+  {
+   "t": "bullets",
+   "items": [
+    "**Persistence is a strong benchmark.** LR full ranks spikes only slightly better than persistence (the PR-AUC CI includes 0), and for the continuous index no model beats persistence on validation. The models gain mainly at the alert decision.",
+    "**Class imbalance and one training winter.** Spikes are 4.8% of training days and come from a single winter; every threshold and hyperparameter rests on it.",
+    "**A short validation season.** 18 weeks, with 77 of 89 spikes in December, give wide CIs, and December 2023 was unusually persistent.",
+    "**Dependent series and model data.** Islamabad and Rawalpindi share one CAMS series; air quality is CAMS model output, not monitor data; one UTC+5 clock is used for India.",
+    "**Label timing.** The Milestone 2 label puts spikes in December–January, after the burning peak; the month-wise label (Section 9.3) answers this only in part.",
+    "**Uneven false alarms by city** (Section 10.4), and observed rather than forecast weather on day *t*."
+   ]
+  },
+  {
+   "t": "p",
+   "text": "**Milestone 4 roadmap.**"
+  },
+  {
+   "t": "bullets",
+   "items": [
+    "**Advanced models:** random forest and gradient boosting on the same purged folds, with per-horizon tuning for *t* + 2 and *t* + 3.",
+    "**Probability calibration** (reliability curves, isotonic or Platt scaling), so that alert probabilities can be read at face value.",
+    "**Fairness audit:** error-rate parity by city and by country, per-group thresholds, and the cost each group bears; an ethical review of who carries false alarms and missed warnings.",
+    "**Remaining hypotheses:** H1 (cone vs radius), H3 (fire × stagnation) and H4 (cross-border) with city-clustered regressions.",
+    "**Data:** surface pressure re-exported for the same coordinates; a check of the ozone weight in the index.",
+    "**Week 14:** retrain with 2024 H1 added and test out of time on 2024 H2, with every setting kept as saved."
+   ]
+  },
+  {
+   "t": "h2",
+   "text": "References"
+  },
+  {
+   "t": "refs",
+   "items": [
+    "Environment Protection Department, Government of the Punjab (n.d.). Smog Commission reports, including the Policy and Action Plan for Control, Mitigation, Advisory, and Protective Measures in Extreme Weather Conditions of Dense Smog in Punjab and the Standing Instructions for Management of Episodes of Poor Air Quality (2018). https://epd.punjab.gov.pk/smog_commission_reports",
+    "Hersbach, H., et al. (2020). The ERA5 global reanalysis. Quarterly Journal of the Royal Meteorological Society, 146(730), 1999–2049.",
+    "Inness, A., et al. (2019). The CAMS reanalysis of atmospheric composition. Atmospheric Chemistry and Physics, 19, 3515–3556.",
+    "NASA (2024). Fire Information for Resource Management System (FIRMS), VIIRS 375 m active fire product. https://firms.modaps.eosdis.nasa.gov",
+    "Pandey, A., Brauer, M., Cropper, M. L., et al. (2021). Health and economic impact of air pollution in the states of India: the Global Burden of Disease Study 2019. The Lancet Planetary Health, 5(1), e25–e38. https://doi.org/10.1016/S2542-5196(20)30298-9",
+    "Pedregosa, F., Varoquaux, G., Gramfort, A., et al. (2011). Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, 12(85), 2825–2830.",
+    "Roberts, D. R., Bahn, V., Ciuti, S., et al. (2017). Cross-validation strategies for data with temporal, spatial, hierarchical, or phylogenetic structure. Ecography, 40(8), 913–929. https://doi.org/10.1111/ecog.02881",
+    "Saito, T., & Rehmsmeier, M. (2015). The precision-recall plot is more informative than the ROC plot when evaluating binary classifiers on imbalanced datasets. PLoS ONE, 10(3), e0118432. https://doi.org/10.1371/journal.pone.0118432",
+    "Schroeder, W., Oliva, P., Giglio, L., & Csiszar, I. A. (2014). The New VIIRS 375 m active fire detection data product: Algorithm description and initial assessment. Remote Sensing of Environment, 143, 85–96.",
+    "Seabold, S., & Perktold, J. (2010). Statsmodels: Econometric and statistical modeling with Python. Proceedings of the 9th Python in Science Conference, 92–96. https://doi.org/10.25080/Majora-92bf1922-011",
+    "Tribune News Service (2024, December 15). GRAP rules revised: Nod to hybrid learning till Class V in severe AQI. The Tribune. https://www.tribuneindia.com/news/delhi/grap-rules-revised-nod-to-hybrid-learning-till-class-v-in-severe-aqi/",
+    "Tukey, J. W. (1977). Exploratory Data Analysis. Addison-Wesley.",
+    "Waqar, A., & Gabol, I. (2024, November 12). Punjab govt orders closure of all schools as province tackles hazardous air quality. Dawn. https://www.dawn.com/news/1871888",
+    "Wickham, H. (2010). A layered grammar of graphics. Journal of Computational and Graphical Statistics, 19(1), 3–28.",
+    "Wilson, E. B. (1927). Probable inference, the law of succession, and statistical inference. Journal of the American Statistical Association, 22(158), 209–212.",
+    "World Health Organization (2021). WHO global air quality guidelines: particulate matter (PM2.5 and PM10), ozone, nitrogen dioxide, sulfur dioxide and carbon monoxide. Geneva: WHO.",
+    "Zippenfenig, P. (2023). Open-Meteo.com Weather API [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.7970649"
+   ]
+  }
+ ]
+}
