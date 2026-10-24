@@ -1,0 +1,18 @@
+kind,name,metric,alpha,cv_mean,cv_sd,validation,ci_low,ci_high,cv_folds_a_better,ci_excludes_0
+model,Persistence (index),mae,,0.2908,0.0143,0.2741,0.2473,0.3009,,
+model,Persistence (index),rmse,,0.3806,0.0191,0.3502,0.3171,0.3854,,
+model,Persistence (index),r2,,0.7217,0.0481,0.7846,0.7007,0.826,,
+model,Ridge full,mae,0.3162,0.2773,0.0089,0.2874,0.2596,0.3147,,
+model,Ridge full,rmse,0.3162,0.3562,0.0159,0.3613,0.3295,0.3926,,
+model,Ridge full,r2,0.3162,0.7574,0.0338,0.7708,0.6858,0.8104,,
+model,Ridge weather-only,mae,0.1,0.3844,0.027,0.5319,0.4657,0.6022,,
+model,Ridge weather-only,rmse,0.1,0.4844,0.0425,0.6613,0.5948,0.7285,,
+model,Ridge weather-only,r2,0.1,0.5523,0.0773,0.232,-0.1023,0.4014,,
+model,Ridge no-fire,mae,0.3162,0.2772,0.0091,0.2885,0.2611,0.3155,,
+model,Ridge no-fire,rmse,0.3162,0.356,0.0159,0.3624,0.3314,0.3932,,
+model,Ridge no-fire,r2,0.3162,0.7577,0.034,0.7693,0.6845,0.808,,
+difference,Ridge full − Ridge no-fire,mae,,0.0002,0.0013,-0.0011,-0.0026,0.0007,14.0,False
+difference,Ridge no-fire − Ridge weather-only,mae,,-0.1072,0.0219,-0.2434,-0.2905,-0.2018,25.0,True
+difference,Ridge full − Persistence (index),mae,,-0.0135,0.0101,0.0133,-0.0036,0.0344,22.0,False
+difference,Ridge no-fire − Persistence (index),mae,,-0.0137,0.0105,0.0144,-0.0024,0.0347,22.0,False
+difference,Ridge weather-only − Persistence (index),mae,,0.0936,0.0224,0.2578,0.2055,0.3196,0.0,True

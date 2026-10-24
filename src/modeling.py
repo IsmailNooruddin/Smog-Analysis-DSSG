@@ -12,7 +12,7 @@ import pandas as pd
 from sklearn.base import clone
 from sklearn.compose import ColumnTransformer
 from sklearn.dummy import DummyClassifier
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression, Ridge
 from sklearn.model_selection import GridSearchCV, StratifiedGroupKFold
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer, StandardScaler
@@ -26,8 +26,12 @@ MASTER = CLEAN_DIR / "master_daily.parquet"
 # ------------------------------------------------------------------
 # Feature sets (names checked against the master in load_model_frame)
 # ------------------------------------------------------------------
-AQ_HISTORY = ["persist_index", "index_lag1", "index_lag2"]
-FIRE = ["fire_cnt_up45_r300_all", "fire_cnt_up45_r300_all_lag1",
+# AQ history as the margin over the city spike threshold (index - spike_threshold). The label is
+# defined relative to each city's threshold (0.36 to 2.18), so the raw pooled index made the city
+# dummies act as a threshold correction; the margin removes that.
+AQ_HISTORY = ["persist_margin", "margin_lag1", "margin_lag2"]
+AQ_HISTORY_RAW = ["persist_index", "index_lag1", "index_lag2"]          # Phase 3 encoding (sensitivity)
+FIRE =["fire_cnt_up45_r300_all", "fire_cnt_up45_r300_all_lag1",
         "fire_cnt_up45_r300_all_lag2", "fire_cnt_up45_r300_all_lag3"]   # raw counts; log1p in the pipeline
 # Wind sectors: 'calm' is identical to stagnant (vector-mean wind < 2 km/h, 631 of 631 rows), so
 # with all 8 sector dummies stagnant would be a linear combination of them. NW, the most
@@ -45,9 +49,11 @@ FEATURE_SETS = {
     "weather_only": WEATHER + CALENDAR_PLACE,
     "no_fire": AQ_HISTORY + WEATHER + CALENDAR_PLACE,
 }
-CONTINUOUS = AQ_HISTORY + ["rh_mean_pct", "temp_range_c", "vec_len_kmh", "temp_mean_c"]
+# Raw-index version of the full set; kept outside FEATURE_SETS so the headline loops stay at 3 sets
+FULL_RAW = AQ_HISTORY_RAW + FIRE + WEATHER + CALENDAR_PLACE
+CONTINUOUS = AQ_HISTORY + AQ_HISTORY_RAW + ["rh_mean_pct", "temp_range_c", "vec_len_kmh", "temp_mean_c"]
 # AQ history goes back to day t-2: a training row dated up to (horizon + 2) days after a held-out
-# day carries that day's target index in persist_index / index_lag1 / index_lag2.
+# day carries that day's target index in the AQ-history columns (margins or raw index).
 MAX_AQ_LAG = 2
 
 
@@ -57,14 +63,19 @@ MAX_AQ_LAG = 2
 def load_model_frame(horizon=1, path=MASTER):
     """Master rows for one horizon, cleaned for modelling (decision D12).
 
-    Adds `suspect_target` (target day t+h is a suspect day, shifted within city), then drops
-    the 3-day skip, rows with a missing target or feature, and rows whose feature day or target
-    day is a suspect day. Returns (frame, drop_log) where drop_log counts the drops per split.
+    Adds the AQ-history margins (index - city spike threshold, the threshold learned on train
+    in Milestone 2) and `suspect_target` (target day t+h is a suspect day, shifted within city),
+    then drops the 3-day skip, rows with a missing target or feature, and rows whose feature day
+    or target day is a suspect day. Returns (frame, drop_log) where drop_log counts the drops per split.
     """
     df = pd.read_parquet(path).sort_values(["city", "date"]).reset_index(drop=True)
     assert (df["date"] < SEALED_FROM).all(), "2024 is sealed: no date may be on or after 2024-01-01"
     target = f"target_spike_h{horizon}"
-    feats = FEATURE_SETS["full"]
+    missing = [c for c in AQ_HISTORY_RAW + ["spike_threshold"] if c not in df.columns]
+    assert not missing, f"AQ columns not in the master: {missing}"
+    for margin, raw in zip(AQ_HISTORY, AQ_HISTORY_RAW):
+        df[margin] = df[raw] - df["spike_threshold"]
+    feats = FEATURE_SETS["full"] + AQ_HISTORY_RAW
     missing = [c for c in feats + [target, "suspect_day", "split"] if c not in df.columns]
     assert not missing, f"feature names not in the master: {missing}"
 
@@ -88,6 +99,8 @@ def load_model_frame(horizon=1, path=MASTER):
     out = df[keep].reset_index(drop=True)
     out[target] = out[target].astype(int)
     out[feats] = out[feats].astype(float)
+    assert ((out["persist_margin"] >= 0).astype(int) == out["persist_spike"]).all(), \
+        "today's margin >= 0 must equal persist_spike"
     return out, drop_log
 
 
@@ -136,22 +149,31 @@ def _log1p():
     return FunctionTransformer(np.log1p, feature_names_out="one-to-one")
 
 
-def make_lr(features):
+def _lr_prep(features):
     """log1p + standardise fire counts, standardise continuous columns, pass binaries through."""
     fire = [c for c in features if c in FIRE]
     cont = [c for c in features if c in CONTINUOUS]
     binary = [c for c in features if c not in fire + cont]
-    prep = ColumnTransformer([
+    return ColumnTransformer([
         ("fire", Pipeline([("log1p", _log1p()), ("scale", StandardScaler())]), fire),
         ("cont", StandardScaler(), cont),
         ("bin", "passthrough", binary),
     ], verbose_feature_names_out=False)
+
+
+def make_lr(features):
+    """Logistic regression on the shared linear preprocessing."""
     # liblinear, not saga: saga hit 5,000 iterations without converging at large C with balanced
     # weights (8 s per fit); liblinear converges in < 0.2 s with the same fold PR-AUC (within 0.005).
     # intercept_scaling = 10 keeps liblinear's penalty on the intercept negligible.
-    return Pipeline([("prep", prep),
+    return Pipeline([("prep", _lr_prep(features)),
                      ("model", LogisticRegression(solver="liblinear", intercept_scaling=10,
                                                   max_iter=5000, random_state=42))])
+
+
+def make_ridge(features):
+    """Ridge regression of the continuous next-day index, same preprocessing as the LR."""
+    return Pipeline([("prep", _lr_prep(features)), ("model", Ridge())])
 
 
 def make_tree(features):
@@ -173,25 +195,29 @@ DT_GRID = {
     "model__min_samples_leaf": [10, 25, 50, 100],
     "model__class_weight": [None, "balanced"],
 }
+RIDGE_GRID = {"model__alpha": np.logspace(-2, 3, 11)}
 
 
-def tune(pipe, grid, X, y, splits, n_jobs=-1):
-    """Grid search on the purged folds, scored by PR-AUC (spikes are rare), refit on all train rows."""
-    gs = GridSearchCV(pipe, grid, scoring="average_precision", cv=splits, n_jobs=n_jobs,
+def tune(pipe, grid, X, y, splits, n_jobs=-1, scoring="average_precision"):
+    """Grid search on the purged folds, scored by PR-AUC by default (spikes are rare), refit on
+    all train rows."""
+    gs = GridSearchCV(pipe, grid, scoring=scoring, cv=splits, n_jobs=n_jobs,
                       refit=True, error_score="raise")
     return gs.fit(X, y)
 
 
-def oof_predict(estimator, X, y, splits, n_jobs=-1):
-    """Out-of-fold probabilities for every training row.
+def oof_predict(estimator, X, y, splits, n_jobs=-1, method="predict_proba"):
+    """Out-of-fold predictions for every training row (probabilities, or `predict` for Ridge).
 
-    Returns (p_oof, folds): p_oof averages each row's held-out probability over the repeats;
+    Returns (p_oof, folds): p_oof averages each row's held-out prediction over the repeats;
     folds is [(test_idx, p_test)] for per-fold metrics.
     """
     from joblib import Parallel, delayed
 
     def one(fit_idx, test_idx):
         est = clone(estimator).fit(X.iloc[fit_idx], y[fit_idx])
+        if method == "predict":
+            return test_idx, est.predict(X.iloc[test_idx])
         return test_idx, est.predict_proba(X.iloc[test_idx])[:, 1]
 
     folds = Parallel(n_jobs=n_jobs)(delayed(one)(f, t) for f, t in splits)

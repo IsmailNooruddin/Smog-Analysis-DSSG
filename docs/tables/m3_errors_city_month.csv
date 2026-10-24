@@ -46,39 +46,39 @@ Persistence,Sialkot,2023-12,5,2,1
 LR full,Amritsar,2023-09,0,0,0
 LR full,Amritsar,2023-10,0,0,0
 LR full,Amritsar,2023-11,0,0,0
-LR full,Amritsar,2023-12,5,2,6
+LR full,Amritsar,2023-12,5,1,6
 LR full,Faisalabad,2023-09,0,0,0
 LR full,Faisalabad,2023-10,0,0,2
-LR full,Faisalabad,2023-11,0,0,2
-LR full,Faisalabad,2023-12,11,4,11
+LR full,Faisalabad,2023-11,0,0,3
+LR full,Faisalabad,2023-12,11,3,8
 LR full,Ferozepur,2023-09,0,0,0
 LR full,Ferozepur,2023-10,0,0,0
-LR full,Ferozepur,2023-11,3,2,6
-LR full,Ferozepur,2023-12,10,1,12
+LR full,Ferozepur,2023-11,3,2,4
+LR full,Ferozepur,2023-12,10,1,8
 LR full,Islamabad,2023-09,0,0,0
 LR full,Islamabad,2023-10,0,0,0
 LR full,Islamabad,2023-11,0,0,0
 LR full,Islamabad,2023-12,0,0,2
 LR full,Jalandhar,2023-09,0,0,0
 LR full,Jalandhar,2023-10,0,0,0
-LR full,Jalandhar,2023-11,0,0,0
+LR full,Jalandhar,2023-11,0,0,3
 LR full,Jalandhar,2023-12,12,0,8
 LR full,Lahore,2023-09,0,0,0
 LR full,Lahore,2023-10,0,0,0
 LR full,Lahore,2023-11,0,0,0
-LR full,Lahore,2023-12,1,0,5
+LR full,Lahore,2023-12,1,0,4
 LR full,Ludhiana,2023-09,0,0,0
 LR full,Ludhiana,2023-10,0,0,0
-LR full,Ludhiana,2023-11,0,0,1
-LR full,Ludhiana,2023-12,10,0,6
+LR full,Ludhiana,2023-11,0,0,3
+LR full,Ludhiana,2023-12,10,0,4
 LR full,Multan,2023-09,0,0,0
 LR full,Multan,2023-10,0,0,0
-LR full,Multan,2023-11,1,0,3
-LR full,Multan,2023-12,9,2,9
+LR full,Multan,2023-11,1,1,3
+LR full,Multan,2023-12,9,2,11
 LR full,Rahim Yar Khan,2023-09,0,0,0
 LR full,Rahim Yar Khan,2023-10,0,0,0
-LR full,Rahim Yar Khan,2023-11,8,2,4
-LR full,Rahim Yar Khan,2023-12,14,2,7
+LR full,Rahim Yar Khan,2023-11,8,1,9
+LR full,Rahim Yar Khan,2023-12,14,0,7
 LR full,Rawalpindi,2023-09,0,0,0
 LR full,Rawalpindi,2023-10,0,0,0
 LR full,Rawalpindi,2023-11,0,0,0
@@ -86,48 +86,48 @@ LR full,Rawalpindi,2023-12,0,0,2
 LR full,Sialkot,2023-09,0,0,0
 LR full,Sialkot,2023-10,0,0,0
 LR full,Sialkot,2023-11,0,0,0
-LR full,Sialkot,2023-12,5,0,6
+LR full,Sialkot,2023-12,5,1,5
 DT full,Amritsar,2023-09,0,0,0
-DT full,Amritsar,2023-10,0,0,4
-DT full,Amritsar,2023-11,0,0,1
-DT full,Amritsar,2023-12,5,1,9
-DT full,Faisalabad,2023-09,0,0,1
-DT full,Faisalabad,2023-10,0,0,6
+DT full,Amritsar,2023-10,0,0,0
+DT full,Amritsar,2023-11,0,0,0
+DT full,Amritsar,2023-12,5,1,4
+DT full,Faisalabad,2023-09,0,0,0
+DT full,Faisalabad,2023-10,0,0,2
 DT full,Faisalabad,2023-11,0,0,3
-DT full,Faisalabad,2023-12,11,2,8
+DT full,Faisalabad,2023-12,11,5,7
 DT full,Ferozepur,2023-09,0,0,0
-DT full,Ferozepur,2023-10,0,0,2
-DT full,Ferozepur,2023-11,3,3,2
-DT full,Ferozepur,2023-12,10,3,2
+DT full,Ferozepur,2023-10,0,0,0
+DT full,Ferozepur,2023-11,3,2,4
+DT full,Ferozepur,2023-12,10,1,7
 DT full,Islamabad,2023-09,0,0,0
 DT full,Islamabad,2023-10,0,0,0
 DT full,Islamabad,2023-11,0,0,0
 DT full,Islamabad,2023-12,0,0,0
 DT full,Jalandhar,2023-09,0,0,0
-DT full,Jalandhar,2023-10,0,0,4
-DT full,Jalandhar,2023-11,0,0,3
-DT full,Jalandhar,2023-12,12,1,2
-DT full,Lahore,2023-09,0,0,2
-DT full,Lahore,2023-10,0,0,8
+DT full,Jalandhar,2023-10,0,0,0
+DT full,Jalandhar,2023-11,0,0,0
+DT full,Jalandhar,2023-12,12,0,7
+DT full,Lahore,2023-09,0,0,0
+DT full,Lahore,2023-10,0,0,0
 DT full,Lahore,2023-11,0,0,0
-DT full,Lahore,2023-12,1,0,17
+DT full,Lahore,2023-12,1,0,1
 DT full,Ludhiana,2023-09,0,0,0
-DT full,Ludhiana,2023-10,0,0,3
+DT full,Ludhiana,2023-10,0,0,0
 DT full,Ludhiana,2023-11,0,0,1
-DT full,Ludhiana,2023-12,10,3,2
-DT full,Multan,2023-09,0,0,1
-DT full,Multan,2023-10,0,0,5
-DT full,Multan,2023-11,1,1,2
-DT full,Multan,2023-12,9,4,3
+DT full,Ludhiana,2023-12,10,1,4
+DT full,Multan,2023-09,0,0,0
+DT full,Multan,2023-10,0,0,0
+DT full,Multan,2023-11,1,1,3
+DT full,Multan,2023-12,9,2,9
 DT full,Rahim Yar Khan,2023-09,0,0,0
 DT full,Rahim Yar Khan,2023-10,0,0,0
-DT full,Rahim Yar Khan,2023-11,8,7,0
-DT full,Rahim Yar Khan,2023-12,14,12,2
+DT full,Rahim Yar Khan,2023-11,8,1,5
+DT full,Rahim Yar Khan,2023-12,14,1,7
 DT full,Rawalpindi,2023-09,0,0,0
 DT full,Rawalpindi,2023-10,0,0,0
 DT full,Rawalpindi,2023-11,0,0,0
 DT full,Rawalpindi,2023-12,0,0,0
 DT full,Sialkot,2023-09,0,0,0
-DT full,Sialkot,2023-10,0,0,1
-DT full,Sialkot,2023-11,0,0,4
-DT full,Sialkot,2023-12,5,2,4
+DT full,Sialkot,2023-10,0,0,0
+DT full,Sialkot,2023-11,0,0,0
+DT full,Sialkot,2023-12,5,1,3

@@ -25,9 +25,9 @@
   },
   "feature_sets": {
     "full": [
-      "persist_index",
-      "index_lag1",
-      "index_lag2",
+      "persist_margin",
+      "margin_lag1",
+      "margin_lag2",
       "fire_cnt_up45_r300_all",
       "fire_cnt_up45_r300_all_lag1",
       "fire_cnt_up45_r300_all_lag2",
@@ -106,9 +106,9 @@
       "city_jalandhar"
     ],
     "no_fire": [
-      "persist_index",
-      "index_lag1",
-      "index_lag2",
+      "persist_margin",
+      "margin_lag1",
+      "margin_lag2",
       "stagnant",
       "stagnant_lag1",
       "rh_mean_pct",
@@ -154,12 +154,12 @@
     },
     "lr_full": {
       "best_params": {
-        "C": 100.0,
+        "C": 0.02682695795279726,
         "class_weight": null,
-        "l1_ratio": 0.0
+        "l1_ratio": 1.0
       },
-      "cv_pr_auc": 0.6047814598732403,
-      "threshold": 0.09995052360567087
+      "cv_pr_auc": 0.650756786220784,
+      "threshold": 0.12803977540343262
     },
     "lr_weather_only": {
       "best_params": {
@@ -172,21 +172,21 @@
     },
     "lr_no_fire": {
       "best_params": {
-        "C": 19.306977288832496,
+        "C": 0.02682695795279726,
         "class_weight": null,
         "l1_ratio": 1.0
       },
-      "cv_pr_auc": 0.6109490729293913,
-      "threshold": 0.09265459985738154
+      "cv_pr_auc": 0.6507470889832067,
+      "threshold": 0.1280281511305619
     },
     "dt_full": {
       "best_params": {
-        "class_weight": "balanced",
-        "max_depth": 6,
+        "class_weight": null,
+        "max_depth": 4,
         "min_samples_leaf": 50
       },
-      "cv_pr_auc": 0.34954965989002224,
-      "threshold": 0.6662234438557703
+      "cv_pr_auc": 0.5190487079447529,
+      "threshold": 0.19880070797242955
     },
     "dt_weather_only": {
       "best_params": {
@@ -199,12 +199,12 @@
     },
     "dt_no_fire": {
       "best_params": {
-        "class_weight": "balanced",
-        "max_depth": 6,
+        "class_weight": null,
+        "max_depth": 4,
         "min_samples_leaf": 50
       },
-      "cv_pr_auc": 0.3612659284839964,
-      "threshold": 0.7072809549810801
+      "cv_pr_auc": 0.5193023079272518,
+      "threshold": 0.19880070797242955
     },
     "persistence": {
       "rule": "alert when today's index >= city spike threshold"

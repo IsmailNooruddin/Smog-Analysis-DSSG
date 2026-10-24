@@ -1,34 +1,34 @@
 model,method,group,mean,sd
-LR full,permutation ΔPR-AUC (validation),"AQ history (today, lags 1–2)",0.5237,0.0133
-LR full,permutation ΔPR-AUC (validation),"Upwind fires (t, lags 1–3)",-0.0106,0.0118
-LR full,permutation ΔPR-AUC (validation),"Stagnant (t, t−1)",-0.0019,0.01
-LR full,permutation ΔPR-AUC (validation),Humidity,0.0187,0.0081
-LR full,permutation ΔPR-AUC (validation),Rain day,0.0551,0.0286
-LR full,permutation ΔPR-AUC (validation),Temperature range,-0.0141,0.0144
-LR full,permutation ΔPR-AUC (validation),Wind speed (vector),-0.0091,0.0053
-LR full,permutation ΔPR-AUC (validation),Mean temperature,0.0006,0.0016
-LR full,permutation ΔPR-AUC (validation),Wind direction,0.0056,0.011
-LR full,permutation ΔPR-AUC (validation),Month,0.0225,0.0164
-LR full,permutation ΔPR-AUC (validation),City,0.3221,0.0309
-DT full,permutation ΔPR-AUC (validation),"AQ history (today, lags 1–2)",0.2806,0.0085
-DT full,permutation ΔPR-AUC (validation),"Upwind fires (t, lags 1–3)",0.0094,0.0059
+LR full,permutation ΔPR-AUC (validation),"AQ history (today, lags 1–2)",0.6121,0.0086
+LR full,permutation ΔPR-AUC (validation),"Upwind fires (t, lags 1–3)",0.0,0.0
+LR full,permutation ΔPR-AUC (validation),"Stagnant (t, t−1)",0.0,0.0
+LR full,permutation ΔPR-AUC (validation),Humidity,0.0,0.0
+LR full,permutation ΔPR-AUC (validation),Rain day,0.0,0.0
+LR full,permutation ΔPR-AUC (validation),Temperature range,0.0,0.0
+LR full,permutation ΔPR-AUC (validation),Wind speed (vector),0.0,0.0
+LR full,permutation ΔPR-AUC (validation),Mean temperature,0.0423,0.0184
+LR full,permutation ΔPR-AUC (validation),Wind direction,0.0,0.0
+LR full,permutation ΔPR-AUC (validation),Month,0.0,0.0
+LR full,permutation ΔPR-AUC (validation),City,0.0,0.0
+DT full,permutation ΔPR-AUC (validation),"AQ history (today, lags 1–2)",0.5183,0.004
+DT full,permutation ΔPR-AUC (validation),"Upwind fires (t, lags 1–3)",0.0005,0.0106
 DT full,permutation ΔPR-AUC (validation),"Stagnant (t, t−1)",0.0,0.0
-DT full,permutation ΔPR-AUC (validation),Humidity,-0.0,0.0076
+DT full,permutation ΔPR-AUC (validation),Humidity,0.0,0.0
 DT full,permutation ΔPR-AUC (validation),Rain day,0.0,0.0
-DT full,permutation ΔPR-AUC (validation),Temperature range,-0.0019,0.0046
-DT full,permutation ΔPR-AUC (validation),Wind speed (vector),-0.0056,0.0142
-DT full,permutation ΔPR-AUC (validation),Mean temperature,0.1854,0.0272
+DT full,permutation ΔPR-AUC (validation),Temperature range,-0.0106,0.0035
+DT full,permutation ΔPR-AUC (validation),Wind speed (vector),0.0,0.0
+DT full,permutation ΔPR-AUC (validation),Mean temperature,0.0032,0.0082
 DT full,permutation ΔPR-AUC (validation),Wind direction,0.0,0.0
-DT full,permutation ΔPR-AUC (validation),Month,0.0007,0.0005
+DT full,permutation ΔPR-AUC (validation),Month,0.0,0.0
 DT full,permutation ΔPR-AUC (validation),City,0.0,0.0
-DT full,Gini importance (train),"AQ history (today, lags 1–2)",0.7287,
-DT full,Gini importance (train),"Upwind fires (t, lags 1–3)",0.0403,
+DT full,Gini importance (train),"AQ history (today, lags 1–2)",0.943,
+DT full,Gini importance (train),"Upwind fires (t, lags 1–3)",0.0022,
 DT full,Gini importance (train),"Stagnant (t, t−1)",0.0,
-DT full,Gini importance (train),Humidity,0.0085,
+DT full,Gini importance (train),Humidity,0.0,
 DT full,Gini importance (train),Rain day,0.0,
-DT full,Gini importance (train),Temperature range,0.049,
-DT full,Gini importance (train),Wind speed (vector),0.034,
-DT full,Gini importance (train),Mean temperature,0.1319,
+DT full,Gini importance (train),Temperature range,0.0078,
+DT full,Gini importance (train),Wind speed (vector),0.0,
+DT full,Gini importance (train),Mean temperature,0.047,
 DT full,Gini importance (train),Wind direction,0.0,
-DT full,Gini importance (train),Month,0.0076,
+DT full,Gini importance (train),Month,0.0,
 DT full,Gini importance (train),City,0.0,

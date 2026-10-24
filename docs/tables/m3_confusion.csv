@@ -1,4 +1,4 @@
 model,tn,fp,fn,tp
 Persistence,1184,25,34,55
-LR full,1117,92,15,74
-DT full,1107,102,39,50
+LR full,1117,92,12,77
+DT full,1142,67,16,73

@@ -44,6 +44,25 @@ def binary_metrics(y, score, threshold=None, yhat=None, cost_fn=COST_FN, cost_fp
     }
 
 
+def group_error_rates(y, yhat):
+    """Spikes, alerts, recall, false-positive rate and precision for one group of rows
+    (a country or a city); NaN where the denominator is 0."""
+    y, yhat = np.asarray(y).astype(int), np.asarray(yhat).astype(int)
+    tp = int(((yhat == 1) & (y == 1)).sum())
+    fp = int(((yhat == 1) & (y == 0)).sum())
+    div = lambda a, b: a / b if b > 0 else np.nan
+    return {"spikes": int(y.sum()), "alerts": int(yhat.sum()), "recall": div(tp, int(y.sum())),
+            "fpr": div(fp, int((y == 0).sum())), "precision": div(tp, tp + fp)}
+
+
+def regression_metrics(y, yhat):
+    """MAE, RMSE and R² of a continuous prediction."""
+    y, yhat = np.asarray(y, dtype=float), np.asarray(yhat, dtype=float)
+    err = yhat - y
+    return {"mae": float(np.mean(np.abs(err))), "rmse": float(np.sqrt(np.mean(err ** 2))),
+            "r2": float(1 - np.sum(err ** 2) / np.sum((y - y.mean()) ** 2))}
+
+
 def cv_metrics(y, folds, threshold=None, yhat=None):
     """Mean and SD of binary_metrics over the CV folds.
 

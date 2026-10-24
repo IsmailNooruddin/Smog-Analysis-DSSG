@@ -1,0 +1,137 @@
+model,level,group,metric,estimate,ci_low,ci_high
+Persistence,country,Pakistan (7 cities),spikes,49.0,14.975,85.0
+Persistence,country,Pakistan (7 cities),alerts,44.0,13.0,77.0
+Persistence,country,Pakistan (7 cities),recall,0.5714,0.3417,0.7565
+Persistence,country,Pakistan (7 cities),fpr,0.0206,0.0064,0.0362
+Persistence,country,Pakistan (7 cities),precision,0.6364,0.4615,0.7143
+Persistence,country,India (4 cities),spikes,40.0,5.0,88.025
+Persistence,country,India (4 cities),alerts,36.0,4.0,85.0
+Persistence,country,India (4 cities),recall,0.675,0.2,0.766
+Persistence,country,India (4 cities),fpr,0.0208,0.0022,0.0522
+Persistence,country,India (4 cities),precision,0.75,0.375,0.875
+Persistence,country gap,PK − IN,recall,-0.1036,-0.2912,0.3725
+Persistence,country gap,PK − IN,fpr,-0.0002,-0.0208,0.0148
+Persistence,country gap,PK − IN,precision,-0.1136,-0.3327,0.2761
+Persistence,city,Amritsar,spikes,5.0,,
+Persistence,city,Amritsar,alerts,4.0,,
+Persistence,city,Amritsar,recall,0.2,,
+Persistence,city,Amritsar,fpr,0.0265,,
+Persistence,city,Amritsar,precision,0.25,,
+Persistence,city,Faisalabad,spikes,11.0,,
+Persistence,city,Faisalabad,alerts,10.0,,
+Persistence,city,Faisalabad,recall,0.5455,,
+Persistence,city,Faisalabad,fpr,0.0374,,
+Persistence,city,Faisalabad,precision,0.6,,
+Persistence,city,Ferozepur,spikes,13.0,,
+Persistence,city,Ferozepur,alerts,12.0,,
+Persistence,city,Ferozepur,recall,0.6154,,
+Persistence,city,Ferozepur,fpr,0.0381,,
+Persistence,city,Ferozepur,precision,0.6667,,
+Persistence,city,Islamabad,spikes,0.0,,
+Persistence,city,Islamabad,alerts,0.0,,
+Persistence,city,Islamabad,recall,,,
+Persistence,city,Islamabad,fpr,0.0,,
+Persistence,city,Islamabad,precision,,,
+Persistence,city,Jalandhar,spikes,12.0,,
+Persistence,city,Jalandhar,alerts,11.0,,
+Persistence,city,Jalandhar,recall,0.8333,,
+Persistence,city,Jalandhar,fpr,0.0094,,
+Persistence,city,Jalandhar,precision,0.9091,,
+Persistence,city,Lahore,spikes,1.0,,
+Persistence,city,Lahore,alerts,0.0,,
+Persistence,city,Lahore,recall,0.0,,
+Persistence,city,Lahore,fpr,0.0,,
+Persistence,city,Lahore,precision,,,
+Persistence,city,Ludhiana,spikes,10.0,,
+Persistence,city,Ludhiana,alerts,9.0,,
+Persistence,city,Ludhiana,recall,0.8,,
+Persistence,city,Ludhiana,fpr,0.0093,,
+Persistence,city,Ludhiana,precision,0.8889,,
+Persistence,city,Multan,spikes,10.0,,
+Persistence,city,Multan,alerts,9.0,,
+Persistence,city,Multan,recall,0.5,,
+Persistence,city,Multan,fpr,0.037,,
+Persistence,city,Multan,precision,0.5556,,
+Persistence,city,Rahim Yar Khan,spikes,22.0,,
+Persistence,city,Rahim Yar Khan,alerts,21.0,,
+Persistence,city,Rahim Yar Khan,recall,0.6364,,
+Persistence,city,Rahim Yar Khan,fpr,0.0729,,
+Persistence,city,Rahim Yar Khan,precision,0.6667,,
+Persistence,city,Rawalpindi,spikes,0.0,,
+Persistence,city,Rawalpindi,alerts,0.0,,
+Persistence,city,Rawalpindi,recall,,,
+Persistence,city,Rawalpindi,fpr,0.0,,
+Persistence,city,Rawalpindi,precision,,,
+Persistence,city,Sialkot,spikes,5.0,,
+Persistence,city,Sialkot,alerts,4.0,,
+Persistence,city,Sialkot,recall,0.6,,
+Persistence,city,Sialkot,fpr,0.0088,,
+Persistence,city,Sialkot,precision,0.75,,
+LR full,country,Pakistan (7 cities),spikes,49.0,14.975,85.0
+LR full,country,Pakistan (7 cities),alerts,97.0,39.0,155.0
+LR full,country,Pakistan (7 cities),recall,0.8367,0.75,0.9231
+LR full,country,Pakistan (7 cities),fpr,0.0721,0.0301,0.1164
+LR full,country,Pakistan (7 cities),precision,0.4227,0.2727,0.5093
+LR full,country,India (4 cities),spikes,40.0,5.0,88.025
+LR full,country,India (4 cities),alerts,72.0,21.0,131.0
+LR full,country,India (4 cities),recall,0.9,0.3321,0.9688
+LR full,country,India (4 cities),fpr,0.0833,0.0281,0.1496
+LR full,country,India (4 cities),precision,0.5,0.0765,0.7101
+LR full,country gap,PK − IN,recall,-0.0633,-0.1453,0.4715
+LR full,country gap,PK − IN,fpr,-0.0113,-0.0444,0.0134
+LR full,country gap,PK − IN,precision,-0.0773,-0.2698,0.2443
+LR full,city,Amritsar,spikes,5.0,,
+LR full,city,Amritsar,alerts,10.0,,
+LR full,city,Amritsar,recall,0.8,,
+LR full,city,Amritsar,fpr,0.0531,,
+LR full,city,Amritsar,precision,0.4,,
+LR full,city,Faisalabad,spikes,11.0,,
+LR full,city,Faisalabad,alerts,21.0,,
+LR full,city,Faisalabad,recall,0.7273,,
+LR full,city,Faisalabad,fpr,0.1215,,
+LR full,city,Faisalabad,precision,0.381,,
+LR full,city,Ferozepur,spikes,13.0,,
+LR full,city,Ferozepur,alerts,22.0,,
+LR full,city,Ferozepur,recall,0.7692,,
+LR full,city,Ferozepur,fpr,0.1143,,
+LR full,city,Ferozepur,precision,0.4545,,
+LR full,city,Islamabad,spikes,0.0,,
+LR full,city,Islamabad,alerts,2.0,,
+LR full,city,Islamabad,recall,,,
+LR full,city,Islamabad,fpr,0.0169,,
+LR full,city,Islamabad,precision,0.0,,
+LR full,city,Jalandhar,spikes,12.0,,
+LR full,city,Jalandhar,alerts,23.0,,
+LR full,city,Jalandhar,recall,1.0,,
+LR full,city,Jalandhar,fpr,0.1038,,
+LR full,city,Jalandhar,precision,0.5217,,
+LR full,city,Lahore,spikes,1.0,,
+LR full,city,Lahore,alerts,5.0,,
+LR full,city,Lahore,recall,1.0,,
+LR full,city,Lahore,fpr,0.0342,,
+LR full,city,Lahore,precision,0.2,,
+LR full,city,Ludhiana,spikes,10.0,,
+LR full,city,Ludhiana,alerts,17.0,,
+LR full,city,Ludhiana,recall,1.0,,
+LR full,city,Ludhiana,fpr,0.0648,,
+LR full,city,Ludhiana,precision,0.5882,,
+LR full,city,Multan,spikes,10.0,,
+LR full,city,Multan,alerts,21.0,,
+LR full,city,Multan,recall,0.7,,
+LR full,city,Multan,fpr,0.1296,,
+LR full,city,Multan,precision,0.3333,,
+LR full,city,Rahim Yar Khan,spikes,22.0,,
+LR full,city,Rahim Yar Khan,alerts,37.0,,
+LR full,city,Rahim Yar Khan,recall,0.9545,,
+LR full,city,Rahim Yar Khan,fpr,0.1667,,
+LR full,city,Rahim Yar Khan,precision,0.5676,,
+LR full,city,Rawalpindi,spikes,0.0,,
+LR full,city,Rawalpindi,alerts,2.0,,
+LR full,city,Rawalpindi,recall,,,
+LR full,city,Rawalpindi,fpr,0.0169,,
+LR full,city,Rawalpindi,precision,0.0,,
+LR full,city,Sialkot,spikes,5.0,,
+LR full,city,Sialkot,alerts,9.0,,
+LR full,city,Sialkot,recall,0.8,,
+LR full,city,Sialkot,fpr,0.0442,,
+LR full,city,Sialkot,precision,0.4444,,

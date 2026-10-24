@@ -5,15 +5,15 @@ Persistence,FN,onset,34
 Persistence,FN,continuation,0
 Persistence,FP,onset,0
 Persistence,FP,continuation,25
-LR full,TP,onset,19
+LR full,TP,onset,22
 LR full,TP,continuation,55
-LR full,FN,onset,15
+LR full,FN,onset,12
 LR full,FN,continuation,0
-LR full,FP,onset,69
-LR full,FP,continuation,23
-DT full,TP,onset,10
-DT full,TP,continuation,40
-DT full,FN,onset,24
-DT full,FN,continuation,15
-DT full,FP,onset,87
-DT full,FP,continuation,15
+LR full,FP,onset,67
+LR full,FP,continuation,25
+DT full,TP,onset,18
+DT full,TP,continuation,55
+DT full,FN,onset,16
+DT full,FN,continuation,0
+DT full,FP,onset,42
+DT full,FP,continuation,25
