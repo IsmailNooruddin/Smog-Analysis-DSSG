@@ -13,7 +13,7 @@ from sklearn.metrics import average_precision_score, roc_auc_score
 from src.modeling import choose_threshold, week_groups
 
 TABLE_DIR = Path("docs/tables")
-COST_FN, COST_FP = 5, 1     # headline cost ratio (decision D6)
+COST_FN, COST_FP = 5, 1
 
 
 def binary_metrics(y, score, threshold=None, yhat=None, cost_fn=COST_FN, cost_fp=COST_FP):

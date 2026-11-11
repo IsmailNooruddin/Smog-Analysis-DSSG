@@ -12,14 +12,12 @@ from pathlib import Path
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-# Okabe-Ito colours in a fixed order (adjacent pairs pass the CVD check in this order).
-# A category always keeps its colour; we never cycle or re-rank colours.
+
 CAT_COLORS = ["#0072B2", "#D55E00", "#009E73", "#E69F00", "#CC79A7", "#56B4E9"]
 GREY = "#6E6E6E"
-SEQ_CMAP = "cividis"     # magnitude (one hue family, light to dark)
-DIV_CMAP = "RdBu_r"      # signed values: blue = negative, red = positive, white = 0
+SEQ_CMAP = "cividis"
+DIV_CMAP = "RdBu_r"
 
-# Fixed colours for the groups that appear in several figures
 GROUP_COLORS = {
     "Near border (PK)": CAT_COLORS[0],
     "Intermediate (PK)": CAT_COLORS[3],

@@ -1,12 +1,4 @@
-"""Milestone 3: data access, feature sets, leakage-free CV, pipelines, tuning and thresholds.
 
-Everything here is fitted on `split == "train"` rows only. The chronological validation
-split (2023-09-04 to 2023-12-31) is touched only by modeling.ipynb when it reports results.
-2024 is sealed: load_model_frame() refuses any date on or after 2024-01-01.
-
-Observational unit: 1 row = 1 city on 1 local (UTC+5) day; the target is that city's
-spike label h days later.
-"""
 import numpy as np
 import pandas as pd
 from sklearn.base import clone
@@ -23,25 +15,19 @@ from src.config import CLEAN_DIR, WINDOW_START
 SEALED_FROM = pd.Timestamp("2024-01-01")
 MASTER = CLEAN_DIR / "master_daily.parquet"
 
-# ------------------------------------------------------------------
-# Feature sets (names checked against the master in load_model_frame)
-# ------------------------------------------------------------------
-# AQ history as the margin over the city spike threshold (index - spike_threshold). The label is
-# defined relative to each city's threshold (0.36 to 2.18), so the raw pooled index made the city
-# dummies act as a threshold correction; the margin removes that.
+
+
 AQ_HISTORY = ["persist_margin", "margin_lag1", "margin_lag2"]
-AQ_HISTORY_RAW = ["persist_index", "index_lag1", "index_lag2"]          # Phase 3 encoding (sensitivity)
+AQ_HISTORY_RAW = ["persist_index", "index_lag1", "index_lag2"]
 FIRE =["fire_cnt_up45_r300_all", "fire_cnt_up45_r300_all_lag1",
-        "fire_cnt_up45_r300_all_lag2", "fire_cnt_up45_r300_all_lag3"]   # raw counts; log1p in the pipeline
-# Wind sectors: 'calm' is identical to stagnant (vector-mean wind < 2 km/h, 631 of 631 rows), so
-# with all 8 sector dummies stagnant would be a linear combination of them. NW, the most
-# frequent sector, is the reference instead; stagnant then reads as "calm vs NW wind".
+        "fire_cnt_up45_r300_all_lag2", "fire_cnt_up45_r300_all_lag3"]
+
 WEATHER = ["stagnant", "stagnant_lag1", "rh_mean_pct", "rain_day", "temp_range_c", "vec_len_kmh",
            "temp_mean_c"] + [f"wind_from_{s}" for s in ["n", "ne", "e", "se", "s", "sw", "w"]]
-MONTHS = [f"month_{m:02d}" for m in range(2, 13)]                       # reference: January
+MONTHS = [f"month_{m:02d}" for m in range(2, 13)]
 CITY_DUMMIES = ["city_faisalabad", "city_multan", "city_rawalpindi", "city_sialkot",
                 "city_rahim_yar_khan", "city_islamabad", "city_amritsar", "city_ferozepur",
-                "city_ludhiana", "city_jalandhar"]                      # reference: Lahore
+                "city_ludhiana", "city_jalandhar"]
 CALENDAR_PLACE = MONTHS + CITY_DUMMIES
 
 FEATURE_SETS = {
@@ -49,11 +35,8 @@ FEATURE_SETS = {
     "weather_only": WEATHER + CALENDAR_PLACE,
     "no_fire": AQ_HISTORY + WEATHER + CALENDAR_PLACE,
 }
-# Raw-index version of the full set; kept outside FEATURE_SETS so the headline loops stay at 3 sets
 FULL_RAW = AQ_HISTORY_RAW + FIRE + WEATHER + CALENDAR_PLACE
 CONTINUOUS = AQ_HISTORY + AQ_HISTORY_RAW + ["rh_mean_pct", "temp_range_c", "vec_len_kmh", "temp_mean_c"]
-# AQ history goes back to day t-2: a training row dated up to (horizon + 2) days after a held-out
-# day carries that day's target index in the AQ-history columns (margins or raw index).
 MAX_AQ_LAG = 2
 
 
@@ -110,7 +93,7 @@ def week_groups(dates):
 
 
 # ------------------------------------------------------------------
-# Cross-validation (decision D5)
+# Cross-validation
 # ------------------------------------------------------------------
 def purged_sgkf_splits(df, y, n_splits=5, seeds=range(5), horizon=1):
     """Purged, repeated StratifiedGroupKFold on the training rows of `df`.
@@ -143,7 +126,7 @@ def purged_sgkf_splits(df, y, n_splits=5, seeds=range(5), horizon=1):
 
 
 # ------------------------------------------------------------------
-# Pipelines and grids (every transform is learned inside the fold)
+# Pipelines and grids
 # ------------------------------------------------------------------
 def _log1p():
     return FunctionTransformer(np.log1p, feature_names_out="one-to-one")
@@ -163,9 +146,6 @@ def _lr_prep(features):
 
 def make_lr(features):
     """Logistic regression on the shared linear preprocessing."""
-    # liblinear, not saga: saga hit 5,000 iterations without converging at large C with balanced
-    # weights (8 s per fit); liblinear converges in < 0.2 s with the same fold PR-AUC (within 0.005).
-    # intercept_scaling = 10 keeps liblinear's penalty on the intercept negligible.
     return Pipeline([("prep", _lr_prep(features)),
                      ("model", LogisticRegression(solver="liblinear", intercept_scaling=10,
                                                   max_iter=5000, random_state=42))])
@@ -187,7 +167,7 @@ def make_tree(features):
 
 LR_GRID = {
     "model__C": np.logspace(-3, 2, 8),
-    "model__l1_ratio": [0.0, 1.0],          # 0 = ridge (L2), 1 = lasso (L1); sklearn >= 1.8 API
+    "model__l1_ratio": [0.0, 1.0],
     "model__class_weight": [None, "balanced"],
 }
 DT_GRID = {
