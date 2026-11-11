@@ -1,28 +1,29 @@
-# Handoff: Trans-Boundary Smog Prediction (Milestone 3 complete → Milestone 4 next)
+# Handoff: Trans-Boundary Smog Prediction (Milestone 4 complete → Week 14 test next)
 
 This document is for an AI coding agent (any vendor) picking up the project cold. It explains what the project is,
-what is finished, where everything lives, which decisions were made and why, what the Milestone 3 results are, and
-what comes next. Read it fully, then `context/milestone3.md` (the brief and rubric), `context/milestone3_plan.md`
-(the original plan) and `context/milestone3_finish_plan.md` (the rubric fixes Q1–Q8), before touching the code.
+what is finished, where everything lives, which decisions were made and why, what the Milestone 3 and Milestone 4
+results are, and what comes next. Read it fully before touching the code. Then read the briefs:
+- `context/milestone 4.md` (the Milestone 4 brief and rubric);
+- `context/milestone3.md`, `context/milestone3_plan.md` and `context/milestone3_finish_plan.md` (Milestone 3).
 
-Last updated: 2026-10-25. State of `main` at writing: see the commit table in section 2.
-Milestone 3 deadline was **Sunday 25 Oct 2026, 23:59**; the package was finished and pushed on 25 Oct.
+Last updated: 2026-11-11. State of `main` at writing: see the commit tables in section 2.
+Milestone 3 was graded. The grader took 5 points off the manuscript, so the Milestone 4 report is one rewritten paper.
 
 ---
 
-## 0. Where we are, in five lines
+## 0. Where we are, in six lines
 
 1. Milestone 2 (data, EDA, hypotheses) is finished and handed in (`submission/`).
-2. Milestone 3 is finished: `src/modeling.py`, `src/evaluate.py`, an executed `modeling.ipynb` (58 cells, 25 tables,
-   7 figures, 10 saved models), the `DECISIONS.md` section (rows S1–S19), report Sections 7–12, and the
-   self-contained package `submission/milestone3/` (report DOCX + PDF, notebook, modules, data, models, README).
-3. After a rubric audit (`context/milestone3_finish_plan.md`) the headline AQ-history features became **margins over
-   the city spike threshold** (Q4); this changed the results in section 9 (the Phase 3 numbers are kept as the
-   raw-index sensitivity run, M3.9c).
-4. **Next:** Milestone 4 (advanced models, fairness audit, ethics) and the Week 14 out-of-time test on 2024. See
-   section 11.
-5. One commit per phase, straight to `main`, author `bilal <bilelayub@gmail.com>`, **no** `Co-Authored-By`,
-   `Claude-Session` or "Generated with" lines.
+2. Milestone 3 is finished and graded: `modeling.ipynb`, `src/modeling.py`, `src/evaluate.py`, `DECISIONS.md` rows
+   S1–S19 and the package `submission/milestone3/`.
+3. **Milestone 4 is finished** (section 10b): `advanced_modeling.ipynb` (39 cells, 18 tables, 7 figures, 6 new
+   models), `src/fairness.py`, census tiers in `Dataset/external/city_population.csv`, `DECISIONS.md` rows P1–P9,
+   an 18-page report rewritten as one paper, and the package `submission/milestone4/`.
+4. **Result:** RF and HGB do not beat LR full, so LR full stays the final model. Per-tier thresholds halve the
+   small-city false-alarm gap and lower the cost.
+5. **Next:** the Week 14 out-of-time test on 2024. See section 11. Nothing is pushed yet for Milestone 4.
+6. One commit per phase, straight to `main`, author `bilal <bilelayub@gmail.com>`, **no** `Co-Authored-By`,
+   `Claude-Session` or "Generated with" lines. Push only when the user asks.
 
 ---
 
@@ -39,8 +40,8 @@ The target is a **Composite Smog Index** built from six pollutants, plus a per-c
 aligned with SDG 3.9, 11.6 and 13. The course runs in milestones:
 - Milestone 1: proposal (done).
 - Milestone 2: data preparation, EDA and hypotheses (done).
-- **Milestone 3: baseline models, leakage-free CV, error-cost analysis (in progress: Phases 0–3 of 5 done).**
-- Milestone 4: advanced models, fairness audit, ethics.
+- Milestone 3: baseline models, leakage-free CV, error-cost analysis (done, graded).
+- **Milestone 4: advanced models, fairness audit, bias mitigation, ethics (done, not yet pushed).**
 - Week 14: out-of-time test on 2024 data.
 
 ---
@@ -68,7 +69,20 @@ aligned with SDG 3.9, 11.6 and 13. The course runs in milestones:
 | `6ae1eb5` | Milestone 3 revisions: threshold-margin features, leakage check, group error rates, index regression | `src/*.py`, `modeling.ipynb` (58 cells), `m3_params.json`, `docs/tables/m3_*.csv` (25), figures, `models/*.joblib` (10), `context/milestone3_finish_plan.md` |
 | `f9efad7` | Decision log: Milestone 3 modelling choices | `DECISIONS.md` rows S1–S19 |
 | `a897ac1` | Milestone 3 report sections and submission package | `docs/manuscript/*` (builder `--milestone 3`, renderer argument 3, `manuscript_m3.json`), `requirements.txt` (scikit-learn ≥ 1.8), `submission/milestone3/` |
-| (this) | Update project handoff after Milestone 3 | this file |
+| `9d64111` | Update project handoff after Milestone 3 | this file |
+
+- **Milestone 4 commits** (none pushed when this was written; `git log origin/main..main` lists them):
+
+| Commit | Message | Content |
+|---|---|---|
+| `70b4db2` | Milestone 3 revised submission and Milestone 4 brief | the team's hand revisions (`modeling.ipynb`, `submission/milestone3/*_revised.*`), `CLAUDE.md`, `context/milestone 4.md` |
+| `8223511` | Milestone 4: city census population and size tiers | `Dataset/external/city_population.csv`, `CITY_POP_FILE` in `src/config.py`, `DECISIONS.md` row P1 |
+| `abf9d06` | Milestone 4 modules: ensemble pipelines, random search, fairness audit and mitigation | `src/modeling.py` (additions only), `src/fairness.py` (new) |
+| `c096c31` | Milestone 4 notebook: tuned RF and HGB, fairness audit, mitigation and Pareto trade-off | `advanced_modeling.ipynb` (executed), `m4_params.json`, `docs/tables/m4_*.csv` (18), `figures/fig_m04_*.png` (7), `models/rf_*`, `models/hgb_*` (6) |
+| `1d99b05` | Milestone 4 decisions P2-P9: search spaces, final-model rule, fairness settings | `DECISIONS.md` |
+| `6a50d92` | Milestone 4 manuscript: one-paper builder, APA references and number check | `docs/manuscript/build_manuscript_m4.py`, `check_numbers_m4.py`, `manuscript_m4.json`, `render_docx.js` (argument 4) |
+| `2ab0611` | Milestone 4 submission package: report, notebooks, code, models and data | `submission/milestone4/` |
+| (this) | Update project handoff after Milestone 4 | this file |
 
 Earlier history worth knowing, oldest first: `5306bfe` (Role 1 fixes), `986d7d0` (Role 2 merge and analysis),
 `1071958` (manuscript, decision log), `dd2db4e`/`631c3b6` (review fixes), `70faa64` (Excel export, `submission/`),
@@ -84,6 +98,10 @@ weather.ipynb          Role 1, Person B (Munir): weather, vector-mean wind, stag
 fire.ipynb             Role 1, Person C (Bilal): VIIRS filtering, Haversine/bearing, wind cones
 merge_analysis.ipynb   Role 2: merge → master table; analysis; hypotheses; Excel export (83 cells)
 modeling.ipynb         ★ Milestone 3: 58 cells, sections M3.1–M3.10, executed, ~5 min (reads only the master + role2_params.json)
+advanced_modeling.ipynb ◆ Milestone 4: 39 cells, sections M4.1–M4.10 + Summary, executed, 67–82 min (section 10b)
+src/fairness.py        ◆ M4: load_city_tiers, add_groups, group_metrics, disparity, reweigh_weights, group_thresholds,
+                         constrained_thresholds, pareto_mask
+Dataset/external/city_population.csv  ◆ census population, definition and source per city; tiers derive from it
 src/config.py          ALL shared settings: cities, files, coordinates, window and split dates, city groups
 src/merge.py           Merge functions (every one takes a date window)
 src/eda.py             EDA helpers (summary_table, outlier_audit, spearman_by_city, rate_by_condition, contingency)
@@ -94,22 +112,32 @@ src/modeling.py        ★ M3: load_model_frame (adds the margins), FEATURE_SETS
 src/evaluate.py        ★ M3: binary_metrics, group_error_rates, regression_metrics, cv_metrics, block_bootstrap,
                          cost_curve, error_breakdown, save_table
 models/                ★ M3: majority, lr_*, dt_*, ridge_* ({full,weather_only,no_fire}).joblib (10 files)
+                       ◆ M4: rf_*, hgb_* (6 files). The final model stays lr_full.joblib
 submission/milestone3/ ★ M3 package: report DOCX + PDF, modeling.ipynb, src/, models/, Dataset/clean/ (3 files), README
+submission/milestone4/ ◆ M4 package: Milestone4_Report.docx/.pdf, both notebooks, src/ (5 modules), models/ (16),
+                       Dataset/clean/ (4 files), Dataset/external/city_population.csv,
+                       docs/tables/m3_metrics_validation.csv, requirements.txt, README
 Dataset/clean/         Role 1/2 outputs + master_daily.parquet (5,665 × 287), master_data_dictionary.csv,
                        aq_params.json, weather/fire z-score params, role2_params.json,
                        ★ m3_params.json (best hyperparameters, OOF thresholds, CV settings, feature sets),
+                       ◆ m4_params.json (search settings, best RF/HGB settings, thresholds, final-model rule and
+                         choice, fairness settings, per-tier thresholds of every mitigation rule),
                        Milestone2_Final_Master_and_EDA.xlsx
-figures/               fig_a*, fig_b*, fig_fire_*, fig_m1..m6 (Milestone 2); ★ fig_m3_1 … fig_m3_7 (Milestone 3)
-docs/tables/*.csv      Every report table at 4 decimals; ★ 25 files named m3_*.csv
+figures/               fig_a*, fig_b*, fig_fire_*, fig_m1..m6 (Milestone 2); ★ fig_m3_1 … fig_m3_7 (Milestone 3);
+                       ◆ fig_m04_1 … fig_m04_7 (Milestone 4; the 0 avoids a clash with the Milestone 2 fig_m4_*)
+docs/tables/*.csv      Every report table at 4 decimals; ★ 25 files named m3_*.csv; ◆ 18 files named m4_*.csv
 docs/manuscript/       build_manuscript.py (CSV → manuscript.json; --milestone 3 → manuscript_m3.json) +
-                       render_docx.js (JSON → .docx; argument 3 → submission/milestone3/Milestone3_Report.docx)
+                       render_docx.js (JSON → .docx; argument 3 → submission/milestone3/Milestone3_Report.docx);
+                       ◆ build_manuscript_m4.py (→ manuscript_m4.json), render_docx.js argument 4
+                       (→ submission/milestone4/Milestone4_Report.docx), check_numbers_m4.py (number check)
 submission/            Milestone 2 hand-in package (Milestone2_Report.docx, notebook, Excel, README.md)
-DECISIONS.md           Every data removal/change with exact counts: sections F, A, W, M, ★ S (Milestone 3, S1–S19)
+DECISIONS.md           Every data removal/change with exact counts: sections F, A, W, M, ★ S (Milestone 3, S1–S19),
+                       ◆ P (Milestone 4, P1–P9)
 context/               milestone1/2/3.md briefs, Final Proposal.md, milestone3_plan.md, milestone3_finish_plan.md, this file
 package.json           npm dependency for render_docx.js (`npm install` restores node_modules/, which is gitignored)
 ```
 
-★ = new in Milestone 3.
+★ = new in Milestone 3. ◆ = new in Milestone 4.
 
 ---
 
@@ -121,7 +149,15 @@ python -m pip install docx2pdf            # Windows-only, PDF export via Word
 npm install                               # restores node_modules/ for render_docx.js
 # from the repository root:
 jupyter nbconvert --to notebook --execute --inplace modeling.ipynb     # ~5 min, 8 cores
+jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=7200 advanced_modeling.ipynb   # 67–82 min
 ```
+
+- `advanced_modeling.ipynb` reads the master, `role2_params.json`, `m3_params.json`, the Milestone 3 models in
+  `models/`, `docs/tables/m3_metrics_validation.csv` and `Dataset/external/city_population.csv`. It asserts that the
+  reloaded LR and DT reproduce the Milestone 3 thresholds and validation PR-AUC. Run `modeling.ipynb` first only if
+  those models are missing.
+- **Milestone 4 determinism is verified:** two runs gave byte-identical `docs/tables/m4_*.csv` (all 18 files).
+- The default nbconvert cell timeout is too short for the random searches. Keep `--ExecutePreprocessor.timeout=7200`.
 
 - `modeling.ipynb` reads **only** `Dataset/clean/master_daily.parquet` and `Dataset/clean/role2_params.json`. You do
   **not** need to rerun the Role 1 or merge notebooks for Milestone 3. If you do rerun them by accident,
@@ -136,8 +172,8 @@ jupyter nbconvert --to notebook --execute --inplace modeling.ipynb     # ~5 min,
   (expect `0`).
 - **Windows console encoding:** printing notebook output that contains `−`, `→` or `×` from Python fails with cp1252.
   Set `PYTHONIOENCODING=utf-8` first.
-- The notebook was generated with a throwaway builder script in a session scratchpad (not in the repo). **The
-  notebook itself is now the source of truth:** edit its cells directly (or with `NotebookEdit`), then re-execute.
+- Both notebooks were generated with throwaway builder scripts in a session scratchpad (not in the repo). **The
+  notebooks themselves are now the source of truth:** edit their cells directly (or with `NotebookEdit`), then re-execute.
   The "What we found" Markdown cells hold hand-written numbers. If any result changes, update them to match the new
   output.
 
@@ -411,20 +447,123 @@ Every computational section is followed by a "What we found" cell whose numbers 
 
 ---
 
+## 10b. Milestone 4 (advanced models, fairness audit, mitigation)
+
+Plan: `C:\Users\Bilel\.claude\plans\last-time-we-completed-joyful-truffle.md` (local to the laptop). Decisions:
+`DECISIONS.md` rows P1–P9. All numbers below come from `docs/tables/m4_*.csv` and `m4_params.json`.
+
+### 10b.1 Agreed with the user (do not reopen)
+
+- **Sensitive attribute = geography** (the instructor approved it). The groups are country (PK, IN), city (11) and a
+  city-size tier from census population.
+- **Tiers** (P1, rule fixed before any result): Tier 1 metro ≥ 3 M (Lahore, Faisalabad, Rawalpindi); Tier 2 large
+  1–3 M (Multan, Ludhiana, Amritsar, Islamabad); Tier 3 small < 1 M (Jalandhar, Sialkot, Rahim Yar Khan, Ferozepur).
+  Pakistan uses the 2023 census, India the 2011 census.
+- **Models:** RF and HGB from scikit-learn, no new dependencies. HGB runs with `early_stopping=False` (P4).
+- **Report:** one restructured research paper, not Milestone 2 plus appended sections. H1, H3 and H4 are included
+  compactly. 2024 stays sealed.
+
+### 10b.2 Notebook map (`advanced_modeling.ipynb`, 39 cells)
+
+| Section | Produces |
+|---|---|
+| M4.1 | `m4_groups.csv`, `m4_group_summary.csv` (tiers, base rates per group) |
+| M4.2 | random search for RF and HGB × 3 feature sets → `m4_tuning_rf.csv`, `m4_tuning_hgb.csv`, `fig_m04_1`, `m4_params.json` |
+| M4.3 | `m4_metrics_cv.csv`, `m4_metrics_validation.csv`, `m4_validation_counts.csv`, `m4_deltas.csv` (paired bootstrap Δ, includes the fire ablation), `m4_cost_curve.csv`, `fig_m04_2`, `fig_m04_3` |
+| M4.4 | `m4_importance.csv`, `fig_m04_4` |
+| M4.5 | `m4_hypotheses.csv` (H1, H3, H4; OLS, city-clustered SE) |
+| M4.6 | `m4_fair_groups.csv`, `m4_fair_disparity.csv`, `m4_fair_group_ci.csv`, `fig_m04_5` |
+| M4.7 | `m4_mitigation.csv`, `m4_mitigation_groups.csv` |
+| M4.8 | `m4_pareto.csv`, `fig_m04_6` |
+| M4.9 | `m4_threshold_curves.csv`, `fig_m04_7` |
+| M4.10 | `models/rf_*`, `models/hgb_*`, `mitigation_thresholds` in `m4_params.json`, versions, run time |
+
+### 10b.3 Models (validation = Sep–Dec 2023)
+
+| Model | Best setting | CV PR-AUC | 5:1 threshold | Val PR-AUC | Cost /1,000 at 5:1 | Brier |
+|---|---|---|---|---|---|---|
+| LR full (final) | Milestone 3 | 0.651 | 0.128 | 0.695 | 117.1 | 0.037 |
+| RF full | 500 trees, depth 4, leaf 50, max features 0.5, no weights | 0.590 | 0.175 | 0.679 | 114.8 | 0.035 |
+| HGB full | lr 0.020, 330 rounds, 7 leaves, depth 8, leaf 61, L2 0.057, balanced | 0.565 | 0.578 | 0.636 | 110.2 | 0.063 |
+| DT full | Milestone 3 | 0.519 | 0.199 | 0.590 | 113.3 | 0.037 |
+| Persistence | rule | 0.636 | – | 0.669 | 150.2 | – |
+
+- **Paired Δ against LR full:** RF −0.015 [−0.067, 0.015], better in 1 of 25 folds. HGB −0.059 [−0.116, −0.030].
+- **RF − DT** = +0.090, better in 25 of 25 folds. The ensembles improve on the tree, not on LR.
+- **Cost:** every cost CI against LR includes 0. Break-even against persistence is 2:1 for LR, DT and RF, and 3:1
+  for HGB.
+- **Fires:** shuffling AQ history costs 0.612 / 0.543 / 0.531 PR-AUC (LR / RF / HGB). Full − no-fire costs are
+  RF −6.2 [−10.8, −2.2] and HGB −12.3 [−25.4, −1.5]. CV does not confirm a ranking gain.
+
+### 10b.4 Hypotheses (`m4_hypotheses.csv`)
+
+- **H1 supported:** cone fires β = 0.054 [0.007, 0.101], p = 0.012; with today's index 0.035, p = 0.002; placebo −0.032.
+- **H3 not supported:** −0.038 (spec A), −0.045 [−0.073, −0.017] (spec B). On stagnant days the cone count equals the
+  radius count, so the term compares two fire measures.
+- **H4 not supported:** India-origin β = 0.001, p = 0.48. Pakistan-origin 0.056. Only 7 city clusters.
+
+### 10b.5 Fairness audit (LR full)
+
+- **Country:** TPR PK 0.837, IN 0.900. FPR 7.2% vs 8.3%. DIR 1.30 on validation fails the two-sided rule, but India's
+  base rate was 8.5% against 5.9%. OOF DIR is 1.01.
+- **Tier:** FPR 5.6% (T1), 6.5% (T2), 10.5% (T3). Predictive-equality gap 0.049 [0.011, 0.126]. Validation base
+  rates are 3.4%, 5.3% and 11.0% (ratio 3.25), so the DIR of 2.44 fails. OOF DIR is 1.15–1.18.
+- **Training base rates are nearly equal by design** (4.6–4.9%), because each city's spike threshold is its own P90.
+- **RF full** has a larger tier gap (equalized odds 0.301) and catches only 7 of 12 metro spikes.
+- **Cities:** highest FPR Rahim Yar Khan 16.7%, Multan 13.0%, Faisalabad 12.2%. Islamabad and Rawalpindi 1.7%
+  with no spikes.
+
+### 10b.6 Mitigation and Pareto (`m4_mitigation*.csv`, `m4_pareto.csv`)
+
+- **Per-tier 5:1 thresholds** (T1 0.131, T2 0.128, T3 0.160) cut T3 FPR from 10.5% to 8.1% (44 → 34 false alarms).
+  The gap falls from 0.049 to 0.025, the cost from 117.1 to 113.3, and F1 rises from 0.597 to 0.615. Recall falls
+  from 0.865 to 0.854.
+- **Predictive equality and equalized odds at ε = 0.05** give LR full the same validation result. OOF EO gap
+  0.091 → 0.026.
+- **Reweighing** weights stay between 0.976 and 1.045, so LR alerts do not change. RF cost moves 114.8 → 112.5.
+- **Per-tier thresholds do not transfer for RF:** cost rises from 114.8 to 124.8.
+- **Pareto (OOF, LR EO):** ε 0.05 → cost 80.8, gap 0.026; ε 0.02 → 82.9, 0.017; ε 0.01 → 169.3 (recall 0.319).
+- The cheapest validation rule (PE at ε 0.01, 109.4) was not chosen, because choices must come from training data.
+
+### 10b.7 Report (`submission/milestone4/Milestone4_Report.pdf`, 18 pages)
+
+- Main text pp. 1–14, references pp. 14–15, Appendices A–C pp. 16–18. 16 tables, 12 figures, APA references.
+- Sections: abstract (≤ 250 words) and keywords, introduction, related work, data, exploratory findings and
+  hypotheses, methods, results, discussion (FATEN table, living lab, failure modes, governance, policy),
+  limitations, conclusion.
+- The fixes for the Milestone 3 deduction: one title, no draft labels, author-year citations that match the list,
+  every listed reference cited in the text, and dense tables moved to the appendices.
+- New references were checked on Crossref or the publisher page (DOIs for Inness 2019 and Schroeder 2014).
+- **Number check:** `check_numbers_m4.py` matched all 1,000 decimal numbers in `manuscript_m4.json` to the tables.
+
+---
+
 ## 11. What is left
 
-Milestone 3 is complete. Next:
-- **Milestone 4:** RF/GBM on the same purged folds; per-horizon tuning; probability calibration; full fairness audit
-  (error-rate parity by city and country, per-group thresholds, ethics); H1, H3, H4 tests; surface pressure; ozone
-  weight check.
+Milestone 4 is complete but not pushed. Next:
+- **Push** with `git push origin main` when the user asks.
 - **Week 14:** move `WINDOW_START/END` and split dates in `src/config.py`, add the 2024 files, rerun all notebooks and
-  deliberately move the `SEALED_FROM` assert in `src/modeling.py`.
-- **Report builds:** `python docs/manuscript/build_manuscript.py --milestone 3` then `node docs/manuscript/render_docx.js 3`
-  (writes `submission/milestone3/Milestone3_Report.docx`); PDF with
-  `python -c "from docx2pdf import convert; convert('submission/milestone3/Milestone3_Report.docx')"`.
-  The default build (no argument) still produces the Milestone 2 report.
+  deliberately move the `SEALED_FROM` assert in `src/modeling.py`. Test the final alert as it stands: LR full with
+  the per-tier cost-optimal thresholds, and report the tier gaps on 2024 too.
+- Open ideas not done: per-horizon tuning of the ensembles, surface pressure, an ozone weight check, and probability
+  calibration of HGB.
+- **Report builds:**
+  - Milestone 4: `python docs/manuscript/build_manuscript_m4.py`, then `python docs/manuscript/check_numbers_m4.py`
+    (expect 0 missing), then `node docs/manuscript/render_docx.js 4`. PDF with
+    `python -c "from docx2pdf import convert; convert('submission/milestone4/Milestone4_Report.docx','submission/milestone4/Milestone4_Report.pdf')"`.
+  - Milestone 3: `python docs/manuscript/build_manuscript.py --milestone 3`, then `node docs/manuscript/render_docx.js 3`.
+  - The default build (no argument) still produces the Milestone 2 report.
 
 ## 12. Rubric reminders
+
+**Milestone 4** (`context/milestone 4.md`):
+
+| Criterion | Weight | Where it is covered |
+|---|---|---|
+| Advanced models + structured tuning, compared with baselines | 30 | M4.2–M4.4; report §5.2, §§6.1–6.3, Appendix B |
+| Fairness audit (DIR / 80% rule, equalized odds, predictive equality, Pareto) | 35 | M4.6, M4.8; report §5.4, §6.5, §6.6, Appendix C |
+| Bias mitigation + asymmetric thresholds by group | 20 | M4.7, M4.9; report §5.5, §6.6 |
+| Notebook + manuscript (FATEN, living lab) | 15 | `advanced_modeling.ipynb`, report §§7.2–7.3 |
 
 **Milestone 3** (`context/milestone3.md`):
 
@@ -463,7 +602,14 @@ and `P.save()` at 300 dpi. Every number in the report must come from `docs/table
 - **Perfect separation:** rain days and Mar–Aug have no spikes. Any unpenalised logit on the spike label must handle
   that (X5).
 - **Balanced-weight trees** have inflated probabilities. Their 5:1 thresholds are about 0.67–0.71, against about
-  0.10 for LR. This is not a bug.
+  0.10 for LR. This is not a bug. The same holds for HGB full (balanced, threshold 0.578, Brier 0.063).
+- **Reweighing barely moves anything** (Milestone 4). The spike label is each city's own training P90, so training
+  base rates are 4.6–4.9% in every group and the weights stay near 1. Identical LR alerts after reweighing are real.
+- **Fairness results differ between OOF and validation** because the validation base rates differ by tier
+  (3.4% / 5.3% / 11.0%). Report both. Never choose a rule on validation.
+- **The number checker** (`check_numbers_m4.py`) compares within half a unit of the last shown digit. Exact
+  comparison flags false misses because `np.round` rounds half to even.
+- **The Milestone 4 manuscript JSON holds absolute figure paths**, like the earlier ones.
 - **Rerunning `merge_analysis.ipynb`** regenerates `master_daily.parquet` with identical data but different bytes.
   Avoid it, or `git checkout` the file afterwards.
 - **The AQ notebook** defines its own `TRAIN_START/END` and does not import `src/config.py`. This matters for Week 14.
