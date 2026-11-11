@@ -1,7 +1,9 @@
 // Renders docs/manuscript/manuscript.json (made by build_manuscript.py) into
 // Milestone2_Manuscript_Draft.docx at the repository root.
 // With the argument 3 it renders manuscript_m3.json into submission/milestone3/Milestone3_Report.docx.
-// Run from the repository root:  node docs/manuscript/render_docx.js [2|3]
+// With the argument 4 it renders manuscript_m4.json (build_manuscript_m4.py) into
+// submission/milestone4/Milestone4_Report.docx.
+// Run from the repository root:  node docs/manuscript/render_docx.js [2|3|4]
 // Needs the 'docx' npm package (npm install docx).
 const fs = require("fs");
 const path = require("path");
@@ -17,8 +19,10 @@ const SETTINGS = {
          footer: "Trans-Boundary Smog Prediction, Milestone 02", title: "Trans-Boundary Smog Prediction: Milestone 2 report" },
   "3": { json: "manuscript_m3.json", out: path.join(ROOT, "submission", "milestone3", "Milestone3_Report.docx"),
          footer: "Trans-Boundary Smog Prediction, Milestone 03", title: "Trans-Boundary Smog Prediction: Milestone 3 report" },
+  "4": { json: "manuscript_m4.json", out: path.join(ROOT, "submission", "milestone4", "Milestone4_Report.docx"),
+         footer: "Forecasting trans-boundary smog spikes in Punjab, Milestone 04", title: "Forecasting Trans-Boundary Smog Spikes in Punjab" },
 }[MILESTONE];
-if (!SETTINGS) throw new Error("milestone must be 2 or 3, got " + MILESTONE);
+if (!SETTINGS) throw new Error("milestone must be 2, 3 or 4, got " + MILESTONE);
 const model = JSON.parse(fs.readFileSync(path.join(__dirname, SETTINGS.json), "utf8"));
 // Layout follows the team's stream reports (Report_Weather.docx): US Letter, Arial, numbered blue headings
 const FONT = "Arial";
@@ -98,6 +102,25 @@ for (const b of model.blocks) {
       for (const it of b.items)
         children.push(new Paragraph({ numbering: { reference: "bullets", level: 0 },
           spacing: { after: 40, line: 264 }, children: runs(it) }));
+      break;
+    case "keywords":
+      children.push(new Paragraph({ spacing: { after: 200 },
+        children: [new TextRun({ text: "Keywords: ", bold: true, size: 18, font: FONT }), ...runs(b.text, { size: 18 })] }));
+      break;
+    case "abstract":
+      children.push(new Paragraph({ spacing: { before: 120, after: 60 },
+        children: [new TextRun({ text: "Abstract", bold: true, size: 21, color: NAVY, font: FONT })] }));
+      for (const it of b.items)
+        children.push(new Paragraph({ spacing: { after: 60, line: 252 }, indent: { left: 360, right: 360 }, children: runs(it, { size: 18 }) }));
+      break;
+    case "apa":
+      // APA 7 reference list: alphabetical, hanging indent, no numbers
+      for (const it of b.items)
+        children.push(new Paragraph({ spacing: { after: 70, line: 252 }, indent: { left: 480, hanging: 480 },
+          children: runs(it, { size: 17 }) }));
+      break;
+    case "pagebreak":
+      children.push(new Paragraph({ pageBreakBefore: true, children: [] }));
       break;
     case "refs":
       for (const it of b.items)
