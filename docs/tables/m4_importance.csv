@@ -1,0 +1,34 @@
+group,mean,sd,model
+"AQ history (today, lags 1–2)",0.6121,0.0086,LR full
+"Upwind fires (t, lags 1–3)",0.0,0.0,LR full
+"Stagnant (t, t−1)",0.0,0.0,LR full
+Humidity,0.0,0.0,LR full
+Rain day,0.0,0.0,LR full
+Temperature range,0.0,0.0,LR full
+Wind speed (vector),0.0,0.0,LR full
+Mean temperature,0.0423,0.0184,LR full
+Wind direction,0.0,0.0,LR full
+Month,0.0,0.0,LR full
+City,0.0,0.0,LR full
+"AQ history (today, lags 1–2)",0.5426,0.0111,RF full
+"Upwind fires (t, lags 1–3)",0.0028,0.0035,RF full
+"Stagnant (t, t−1)",0.0,0.0,RF full
+Humidity,0.0069,0.005,RF full
+Rain day,0.0002,0.0008,RF full
+Temperature range,-0.0028,0.002,RF full
+Wind speed (vector),0.0005,0.0044,RF full
+Mean temperature,0.0194,0.0135,RF full
+Wind direction,0.0,0.0,RF full
+Month,0.0039,0.0019,RF full
+City,-0.0,0.0,RF full
+"AQ history (today, lags 1–2)",0.531,0.0117,HGB full
+"Upwind fires (t, lags 1–3)",-0.0104,0.0129,HGB full
+"Stagnant (t, t−1)",0.0009,0.0022,HGB full
+Humidity,0.0137,0.0052,HGB full
+Rain day,0.0318,0.0209,HGB full
+Temperature range,-0.0029,0.0154,HGB full
+Wind speed (vector),-0.0118,0.0157,HGB full
+Mean temperature,0.0321,0.0184,HGB full
+Wind direction,0.0015,0.0031,HGB full
+Month,0.0055,0.0113,HGB full
+City,-0.002,0.0057,HGB full

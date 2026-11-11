@@ -1,0 +1,34 @@
+comparison,metric,validation_diff,ci_low,ci_high,ci_excludes_0,cv_diff_mean,cv_folds_a_better
+RF full − LR full,pr_auc,-0.0152,-0.0669,0.0154,False,-0.0604,1.0
+RF full − LR full,roc_auc,-0.0025,-0.0165,0.0026,False,-0.0081,3.0
+RF full − LR full,cost,-2.3112,-15.7086,11.1773,False,,
+HGB full − LR full,pr_auc,-0.0586,-0.1163,-0.0304,True,-0.086,5.0
+HGB full − LR full,roc_auc,-0.0037,-0.01,0.0017,False,-0.0113,1.0
+HGB full − LR full,cost,-6.9337,-23.846,8.4746,False,,
+RF full − DT full,pr_auc,0.0899,0.0392,0.1245,True,0.0713,25.0
+RF full − DT full,roc_auc,0.0108,0.001,0.0302,True,0.0212,23.0
+RF full − DT full,cost,1.5408,-7.9375,10.7858,False,,
+HGB full − DT full,pr_auc,0.0465,-0.0224,0.093,False,0.0457,17.0
+HGB full − DT full,roc_auc,0.0097,-0.003,0.041,False,0.018,18.0
+HGB full − DT full,cost,-3.0817,-30.8166,22.314,False,,
+RF full − Persistence,pr_auc,0.0108,-0.0563,0.0397,False,-0.0459,0.0
+RF full − Persistence,roc_auc,0.001,-0.0134,0.0072,False,-0.0049,7.0
+RF full − Persistence,cost,-35.4391,-94.6414,6.9398,False,,
+HGB full − Persistence,pr_auc,-0.0327,-0.0956,-0.0038,True,-0.0715,8.0
+HGB full − Persistence,roc_auc,-0.0001,-0.0062,0.0051,False,-0.0082,5.0
+HGB full − Persistence,cost,-40.0616,-103.8308,10.8314,False,,
+LR full − Persistence,pr_auc,0.0259,-0.0196,0.0519,False,0.0145,19.0
+LR full − Persistence,roc_auc,0.0036,0.0009,0.0059,True,0.0032,21.0
+LR full − Persistence,cost,-33.1279,-92.5977,12.6756,False,,
+RF full − RF no-fire,pr_auc,0.003,-0.0068,0.0172,False,-0.0009,10.0
+RF full − RF no-fire,roc_auc,0.0004,-0.0007,0.0037,False,-0.0008,8.0
+RF full − RF no-fire,cost,-6.1633,-10.7858,-2.2355,True,,
+HGB full − HGB no-fire,pr_auc,0.0108,-0.0129,0.0683,False,-0.0149,8.0
+HGB full − HGB no-fire,roc_auc,0.0031,-0.0008,0.0098,False,-0.004,7.0
+HGB full − HGB no-fire,cost,-12.3267,-25.4375,-1.5396,True,,
+RF no-fire − RF weather-only,pr_auc,0.3034,0.1531,0.3763,True,0.1808,25.0
+RF no-fire − RF weather-only,roc_auc,0.0917,0.0401,0.2475,True,0.0418,25.0
+RF no-fire − RF weather-only,cost,-119.4145,-242.7196,-18.0296,True,,
+HGB no-fire − HGB weather-only,pr_auc,0.3307,0.1544,0.3666,True,0.1729,24.0
+HGB no-fire − HGB weather-only,roc_auc,0.1275,0.0752,0.2926,True,0.0475,25.0
+HGB no-fire − HGB weather-only,cost,-179.5069,-277.7819,-86.2782,True,,

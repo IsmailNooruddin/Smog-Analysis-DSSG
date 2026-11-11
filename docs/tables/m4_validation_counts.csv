@@ -1,0 +1,15 @@
+,tp,fp,tn,fn,n
+Majority class,0,0,1209,89,1298
+Persistence,55,25,1184,34,1298
+LR full,77,92,1117,12,1298
+LR weather-only,68,230,979,21,1298
+LR no-fire,77,92,1117,12,1298
+DT full,73,67,1142,16,1298
+DT weather-only,77,249,960,12,1298
+DT no-fire,73,67,1142,16,1298
+RF full,73,69,1140,16,1298
+RF weather-only,75,242,967,14,1298
+RF no-fire,73,77,1132,16,1298
+HGB full,76,78,1131,13,1298
+HGB weather-only,65,272,937,24,1298
+HGB no-fire,72,74,1135,17,1298

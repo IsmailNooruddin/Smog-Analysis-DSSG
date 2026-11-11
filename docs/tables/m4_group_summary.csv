@@ -1,0 +1,6 @@
+grouping,group,cities,train_days,train_spikes,train_rate,val_days,val_spikes,val_rate
+country,India,4,1544,71,0.046,472,40,0.0847
+country,Pakistan,7,2702,133,0.0492,826,49,0.0593
+city-size tier,Tier 1 metro (≥ 3 M),3,1158,57,0.0492,354,12,0.0339
+city-size tier,Tier 2 large (1–3 M),4,1544,76,0.0492,472,25,0.053
+city-size tier,Tier 3 small (< 1 M),4,1544,71,0.046,472,52,0.1102

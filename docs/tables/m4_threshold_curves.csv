@@ -1,0 +1,121 @@
+model,tier,ratio,rule,threshold,val_fn,val_fp,val_cost_per_1000
+LR full,Tier 1 metro (≥ 3 M),1,per tier,0.4729,10,1,31.0734
+LR full,Tier 1 metro (≥ 3 M),1,single,0.4152,8,1,25.4237
+LR full,Tier 1 metro (≥ 3 M),2,per tier,0.2351,6,5,48.0226
+LR full,Tier 1 metro (≥ 3 M),2,single,0.2599,6,4,45.1977
+LR full,Tier 1 metro (≥ 3 M),3,per tier,0.1853,5,7,62.1469
+LR full,Tier 1 metro (≥ 3 M),3,single,0.2279,6,5,64.9718
+LR full,Tier 1 metro (≥ 3 M),4,per tier,0.1337,3,19,87.5706
+LR full,Tier 1 metro (≥ 3 M),4,single,0.1599,5,10,84.7458
+LR full,Tier 1 metro (≥ 3 M),5,per tier,0.1305,3,19,96.0452
+LR full,Tier 1 metro (≥ 3 M),5,single,0.128,3,19,96.0452
+LR full,Tier 1 metro (≥ 3 M),6,per tier,0.1305,3,19,104.5198
+LR full,Tier 1 metro (≥ 3 M),6,single,0.128,3,19,104.5198
+LR full,Tier 1 metro (≥ 3 M),7,per tier,0.1305,3,19,112.9944
+LR full,Tier 1 metro (≥ 3 M),7,single,0.128,3,19,112.9944
+LR full,Tier 1 metro (≥ 3 M),8,per tier,0.1305,3,19,121.4689
+LR full,Tier 1 metro (≥ 3 M),8,single,0.128,3,19,121.4689
+LR full,Tier 1 metro (≥ 3 M),9,per tier,0.1305,3,19,129.9435
+LR full,Tier 1 metro (≥ 3 M),9,single,0.128,3,19,129.9435
+LR full,Tier 1 metro (≥ 3 M),10,per tier,0.1305,3,19,138.4181
+LR full,Tier 1 metro (≥ 3 M),10,single,0.128,3,19,138.4181
+LR full,Tier 1 metro (≥ 3 M),11,per tier,0.1305,3,19,146.8927
+LR full,Tier 1 metro (≥ 3 M),11,single,0.128,3,19,146.8927
+LR full,Tier 1 metro (≥ 3 M),12,per tier,0.1305,3,19,155.3672
+LR full,Tier 1 metro (≥ 3 M),12,single,0.128,3,19,155.3672
+LR full,Tier 1 metro (≥ 3 M),13,per tier,0.1305,3,19,163.8418
+LR full,Tier 1 metro (≥ 3 M),13,single,0.128,3,19,163.8418
+LR full,Tier 1 metro (≥ 3 M),14,per tier,0.1305,3,19,172.3164
+LR full,Tier 1 metro (≥ 3 M),14,single,0.128,3,19,172.3164
+LR full,Tier 1 metro (≥ 3 M),15,per tier,0.1305,3,19,180.791
+LR full,Tier 1 metro (≥ 3 M),15,single,0.128,3,19,180.791
+LR full,Tier 1 metro (≥ 3 M),16,per tier,0.1305,3,19,189.2655
+LR full,Tier 1 metro (≥ 3 M),16,single,0.128,3,19,189.2655
+LR full,Tier 1 metro (≥ 3 M),17,per tier,0.1305,3,19,197.7401
+LR full,Tier 1 metro (≥ 3 M),17,single,0.128,3,19,197.7401
+LR full,Tier 1 metro (≥ 3 M),18,per tier,0.1305,3,19,206.2147
+LR full,Tier 1 metro (≥ 3 M),18,single,0.128,3,19,206.2147
+LR full,Tier 1 metro (≥ 3 M),19,per tier,0.1305,3,19,214.6893
+LR full,Tier 1 metro (≥ 3 M),19,single,0.128,3,19,214.6893
+LR full,Tier 1 metro (≥ 3 M),20,per tier,0.1305,3,19,223.1638
+LR full,Tier 1 metro (≥ 3 M),20,single,0.128,3,19,223.1638
+LR full,Tier 2 large (1–3 M),1,per tier,0.4862,16,2,38.1356
+LR full,Tier 2 large (1–3 M),1,single,0.4152,15,3,38.1356
+LR full,Tier 2 large (1–3 M),2,per tier,0.2599,7,11,52.9661
+LR full,Tier 2 large (1–3 M),2,single,0.2599,7,11,52.9661
+LR full,Tier 2 large (1–3 M),3,per tier,0.1696,5,19,72.0339
+LR full,Tier 2 large (1–3 M),3,single,0.2279,6,14,67.7966
+LR full,Tier 2 large (1–3 M),4,per tier,0.1696,5,19,82.6271
+LR full,Tier 2 large (1–3 M),4,single,0.1599,5,21,86.8644
+LR full,Tier 2 large (1–3 M),5,per tier,0.128,4,29,103.8136
+LR full,Tier 2 large (1–3 M),5,single,0.128,4,29,103.8136
+LR full,Tier 2 large (1–3 M),6,per tier,0.128,4,29,112.2881
+LR full,Tier 2 large (1–3 M),6,single,0.128,4,29,112.2881
+LR full,Tier 2 large (1–3 M),7,per tier,0.128,4,29,120.7627
+LR full,Tier 2 large (1–3 M),7,single,0.128,4,29,120.7627
+LR full,Tier 2 large (1–3 M),8,per tier,0.128,4,29,129.2373
+LR full,Tier 2 large (1–3 M),8,single,0.128,4,29,129.2373
+LR full,Tier 2 large (1–3 M),9,per tier,0.128,4,29,137.7119
+LR full,Tier 2 large (1–3 M),9,single,0.128,4,29,137.7119
+LR full,Tier 2 large (1–3 M),10,per tier,0.128,4,29,146.1864
+LR full,Tier 2 large (1–3 M),10,single,0.128,4,29,146.1864
+LR full,Tier 2 large (1–3 M),11,per tier,0.128,4,29,154.661
+LR full,Tier 2 large (1–3 M),11,single,0.128,4,29,154.661
+LR full,Tier 2 large (1–3 M),12,per tier,0.128,4,29,163.1356
+LR full,Tier 2 large (1–3 M),12,single,0.128,4,29,163.1356
+LR full,Tier 2 large (1–3 M),13,per tier,0.128,4,29,171.6102
+LR full,Tier 2 large (1–3 M),13,single,0.128,4,29,171.6102
+LR full,Tier 2 large (1–3 M),14,per tier,0.128,4,29,180.0847
+LR full,Tier 2 large (1–3 M),14,single,0.128,4,29,180.0847
+LR full,Tier 2 large (1–3 M),15,per tier,0.128,4,29,188.5593
+LR full,Tier 2 large (1–3 M),15,single,0.128,4,29,188.5593
+LR full,Tier 2 large (1–3 M),16,per tier,0.128,4,29,197.0339
+LR full,Tier 2 large (1–3 M),16,single,0.128,4,29,197.0339
+LR full,Tier 2 large (1–3 M),17,per tier,0.128,4,29,205.5085
+LR full,Tier 2 large (1–3 M),17,single,0.128,4,29,205.5085
+LR full,Tier 2 large (1–3 M),18,per tier,0.128,4,29,213.9831
+LR full,Tier 2 large (1–3 M),18,single,0.128,4,29,213.9831
+LR full,Tier 2 large (1–3 M),19,per tier,0.128,4,29,222.4576
+LR full,Tier 2 large (1–3 M),19,single,0.128,4,29,222.4576
+LR full,Tier 2 large (1–3 M),20,per tier,0.128,4,29,230.9322
+LR full,Tier 2 large (1–3 M),20,single,0.128,4,29,230.9322
+LR full,Tier 3 small (< 1 M),1,per tier,0.2945,19,13,67.7966
+LR full,Tier 3 small (< 1 M),1,single,0.4152,30,6,76.2712
+LR full,Tier 3 small (< 1 M),2,per tier,0.2844,18,13,103.8136
+LR full,Tier 3 small (< 1 M),2,single,0.2599,16,15,99.5763
+LR full,Tier 3 small (< 1 M),3,per tier,0.2751,18,14,144.0678
+LR full,Tier 3 small (< 1 M),3,single,0.2279,15,18,133.4746
+LR full,Tier 3 small (< 1 M),4,per tier,0.1599,6,34,122.8814
+LR full,Tier 3 small (< 1 M),4,single,0.1599,6,34,122.8814
+LR full,Tier 3 small (< 1 M),5,per tier,0.1599,6,34,135.5932
+LR full,Tier 3 small (< 1 M),5,single,0.128,5,44,146.1864
+LR full,Tier 3 small (< 1 M),6,per tier,0.1599,6,34,148.3051
+LR full,Tier 3 small (< 1 M),6,single,0.128,5,44,156.7797
+LR full,Tier 3 small (< 1 M),7,per tier,0.1599,6,34,161.0169
+LR full,Tier 3 small (< 1 M),7,single,0.128,5,44,167.3729
+LR full,Tier 3 small (< 1 M),8,per tier,0.1599,6,34,173.7288
+LR full,Tier 3 small (< 1 M),8,single,0.128,5,44,177.9661
+LR full,Tier 3 small (< 1 M),9,per tier,0.1599,6,34,186.4407
+LR full,Tier 3 small (< 1 M),9,single,0.128,5,44,188.5593
+LR full,Tier 3 small (< 1 M),10,per tier,0.1599,6,34,199.1525
+LR full,Tier 3 small (< 1 M),10,single,0.128,5,44,199.1525
+LR full,Tier 3 small (< 1 M),11,per tier,0.1293,5,43,207.6271
+LR full,Tier 3 small (< 1 M),11,single,0.128,5,44,209.7458
+LR full,Tier 3 small (< 1 M),12,per tier,0.1293,5,43,218.2203
+LR full,Tier 3 small (< 1 M),12,single,0.128,5,44,220.339
+LR full,Tier 3 small (< 1 M),13,per tier,0.1293,5,43,228.8136
+LR full,Tier 3 small (< 1 M),13,single,0.128,5,44,230.9322
+LR full,Tier 3 small (< 1 M),14,per tier,0.1293,5,43,239.4068
+LR full,Tier 3 small (< 1 M),14,single,0.128,5,44,241.5254
+LR full,Tier 3 small (< 1 M),15,per tier,0.1293,5,43,250.0
+LR full,Tier 3 small (< 1 M),15,single,0.128,5,44,252.1186
+LR full,Tier 3 small (< 1 M),16,per tier,0.1293,5,43,260.5932
+LR full,Tier 3 small (< 1 M),16,single,0.128,5,44,262.7119
+LR full,Tier 3 small (< 1 M),17,per tier,0.1293,5,43,271.1864
+LR full,Tier 3 small (< 1 M),17,single,0.128,5,44,273.3051
+LR full,Tier 3 small (< 1 M),18,per tier,0.1293,5,43,281.7797
+LR full,Tier 3 small (< 1 M),18,single,0.128,5,44,283.8983
+LR full,Tier 3 small (< 1 M),19,per tier,0.1293,5,43,292.3729
+LR full,Tier 3 small (< 1 M),19,single,0.128,5,44,294.4915
+LR full,Tier 3 small (< 1 M),20,per tier,0.1293,5,43,302.9661
+LR full,Tier 3 small (< 1 M),20,single,0.128,5,44,305.0847

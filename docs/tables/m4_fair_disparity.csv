@@ -1,0 +1,145 @@
+model,data,grouping,metric,estimate,ci_low,ci_high
+Persistence,validation,country,dir_vs_priv_min,1.4318,0.3399,2.5744
+Persistence,validation,country,dir_vs_priv_max,1.4318,0.3399,2.5744
+Persistence,validation,country,dir_min_over_max,0.6984,0.3307,0.9697
+Persistence,validation,country,dp_diff,0.023,0.0009,0.0981
+Persistence,validation,country,eop_diff,0.1036,0.007,0.375
+Persistence,validation,country,pe_diff,0.0002,0.0003,0.0214
+Persistence,validation,country,eo_diff,0.1036,0.0111,0.375
+Persistence,validation,country,passes_80_rule,0.0,,
+Persistence,validation,city-size tier,dir_vs_priv_min,1.65,0.4259,3.5062
+Persistence,validation,city-size tier,dir_vs_priv_max,3.6,2.0339,9.5125
+Persistence,validation,city-size tier,dir_min_over_max,0.2778,0.0585,0.4214
+Persistence,validation,city-size tier,dp_diff,0.0734,0.0219,0.1455
+Persistence,validation,city-size tier,eop_diff,0.1731,0.0329,0.5002
+Persistence,validation,city-size tier,pe_diff,0.0193,0.0066,0.0393
+Persistence,validation,city-size tier,eo_diff,0.1731,0.033,0.5002
+Persistence,validation,city-size tier,passes_80_rule,0.0,,
+Persistence,validation,city,dir_vs_priv_min,inf,,
+Persistence,validation,city,dir_vs_priv_max,inf,,
+Persistence,validation,city,dir_min_over_max,0.0,,
+Persistence,validation,city,dp_diff,0.178,,
+Persistence,validation,city,eop_diff,0.8333,,
+Persistence,validation,city,pe_diff,0.0729,,
+Persistence,validation,city,eo_diff,0.8333,,
+Persistence,validation,city,passes_80_rule,0.0,,
+LR full,validation,country,dir_vs_priv_min,1.299,0.8531,1.5898
+LR full,validation,country,dir_vs_priv_max,1.299,0.8531,1.5898
+LR full,validation,country,dir_min_over_max,0.7698,0.6186,0.9754
+LR full,validation,country,dp_diff,0.0351,0.0018,0.0987
+LR full,validation,country,eop_diff,0.0633,0.0036,0.4713
+LR full,validation,country,pe_diff,0.0113,0.0005,0.0444
+LR full,validation,country,eo_diff,0.0633,0.0087,0.4713
+LR full,validation,country,passes_80_rule,0.0,,
+LR full,validation,city-size tier,dir_vs_priv_min,1.3393,0.75,1.7368
+LR full,validation,city-size tier,dir_vs_priv_max,2.4375,1.5,3.9004
+LR full,validation,city-size tier,dir_min_over_max,0.4103,0.25,0.6047
+LR full,validation,city-size tier,dp_diff,0.1137,0.0339,0.1954
+LR full,validation,city-size tier,eop_diff,0.1538,0.0399,0.6897
+LR full,validation,city-size tier,pe_diff,0.0492,0.0107,0.1264
+LR full,validation,city-size tier,eo_diff,0.1538,0.0498,0.6897
+LR full,validation,city-size tier,passes_80_rule,0.0,,
+LR full,validation,city,dir_vs_priv_min,0.4,,
+LR full,validation,city,dir_vs_priv_max,7.4,,
+LR full,validation,city,dir_min_over_max,0.0541,,
+LR full,validation,city,dp_diff,0.2966,,
+LR full,validation,city,eop_diff,0.3,,
+LR full,validation,city,pe_diff,0.1497,,
+LR full,validation,city,eo_diff,0.3,,
+LR full,validation,city,passes_80_rule,0.0,,
+RF full,validation,country,dir_vs_priv_min,1.3956,0.6834,1.9583
+RF full,validation,country,dir_vs_priv_max,1.3956,0.6834,1.9583
+RF full,validation,country,dir_min_over_max,0.7166,0.5041,0.9817
+RF full,validation,country,dp_diff,0.0378,0.0015,0.116
+RF full,validation,country,eop_diff,0.0995,0.0075,0.4253
+RF full,validation,country,pe_diff,0.012,0.0007,0.0509
+RF full,validation,country,eo_diff,0.0995,0.0125,0.4253
+RF full,validation,country,passes_80_rule,0.0,,
+RF full,validation,city-size tier,dir_vs_priv_min,1.6579,0.7081,2.5386
+RF full,validation,city-size tier,dir_vs_priv_max,3.1974,1.7143,4.6003
+RF full,validation,city-size tier,dir_min_over_max,0.3128,0.2168,0.4667
+RF full,validation,city-size tier,dp_diff,0.1179,0.0348,0.2076
+RF full,validation,city-size tier,eop_diff,0.3013,0.1071,0.6897
+RF full,validation,city-size tier,pe_diff,0.0482,0.0105,0.1061
+RF full,validation,city-size tier,eo_diff,0.3013,0.1071,0.6897
+RF full,validation,city-size tier,passes_80_rule,0.0,,
+RF full,validation,city,dir_vs_priv_min,0.0,,
+RF full,validation,city,dir_vs_priv_max,33.0,,
+RF full,validation,city,dir_min_over_max,0.0,,
+RF full,validation,city,dp_diff,0.2797,,
+RF full,validation,city,eop_diff,0.4545,,
+RF full,validation,city,pe_diff,0.1354,,
+RF full,validation,city,eo_diff,0.4545,,
+RF full,validation,city,passes_80_rule,0.0,,
+Persistence,training OOF,country,dir_vs_priv_min,0.9265,0.4877,1.2969
+Persistence,training OOF,country,dir_vs_priv_max,0.9265,0.4877,1.2969
+Persistence,training OOF,country,dir_min_over_max,0.9265,0.4877,0.9906
+Persistence,training OOF,country,dp_diff,0.0037,0.0005,0.0224
+Persistence,training OOF,country,eop_diff,0.0614,0.0024,0.2614
+Persistence,training OOF,country,pe_diff,0.0049,0.0003,0.0112
+Persistence,training OOF,country,eo_diff,0.0614,0.0046,0.2614
+Persistence,training OOF,country,passes_80_rule,1.0,,
+Persistence,training OOF,city-size tier,dir_vs_priv_min,0.9153,0.542,1.1395
+Persistence,training OOF,city-size tier,dir_vs_priv_max,0.9788,0.8124,1.3226
+Persistence,training OOF,city-size tier,dir_min_over_max,0.9153,0.542,0.9762
+Persistence,training OOF,city-size tier,dp_diff,0.0043,0.0013,0.022
+Persistence,training OOF,city-size tier,eop_diff,0.192,0.1061,0.3148
+Persistence,training OOF,city-size tier,pe_diff,0.0109,0.0043,0.0198
+Persistence,training OOF,city-size tier,eo_diff,0.192,0.1061,0.3148
+Persistence,training OOF,city-size tier,passes_80_rule,1.0,,
+Persistence,training OOF,city,dir_vs_priv_min,1.0,,
+Persistence,training OOF,city,dir_vs_priv_max,1.2778,,
+Persistence,training OOF,city,dir_min_over_max,0.7826,,
+Persistence,training OOF,city,dp_diff,0.013,,
+Persistence,training OOF,city,eop_diff,0.491,,
+Persistence,training OOF,city,pe_diff,0.0304,,
+Persistence,training OOF,city,eo_diff,0.491,,
+Persistence,training OOF,city,passes_80_rule,0.0,,
+LR full,training OOF,country,dir_vs_priv_min,1.009,0.7507,1.2217
+LR full,training OOF,country,dir_vs_priv_max,1.009,0.7507,1.2217
+LR full,training OOF,country,dir_min_over_max,0.9911,0.7364,0.9964
+LR full,training OOF,country,dp_diff,0.001,0.0004,0.0278
+LR full,training OOF,country,eop_diff,0.0686,0.0278,0.128
+LR full,training OOF,country,pe_diff,0.0006,0.0004,0.0254
+LR full,training OOF,country,eo_diff,0.0686,0.0278,0.128
+LR full,training OOF,country,passes_80_rule,1.0,,
+LR full,training OOF,city-size tier,dir_vs_priv_min,1.1504,0.8612,1.352
+LR full,training OOF,city-size tier,dir_vs_priv_max,1.1758,1.0434,1.4834
+LR full,training OOF,city-size tier,dir_min_over_max,0.8505,0.6718,0.9324
+LR full,training OOF,city-size tier,dp_diff,0.0179,0.0066,0.0456
+LR full,training OOF,city-size tier,eop_diff,0.0912,0.0248,0.2143
+LR full,training OOF,city-size tier,pe_diff,0.0168,0.0054,0.0404
+LR full,training OOF,city-size tier,eo_diff,0.0912,0.0248,0.2143
+LR full,training OOF,city-size tier,passes_80_rule,1.0,,
+LR full,training OOF,city,dir_vs_priv_min,1.069,,
+LR full,training OOF,city,dir_vs_priv_max,2.0345,,
+LR full,training OOF,city,dir_min_over_max,0.4915,,
+LR full,training OOF,city,dp_diff,0.0777,,
+LR full,training OOF,city,eop_diff,0.1304,,
+LR full,training OOF,city,pe_diff,0.0695,,
+LR full,training OOF,city,eo_diff,0.1304,,
+LR full,training OOF,city,passes_80_rule,0.0,,
+RF full,training OOF,country,dir_vs_priv_min,0.9403,0.6319,1.1429
+RF full,training OOF,country,dir_vs_priv_max,0.9403,0.6319,1.1429
+RF full,training OOF,country,dir_min_over_max,0.9403,0.6319,0.9954
+RF full,training OOF,country,dp_diff,0.0059,0.0005,0.0261
+RF full,training OOF,country,eop_diff,0.0668,0.0028,0.1833
+RF full,training OOF,country,pe_diff,0.0068,0.0003,0.0222
+RF full,training OOF,country,eo_diff,0.0668,0.0066,0.1833
+RF full,training OOF,country,passes_80_rule,1.0,,
+RF full,training OOF,city-size tier,dir_vs_priv_min,1.039,0.7697,1.1988
+RF full,training OOF,city-size tier,dir_vs_priv_max,1.0459,0.9115,1.3646
+RF full,training OOF,city-size tier,dir_min_over_max,0.9561,0.6982,0.9792
+RF full,training OOF,city-size tier,dp_diff,0.0043,0.002,0.0318
+RF full,training OOF,city-size tier,eop_diff,0.1138,0.0315,0.3055
+RF full,training OOF,city-size tier,pe_diff,0.0043,0.0017,0.0238
+RF full,training OOF,city-size tier,eo_diff,0.1138,0.0315,0.3055
+RF full,training OOF,city-size tier,passes_80_rule,1.0,,
+RF full,training OOF,city,dir_vs_priv_min,1.0,,
+RF full,training OOF,city,dir_vs_priv_max,1.7586,,
+RF full,training OOF,city,dir_min_over_max,0.5686,,
+RF full,training OOF,city,dp_diff,0.057,,
+RF full,training OOF,city,eop_diff,0.3043,,
+RF full,training OOF,city,pe_diff,0.0612,,
+RF full,training OOF,city,eo_diff,0.3043,,
+RF full,training OOF,city,passes_80_rule,0.0,,

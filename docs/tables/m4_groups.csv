@@ -1,0 +1,12 @@
+city,country,census_year,population,tier,spike_threshold,train_days,train_spikes,train_rate,val_days,val_spikes,val_rate
+Lahore,PK,2023,13004135,Tier 1 metro (≥ 3 M),2.1771,386,17,0.044,118,1,0.0085
+Faisalabad,PK,2023,3691999,Tier 1 metro (≥ 3 M),1.5878,386,17,0.044,118,11,0.0932
+Rawalpindi,PK,2023,3357612,Tier 1 metro (≥ 3 M),0.6543,386,23,0.0596,118,0,0.0
+Multan,PK,2023,2215381,Tier 2 large (1–3 M),1.2505,386,18,0.0466,118,10,0.0847
+Ludhiana,IN,2011,1618879,Tier 2 large (1–3 M),1.1731,386,18,0.0466,118,10,0.0847
+Amritsar,IN,2011,1169637,Tier 2 large (1–3 M),1.6402,386,17,0.044,118,5,0.0424
+Islamabad,PK,2023,1108872,Tier 2 large (1–3 M),0.6543,386,23,0.0596,118,0,0.0
+Jalandhar,IN,2011,916774,Tier 3 small (< 1 M),1.0862,386,18,0.0466,118,12,0.1017
+Sialkot,PK,2023,911817,Tier 3 small (< 1 M),1.3364,386,17,0.044,118,5,0.0424
+Rahim Yar Khan,PK,2023,519261,Tier 3 small (< 1 M),0.3631,386,18,0.0466,118,22,0.1864
+Ferozepur,IN,2011,163512,Tier 3 small (< 1 M),1.2452,386,18,0.0466,118,13,0.1102

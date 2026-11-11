@@ -1,0 +1,46 @@
+model,grouping,group,metric,estimate,ci_low,ci_high
+Persistence,country,India,selection_rate,0.0763,0.0088,0.182
+Persistence,country,India,tpr,0.675,0.2,0.766
+Persistence,country,India,fpr,0.0208,0.0022,0.0522
+Persistence,country,Pakistan,selection_rate,0.0533,0.0157,0.0948
+Persistence,country,Pakistan,tpr,0.5714,0.3417,0.7565
+Persistence,country,Pakistan,fpr,0.0206,0.0064,0.0362
+Persistence,city-size tier,Tier 1 metro (≥ 3 M),selection_rate,0.0282,0.0055,0.0546
+Persistence,city-size tier,Tier 1 metro (≥ 3 M),tpr,0.5,0.3333,1.0
+Persistence,city-size tier,Tier 1 metro (≥ 3 M),fpr,0.0117,0.0,0.0261
+Persistence,city-size tier,Tier 2 large (1–3 M),selection_rate,0.0466,0.0039,0.1081
+Persistence,city-size tier,Tier 2 large (1–3 M),tpr,0.56,0.0,0.6667
+Persistence,city-size tier,Tier 2 large (1–3 M),fpr,0.0179,0.0021,0.0458
+Persistence,city-size tier,Tier 3 small (< 1 M),selection_rate,0.1017,0.0266,0.1952
+Persistence,city-size tier,Tier 3 small (< 1 M),tpr,0.6731,0.3528,0.8148
+Persistence,city-size tier,Tier 3 small (< 1 M),fpr,0.031,0.0109,0.0552
+LR full,country,India,selection_rate,0.1525,0.0436,0.2807
+LR full,country,India,tpr,0.9,0.3321,0.9688
+LR full,country,India,fpr,0.0833,0.0281,0.1496
+LR full,country,Pakistan,selection_rate,0.1174,0.0472,0.1932
+LR full,country,Pakistan,tpr,0.8367,0.75,0.9231
+LR full,country,Pakistan,fpr,0.0721,0.0301,0.1164
+LR full,city-size tier,Tier 1 metro (≥ 3 M),selection_rate,0.0791,0.0282,0.1375
+LR full,city-size tier,Tier 1 metro (≥ 3 M),tpr,0.75,0.6667,1.0
+LR full,city-size tier,Tier 1 metro (≥ 3 M),fpr,0.0556,0.0213,0.105
+LR full,city-size tier,Tier 2 large (1–3 M),selection_rate,0.1059,0.0275,0.1974
+LR full,city-size tier,Tier 2 large (1–3 M),tpr,0.84,0.0,0.9355
+LR full,city-size tier,Tier 2 large (1–3 M),fpr,0.0649,0.0213,0.1126
+LR full,city-size tier,Tier 3 small (< 1 M),selection_rate,0.1928,0.0702,0.3159
+LR full,city-size tier,Tier 3 small (< 1 M),tpr,0.9038,0.7241,0.9722
+LR full,city-size tier,Tier 3 small (< 1 M),fpr,0.1048,0.0358,0.1873
+RF full,country,India,selection_rate,0.1335,0.0348,0.2603
+RF full,country,India,tpr,0.875,0.3321,0.9535
+RF full,country,India,fpr,0.0648,0.0183,0.124
+RF full,country,Pakistan,selection_rate,0.0956,0.0386,0.1554
+RF full,country,Pakistan,tpr,0.7755,0.68,0.872
+RF full,country,Pakistan,fpr,0.0528,0.0225,0.0832
+RF full,city-size tier,Tier 1 metro (≥ 3 M),selection_rate,0.0537,0.0246,0.0849
+RF full,city-size tier,Tier 1 metro (≥ 3 M),tpr,0.5833,0.3333,1.0
+RF full,city-size tier,Tier 1 metro (≥ 3 M),fpr,0.0351,0.0157,0.057
+RF full,city-size tier,Tier 2 large (1–3 M),selection_rate,0.089,0.0212,0.1763
+RF full,city-size tier,Tier 2 large (1–3 M),tpr,0.8,0.0,0.9032
+RF full,city-size tier,Tier 2 large (1–3 M),fpr,0.0492,0.0146,0.0873
+RF full,city-size tier,Tier 3 small (< 1 M),selection_rate,0.1716,0.0634,0.2903
+RF full,city-size tier,Tier 3 small (< 1 M),tpr,0.8846,0.722,0.9445
+RF full,city-size tier,Tier 3 small (< 1 M),fpr,0.0833,0.0292,0.148

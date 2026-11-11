@@ -1,0 +1,195 @@
+{
+  "target": "target_spike_h1",
+  "cost_fn_fp": [
+    5,
+    1
+  ],
+  "cv": {
+    "type": "purged repeated StratifiedGroupKFold",
+    "n_splits": 5,
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "group": "calendar week from WINDOW_START",
+    "purge_days": 1,
+    "embargo_days": 3
+  },
+  "search": {
+    "type": "RandomizedSearchCV",
+    "n_iter": 60,
+    "seed": 42,
+    "scoring": "average_precision",
+    "hgb_early_stopping": false
+  },
+  "models": {
+    "rf_full": {
+      "best_params": {
+        "n_estimators": 500,
+        "min_samples_leaf": 50,
+        "max_features": 0.5,
+        "max_depth": 4,
+        "class_weight": null
+      },
+      "cv_pr_auc": 0.5903507525895797,
+      "threshold": 0.17468849785098312
+    },
+    "rf_weather_only": {
+      "best_params": {
+        "n_estimators": 300,
+        "min_samples_leaf": 5,
+        "max_features": "sqrt",
+        "max_depth": 6,
+        "class_weight": null
+      },
+      "cv_pr_auc": 0.4104515919615129,
+      "threshold": 0.1150388608221861
+    },
+    "rf_no_fire": {
+      "best_params": {
+        "n_estimators": 500,
+        "min_samples_leaf": 50,
+        "max_features": 0.5,
+        "max_depth": 4,
+        "class_weight": null
+      },
+      "cv_pr_auc": 0.591262650739524,
+      "threshold": 0.14300684325176471
+    },
+    "hgb_full": {
+      "best_params": {
+        "class_weight": "balanced",
+        "l2_regularization": 0.05719341217670732,
+        "learning_rate": 0.019859290160502092,
+        "max_depth": 8,
+        "max_iter": 330,
+        "max_leaf_nodes": 7,
+        "min_samples_leaf": 61
+      },
+      "cv_pr_auc": 0.5647465981029955,
+      "threshold": 0.577470279081964
+    },
+    "hgb_weather_only": {
+      "best_params": {
+        "class_weight": null,
+        "l2_regularization": 0.004936948694960458,
+        "learning_rate": 0.03781324384545034,
+        "max_depth": 3,
+        "max_iter": 459,
+        "max_leaf_nodes": 63,
+        "min_samples_leaf": 11
+      },
+      "cv_pr_auc": 0.40668788750618645,
+      "threshold": 0.08972785428342815
+    },
+    "hgb_no_fire": {
+      "best_params": {
+        "class_weight": "balanced",
+        "l2_regularization": 0.11101191524846071,
+        "learning_rate": 0.055055457827144,
+        "max_depth": null,
+        "max_iter": 119,
+        "max_leaf_nodes": 7,
+        "min_samples_leaf": 17
+      },
+      "cv_pr_auc": 0.579620887861683,
+      "threshold": 0.5782021308715135
+    }
+  },
+  "final_model_rule": "highest CV PR-AUC among full-feature LR, DT, RF, HGB; within 0.005 = tie; simplest tied model wins",
+  "final_model": "lr_full",
+  "best_ensemble": "rf_full",
+  "fairness": {
+    "attribute": "geography",
+    "groups": {
+      "country": [
+        "Pakistan",
+        "India"
+      ],
+      "tier": [
+        "Tier 1 metro (≥ 3 M)",
+        "Tier 2 large (1–3 M)",
+        "Tier 3 small (< 1 M)"
+      ],
+      "city": [
+        "Amritsar",
+        "Faisalabad",
+        "Ferozepur",
+        "Islamabad",
+        "Jalandhar",
+        "Lahore",
+        "Ludhiana",
+        "Multan",
+        "Rahim Yar Khan",
+        "Rawalpindi",
+        "Sialkot"
+      ]
+    },
+    "privileged": {
+      "country_name": "Pakistan",
+      "tier": "Tier 1 metro (≥ 3 M)",
+      "city": "Lahore"
+    },
+    "eps_headline": 0.05,
+    "eighty_percent_rule": "two-sided, 0.8 to 1.25"
+  },
+  "mitigation_thresholds": {
+    "LR full": {
+      "none (single threshold)": {
+        "Tier 1 metro (≥ 3 M)": 0.12803977540343262,
+        "Tier 2 large (1–3 M)": 0.12803977540343262,
+        "Tier 3 small (< 1 M)": 0.12803977540343262
+      },
+      "reweighing (pre-processing)": {
+        "Tier 1 metro (≥ 3 M)": 0.12804198160318078,
+        "Tier 2 large (1–3 M)": 0.12804198160318078,
+        "Tier 3 small (< 1 M)": 0.12804198160318078
+      },
+      "threshold per tier, cost-optimal": {
+        "Tier 1 metro (≥ 3 M)": 0.13051819280230265,
+        "Tier 2 large (1–3 M)": 0.12803977540343262,
+        "Tier 3 small (< 1 M)": 0.15986551931023305
+      },
+      "predictive equality, ε = 0.05": {
+        "Tier 1 metro (≥ 3 M)": 0.13051819280230265,
+        "Tier 2 large (1–3 M)": 0.12803977540343262,
+        "Tier 3 small (< 1 M)": 0.15986551931023305
+      },
+      "equalized odds, ε = 0.05": {
+        "Tier 1 metro (≥ 3 M)": 0.13051819280230265,
+        "Tier 2 large (1–3 M)": 0.13166238995800658,
+        "Tier 3 small (< 1 M)": 0.1608591077430441
+      }
+    },
+    "RF full": {
+      "none (single threshold)": {
+        "Tier 1 metro (≥ 3 M)": 0.17468849785098312,
+        "Tier 2 large (1–3 M)": 0.17468849785098312,
+        "Tier 3 small (< 1 M)": 0.17468849785098312
+      },
+      "reweighing (pre-processing)": {
+        "Tier 1 metro (≥ 3 M)": 0.1756477239463079,
+        "Tier 2 large (1–3 M)": 0.1756477239463079,
+        "Tier 3 small (< 1 M)": 0.1756477239463079
+      },
+      "threshold per tier, cost-optimal": {
+        "Tier 1 metro (≥ 3 M)": 0.17468849785098312,
+        "Tier 2 large (1–3 M)": 0.13923057522879584,
+        "Tier 3 small (< 1 M)": 0.23420163080142142
+      },
+      "predictive equality, ε = 0.05": {
+        "Tier 1 metro (≥ 3 M)": 0.17468849785098312,
+        "Tier 2 large (1–3 M)": 0.13923057522879584,
+        "Tier 3 small (< 1 M)": 0.23420163080142142
+      },
+      "equalized odds, ε = 0.05": {
+        "Tier 1 metro (≥ 3 M)": 0.1439454779320375,
+        "Tier 2 large (1–3 M)": 0.13923057522879584,
+        "Tier 3 small (< 1 M)": 0.23420163080142142
+      }
+    }
+  }
+}

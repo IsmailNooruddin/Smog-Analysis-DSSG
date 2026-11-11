@@ -1,0 +1,185 @@
+model,method,knob,data,cost_per_1000,f1,accuracy,recall,eo_diff,pe_diff,eop_diff,dir_vs_priv_min,pareto
+LR full,single threshold,,training OOF,82.9016,0.5581,0.9284,0.9412,0.0912,0.0168,0.0912,1.1504,False
+LR full,single threshold,,validation,117.1032,0.5969,0.9199,0.8652,0.1538,0.0492,0.1538,1.3393,False
+LR full,threshold per tier,,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,threshold per tier,,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,predictive equality,0.01,training OOF,78.8978,0.5983,0.9428,0.8873,0.1147,0.0073,0.1147,0.8987,False
+LR full,predictive equality,0.01,validation,109.3991,0.6356,0.9337,0.8427,0.1346,0.0384,0.1346,1.0446,True
+LR full,equalized odds,0.01,training OOF,169.3358,0.4437,0.9616,0.3186,0.0082,0.0055,0.0082,0.7788,True
+LR full,equalized odds,0.01,validation,237.2881,0.4603,0.9476,0.3258,0.2333,0.0066,0.2333,3.25,False
+LR full,predictive equality,0.02,training OOF,78.8978,0.5983,0.9428,0.8873,0.1147,0.0073,0.1147,0.8987,False
+LR full,predictive equality,0.02,validation,109.3991,0.6356,0.9337,0.8427,0.1346,0.0384,0.1346,1.0446,True
+LR full,equalized odds,0.02,training OOF,82.9016,0.5844,0.9397,0.8824,0.0172,0.0172,0.0101,0.9189,True
+LR full,equalized odds,0.02,validation,114.792,0.6173,0.9284,0.8427,0.1346,0.023,0.1346,1.2589,False
+LR full,predictive equality,0.03,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,predictive equality,0.03,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,equalized odds,0.03,training OOF,82.4305,0.5768,0.9364,0.902,0.0213,0.0213,0.0132,0.9116,True
+LR full,equalized odds,0.03,validation,117.1032,0.6098,0.926,0.8427,0.1346,0.0254,0.1346,1.3125,False
+LR full,predictive equality,0.04,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,predictive equality,0.04,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,equalized odds,0.04,training OOF,81.4885,0.5828,0.9383,0.8971,0.0339,0.0138,0.0339,0.9246,False
+LR full,equalized odds,0.04,validation,115.5624,0.6148,0.9276,0.8427,0.1346,0.0254,0.1346,1.2589,False
+LR full,predictive equality,0.05,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,predictive equality,0.05,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,equalized odds,0.05,training OOF,80.7819,0.5785,0.9362,0.9118,0.0263,0.022,0.0263,0.9246,True
+LR full,equalized odds,0.05,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,predictive equality,0.06,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,predictive equality,0.06,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,equalized odds,0.06,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,equalized odds,0.06,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,predictive equality,0.07,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,predictive equality,0.07,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,equalized odds,0.07,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,equalized odds,0.07,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,predictive equality,0.08,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,predictive equality,0.08,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,equalized odds,0.08,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,equalized odds,0.08,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,predictive equality,0.09,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,predictive equality,0.09,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,equalized odds,0.09,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,equalized odds,0.09,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,predictive equality,0.1,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,predictive equality,0.1,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,equalized odds,0.1,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,equalized odds,0.1,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,predictive equality,0.11,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,predictive equality,0.11,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,equalized odds,0.11,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,equalized odds,0.11,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,predictive equality,0.12,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,predictive equality,0.12,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,equalized odds,0.12,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,equalized odds,0.12,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,predictive equality,0.13,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,predictive equality,0.13,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,equalized odds,0.13,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,equalized odds,0.13,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,predictive equality,0.14,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,predictive equality,0.14,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,equalized odds,0.14,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,equalized odds,0.14,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,predictive equality,0.15,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,predictive equality,0.15,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,equalized odds,0.15,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,equalized odds,0.15,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,predictive equality,0.16,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,predictive equality,0.16,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,equalized odds,0.16,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,equalized odds,0.16,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,predictive equality,0.17,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,predictive equality,0.17,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,equalized odds,0.17,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,equalized odds,0.17,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,predictive equality,0.18,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,predictive equality,0.18,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,equalized odds,0.18,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,equalized odds,0.18,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,predictive equality,0.19,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,predictive equality,0.19,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,equalized odds,0.19,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,equalized odds,0.19,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,predictive equality,0.2,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,predictive equality,0.2,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,equalized odds,0.2,training OOF,78.4268,0.5806,0.9357,0.9265,0.0489,0.024,0.0489,0.944,True
+LR full,equalized odds,0.2,validation,113.2512,0.6154,0.9268,0.8539,0.1346,0.0254,0.1346,1.3393,False
+LR full,reweighing,0.25,training OOF,82.9016,0.5581,0.9284,0.9412,0.0912,0.0168,0.0912,1.1504,False
+LR full,reweighing,0.25,validation,117.1032,0.5969,0.9199,0.8652,0.1538,0.0492,0.1538,1.3393,False
+LR full,reweighing,0.5,training OOF,82.9016,0.5581,0.9284,0.9412,0.0912,0.0168,0.0912,1.1504,False
+LR full,reweighing,0.5,validation,117.1032,0.5969,0.9199,0.8652,0.1538,0.0492,0.1538,1.3393,False
+LR full,reweighing,0.75,training OOF,82.9016,0.5581,0.9284,0.9412,0.0912,0.0168,0.0912,1.1504,False
+LR full,reweighing,0.75,validation,117.1032,0.5969,0.9199,0.8652,0.1538,0.0492,0.1538,1.3393,False
+LR full,reweighing,1.0,training OOF,82.666,0.559,0.9286,0.9412,0.0912,0.0177,0.0912,1.1603,False
+LR full,reweighing,1.0,validation,117.1032,0.5969,0.9199,0.8652,0.1538,0.0492,0.1538,1.3393,False
+RF full,single threshold,,training OOF,89.967,0.5682,0.9374,0.8578,0.1138,0.0043,0.1138,1.039,False
+RF full,single threshold,,validation,114.792,0.632,0.9345,0.8202,0.3013,0.0482,0.3013,1.6579,False
+RF full,threshold per tier,,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,threshold per tier,,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,predictive equality,0.01,training OOF,87.8474,0.579,0.9404,0.8529,0.0997,0.0077,0.0997,0.9633,False
+RF full,predictive equality,0.01,validation,122.4961,0.6278,0.9361,0.7865,0.2436,0.0411,0.2436,1.5789,False
+RF full,equalized odds,0.01,training OOF,151.9077,0.4986,0.9593,0.4216,0.0075,0.0075,0.0015,0.825,True
+RF full,equalized odds,0.01,validation,201.849,0.5479,0.9492,0.4494,0.0449,0.012,0.0449,2.0357,True
+RF full,predictive equality,0.02,training OOF,87.3764,0.586,0.9428,0.8431,0.0715,0.0158,0.0715,0.867,False
+RF full,predictive equality,0.02,validation,122.4961,0.6359,0.9391,0.7753,0.2244,0.0292,0.2244,1.5789,False
+RF full,equalized odds,0.02,training OOF,94.2063,0.5775,0.9435,0.8039,0.0185,0.0185,0.0044,0.7921,True
+RF full,equalized odds,0.02,validation,130.9707,0.6286,0.9399,0.7416,0.2167,0.0197,0.2167,1.5789,False
+RF full,predictive equality,0.03,training OOF,87.1408,0.5701,0.9364,0.8775,0.0909,0.0227,0.0909,0.9633,False
+RF full,predictive equality,0.03,validation,124.8074,0.6195,0.9337,0.7865,0.2436,0.0411,0.2436,1.6974,False
+RF full,equalized odds,0.03,training OOF,88.5539,0.5625,0.9341,0.8824,0.0281,0.0281,0.0101,0.7443,True
+RF full,equalized odds,0.03,validation,119.4145,0.6311,0.9361,0.7978,0.0577,0.0204,0.0577,1.3438,True
+RF full,predictive equality,0.04,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,predictive equality,0.04,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,equalized odds,0.04,training OOF,87.6119,0.566,0.935,0.8824,0.0308,0.0308,0.0101,0.7214,False
+RF full,equalized odds,0.04,validation,119.4145,0.6311,0.9361,0.7978,0.0577,0.0204,0.0577,1.3438,True
+RF full,predictive equality,0.05,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,predictive equality,0.05,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,equalized odds,0.05,training OOF,86.6698,0.5719,0.9369,0.8775,0.0308,0.0308,0.0277,0.781,True
+RF full,equalized odds,0.05,validation,125.5778,0.6244,0.9361,0.7753,0.2244,0.0263,0.2244,1.6125,False
+RF full,predictive equality,0.06,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,predictive equality,0.06,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,equalized odds,0.06,training OOF,86.6698,0.5742,0.9378,0.8725,0.0452,0.0308,0.0452,0.8217,False
+RF full,equalized odds,0.06,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,predictive equality,0.07,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,predictive equality,0.07,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,equalized odds,0.07,training OOF,86.6698,0.5742,0.9378,0.8725,0.0452,0.0308,0.0452,0.8217,False
+RF full,equalized odds,0.07,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,predictive equality,0.08,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,predictive equality,0.08,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,equalized odds,0.08,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,equalized odds,0.08,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,predictive equality,0.09,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,predictive equality,0.09,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,equalized odds,0.09,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,equalized odds,0.09,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,predictive equality,0.1,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,predictive equality,0.1,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,equalized odds,0.1,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,equalized odds,0.1,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,predictive equality,0.11,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,predictive equality,0.11,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,equalized odds,0.11,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,equalized odds,0.11,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,predictive equality,0.12,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,predictive equality,0.12,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,equalized odds,0.12,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,equalized odds,0.12,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,predictive equality,0.13,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,predictive equality,0.13,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,equalized odds,0.13,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,equalized odds,0.13,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,predictive equality,0.14,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,predictive equality,0.14,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,equalized odds,0.14,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,equalized odds,0.14,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,predictive equality,0.15,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,predictive equality,0.15,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,equalized odds,0.15,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,equalized odds,0.15,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,predictive equality,0.16,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,predictive equality,0.16,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,equalized odds,0.16,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,equalized odds,0.16,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,predictive equality,0.17,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,predictive equality,0.17,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,equalized odds,0.17,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,equalized odds,0.17,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,predictive equality,0.18,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,predictive equality,0.18,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,equalized odds,0.18,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,equalized odds,0.18,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,predictive equality,0.19,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,predictive equality,0.19,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,equalized odds,0.19,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,equalized odds,0.19,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,predictive equality,0.2,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,predictive equality,0.2,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,equalized odds,0.2,training OOF,86.6698,0.5765,0.9388,0.8676,0.0628,0.0308,0.0628,0.867,False
+RF full,equalized odds,0.2,validation,124.8074,0.6273,0.9368,0.7753,0.2244,0.0292,0.2244,1.6974,False
+RF full,reweighing,0.25,training OOF,90.4381,0.5457,0.9275,0.9069,0.1122,0.0073,0.1122,1.0758,False
+RF full,reweighing,0.25,validation,117.8737,0.6141,0.9284,0.8315,0.3205,0.0596,0.3205,1.65,False
+RF full,reweighing,0.5,training OOF,90.6736,0.5654,0.9366,0.8578,0.1138,0.005,0.1138,1.0459,False
+RF full,reweighing,0.5,validation,113.2512,0.6376,0.9361,0.8202,0.3013,0.0406,0.3013,1.5375,False
+RF full,reweighing,0.75,training OOF,89.967,0.5473,0.9279,0.9069,0.1122,0.0082,0.1122,1.0847,False
+RF full,reweighing,0.75,validation,116.3328,0.6192,0.9299,0.8315,0.3205,0.0548,0.3205,1.65,False
+RF full,reweighing,1.0,training OOF,90.2025,0.5673,0.9371,0.8578,0.1138,0.0052,0.1138,1.0486,False
+RF full,reweighing,1.0,validation,112.4807,0.6404,0.9368,0.8202,0.3013,0.0435,0.3013,1.6184,True
