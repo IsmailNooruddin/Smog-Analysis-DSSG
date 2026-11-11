@@ -1,4 +1,4 @@
-"""Milestone 3: data access, feature sets, leakage-free CV, pipelines, tuning and thresholds.
+"""Milestones 3 and 4: data access, feature sets, leakage-free CV, pipelines, tuning and thresholds.
 
 Everything here is fitted on `split == "train"` rows only. The chronological validation
 split (2023-09-04 to 2023-12-31) is touched only by modeling.ipynb when it reports results.
@@ -6,14 +6,19 @@ split (2023-09-04 to 2023-12-31) is touched only by modeling.ipynb when it repor
 
 Observational unit: 1 row = 1 city on 1 local (UTC+5) day; the target is that city's
 spike label h days later.
+
+Milestone 4 adds the random forest and histogram gradient boosting pipelines, their random-search
+spaces (tune_random) and optional per-fold sample weights in oof_predict (fairness reweighing).
 """
 import numpy as np
 import pandas as pd
 from sklearn.base import clone
 from sklearn.compose import ColumnTransformer
+from scipy.stats import loguniform, randint
 from sklearn.dummy import DummyClassifier
+from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression, Ridge
-from sklearn.model_selection import GridSearchCV, StratifiedGroupKFold
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, StratifiedGroupKFold
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer, StandardScaler
 from sklearn.tree import DecisionTreeClassifier
@@ -206,16 +211,69 @@ def tune(pipe, grid, X, y, splits, n_jobs=-1, scoring="average_precision"):
     return gs.fit(X, y)
 
 
-def oof_predict(estimator, X, y, splits, n_jobs=-1, method="predict_proba"):
+# ------------------------------------------------------------------
+# Milestone 4: ensemble models and random search
+# ------------------------------------------------------------------
+def make_rf(features):
+    """Random forest on the tree preprocessing (log1p on fire counts, no scaling)."""
+    prep = make_tree(features).named_steps["prep"]
+    return Pipeline([("prep", prep),
+                     ("model", RandomForestClassifier(random_state=42, n_jobs=1))])
+
+
+def make_hgb(features):
+    """Histogram gradient boosting on the tree preprocessing.
+
+    early_stopping=False: HGB's early stopping holds out a random 10% of the fit rows, which would
+    put neighbouring days of the same week on both sides and leak. The number of boosting rounds is
+    tuned on the purged folds instead.
+    """
+    prep = make_tree(features).named_steps["prep"]
+    return Pipeline([("prep", prep),
+                     ("model", HistGradientBoostingClassifier(early_stopping=False, random_state=42))])
+
+
+RF_DIST = {
+    "model__n_estimators": [300, 500],
+    "model__max_depth": [3, 4, 5, 6, 8, 10, 12, None],
+    "model__min_samples_leaf": [5, 10, 25, 50, 100],
+    "model__max_features": ["sqrt", 0.3, 0.5, 1.0],
+    "model__class_weight": [None, "balanced", "balanced_subsample"],
+}
+HGB_DIST = {
+    "model__learning_rate": loguniform(0.01, 0.3),
+    "model__max_iter": randint(100, 601),
+    "model__max_leaf_nodes": [7, 15, 31, 63],
+    "model__max_depth": [None, 3, 5, 8],
+    "model__min_samples_leaf": randint(10, 101),
+    "model__l2_regularization": loguniform(1e-3, 10),
+    "model__class_weight": [None, "balanced"],
+}
+N_ITER = 60
+
+
+def tune_random(pipe, dist, X, y, splits, n_iter=N_ITER, seed=42, n_jobs=-1):
+    """Random search on the purged folds, scored by PR-AUC, refit on all train rows."""
+    rs = RandomizedSearchCV(pipe, dist, n_iter=n_iter, scoring="average_precision", cv=splits,
+                            n_jobs=n_jobs, refit=True, random_state=seed, error_score="raise")
+    return rs.fit(X, y)
+
+
+def oof_predict(estimator, X, y, splits, n_jobs=-1, method="predict_proba", weight_fn=None):
     """Out-of-fold predictions for every training row (probabilities, or `predict` for Ridge).
 
+    weight_fn(fit_idx) -> sample weights for the fit rows of one fold (Milestone 4 reweighing).
+    The weights are computed from that fold's fit rows only, so held-out labels never enter.
     Returns (p_oof, folds): p_oof averages each row's held-out prediction over the repeats;
     folds is [(test_idx, p_test)] for per-fold metrics.
     """
     from joblib import Parallel, delayed
 
     def one(fit_idx, test_idx):
-        est = clone(estimator).fit(X.iloc[fit_idx], y[fit_idx])
+        if weight_fn is None:
+            est = clone(estimator).fit(X.iloc[fit_idx], y[fit_idx])
+        else:
+            est = clone(estimator).fit(X.iloc[fit_idx], y[fit_idx], model__sample_weight=weight_fn(fit_idx))
         if method == "predict":
             return test_idx, est.predict(X.iloc[test_idx])
         return test_idx, est.predict_proba(X.iloc[test_idx])[:, 1]
