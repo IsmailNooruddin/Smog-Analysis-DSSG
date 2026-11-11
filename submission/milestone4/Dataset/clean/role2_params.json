@@ -1,0 +1,61 @@
+{
+  "window": [
+    "2022-08-04",
+    "2023-12-31"
+  ],
+  "train": [
+    "2022-08-04",
+    "2023-08-31"
+  ],
+  "fire_setting": {
+    "cone": "up45",
+    "radius_km": 300,
+    "tag": "up45_r300",
+    "rule": "highest median Spearman rho (fire day t vs index day t+1) over the 7 Pakistani cities, training Oct-Dec"
+  },
+  "fire_log1p_zscore": {
+    "fire_cnt_up45_r300_all_log1p": {
+      "mean": 1.955453410178211,
+      "std": 1.7537048565790796
+    },
+    "fire_cnt_up45_r300_in_log1p": {
+      "mean": 0.894717905917987,
+      "std": 1.4992807013681437
+    },
+    "fire_cnt_up45_r300_pk_log1p": {
+      "mean": 1.5028749697074488,
+      "std": 1.6339967539899132
+    },
+    "fire_cnt_r300_all_log1p": {
+      "mean": 3.522319405039178,
+      "std": 1.7876371295547975
+    },
+    "fire_cnt_r300_in_log1p": {
+      "mean": 2.1212935569975695,
+      "std": 2.0570918247082823
+    },
+    "fire_cnt_r300_pk_log1p": {
+      "mean": 3.0359279546814237,
+      "std": 1.5699880120477019
+    },
+    "fire_cnt_down45_r300_all_log1p": {
+      "mean": 2.3616922326084224,
+      "std": 1.7677272281347438
+    },
+    "fire_cnt_down45_r300_in_log1p": {
+      "mean": 1.2864468391740669,
+      "std": 1.8027005779886691
+    },
+    "fire_cnt_down45_r300_pk_log1p": {
+      "mean": 1.6388394107501616,
+      "std": 1.5916247025589463
+    }
+  },
+  "weather_trap": {
+    "rh_mean_pct_p75": 77.0625,
+    "temp_range_c_p75": 13.6,
+    "temp_range_c_p25": 8.899999999999999,
+    "stagnant_rule": "Person B's flag: daily vector-mean wind < 2 km/h",
+    "rain_free_rule": "rain_day == 0 (daily rain < 1 mm)"
+  }
+}
