@@ -78,6 +78,10 @@ SKIP_END = "2023-09-03"
 CLEAN_DIR = DATASET_DIR / "clean"
 FIG_DIR = Path("figures")
 
+# Milestone 4 fairness audit: census population and city-size tier per city
+# (Pakistan 2023 census, India 2011 census; sources in the file itself)
+CITY_POP_FILE = DATASET_DIR / "external" / "city_population.csv"
+
 # City groups for the cross-border analysis (Pakistani cities only)
 NEAR_BORDER = ["Lahore", "Sialkot"]                                 # border cities, most India-origin fires
 INTERMEDIATE = ["Faisalabad"]                                       # some India-origin fires within 150 km
