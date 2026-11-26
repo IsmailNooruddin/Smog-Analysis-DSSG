@@ -65,7 +65,7 @@ MAX_AQ_LAG = 2
 # ------------------------------------------------------------------
 # Data access
 # ------------------------------------------------------------------
-def load_model_frame(horizon=1, path=MASTER):
+def load_model_frame(horizon=1, path=MASTER, sealed_from=SEALED_FROM, extra_drop=None):
     """Master rows for one horizon, cleaned for modelling (decision D12).
 
     Adds the AQ-history margins (index - city spike threshold, the threshold learned on train
@@ -74,7 +74,8 @@ def load_model_frame(horizon=1, path=MASTER):
     or target day is a suspect day. Returns (frame, drop_log) where drop_log counts the drops per split.
     """
     df = pd.read_parquet(path).sort_values(["city", "date"]).reset_index(drop=True)
-    assert (df["date"] < SEALED_FROM).all(), "2024 is sealed: no date may be on or after 2024-01-01"
+    sealed_from = pd.Timestamp(sealed_from)
+    assert (df["date"] < sealed_from).all(), f"sealed: no date may be on or after {sealed_from.date()}"
     target = f"target_spike_h{horizon}"
     missing = [c for c in AQ_HISTORY_RAW + ["spike_threshold"] if c not in df.columns]
     assert not missing, f"AQ columns not in the master: {missing}"
@@ -92,6 +93,8 @@ def load_model_frame(horizon=1, path=MASTER):
         "suspect feature day": df["suspect_day"] == 1,
         "suspect target day": df["suspect_target"] == 1,
     }
+    for step, col in (extra_drop or {}).items():
+        steps[step] = df[col] == 1
     keep = pd.Series(True, index=df.index)
     log = []
     for step, mask in steps.items():

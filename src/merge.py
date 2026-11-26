@@ -82,7 +82,10 @@ def load_fire_long(start, end, lead_in_days=0, clean_dir=CLEAN_DIR):
                       start, end, lead_in_days)
 
 
-def check_keys(df, name, start, end, n_cities=11):
+SEALED_FROM = "2024-01-01"     # Milestone 5 passes a later seal on purpose
+
+
+def check_keys(df, name, start, end, n_cities=11, sealed_from=SEALED_FROM):
     """Swap-and-check (2A step 1). Returns a one-row summary and raises if a rule is broken."""
     days = (pd.Timestamp(end) - pd.Timestamp(start)).days + 1
     inside = df[(df["date"] >= pd.Timestamp(start)) & (df["date"] <= pd.Timestamp(end))]
@@ -103,7 +106,7 @@ def check_keys(df, name, start, end, n_cities=11):
     assert res["key_columns_present"] and res["cities"] == n_cities, name
     assert res["city_names_match_config"] and res["country_matches_config"], name
     assert res["duplicate_city_date"] == 0 and res["full_calendar"], name
-    assert inside["date"].max() < pd.Timestamp("2024-01-01"), f"{name}: 2024 must stay sealed"
+    assert inside["date"].max() < pd.Timestamp(sealed_from), f"{name}: dates from {sealed_from} are sealed"
     return res
 
 
@@ -221,7 +224,7 @@ def order_rows(df):
 
 
 def build_master(start, end, train_start, train_end, skip_start, skip_end,
-                 valid_start, valid_end, clean_dir=CLEAN_DIR, verbose=True):
+                 valid_start, valid_end, clean_dir=CLEAN_DIR, verbose=True, sealed_from=SEALED_FROM):
     """Whole of Part 2A in one call. Returns (master, log) where log holds the checks."""
     aq = load_aq(start, end, clean_dir)
     wx = load_weather(start, end, lead_in_days=max(LAGS), clean_dir=clean_dir)
@@ -232,7 +235,7 @@ def build_master(start, end, train_start, train_end, skip_start, skip_end,
     wx = cut_window(add_lags(wx, WEATHER_LAG_COLS), start, end)
     fire = cut_window(add_lags(fire, FIRE_LAG_COLS), start, end)
 
-    checks = [check_keys(t, n, start, end) for t, n in [(aq, "AQ (A)"), (wx, "weather (B)"), (fire, "fire (C)")]]
+    checks = [check_keys(t, n, start, end, sealed_from=sealed_from) for t, n in [(aq, "AQ (A)"), (wx, "weather (B)"), (fire, "fire (C)")]]
 
     spine = build_spine(start, end)
     log = {"checks": pd.DataFrame(checks), "spine_rows": len(spine), "joins": []}

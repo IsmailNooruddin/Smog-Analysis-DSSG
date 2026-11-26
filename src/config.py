@@ -87,3 +87,54 @@ NEAR_BORDER = ["Lahore", "Sialkot"]                                 # border cit
 INTERMEDIATE = ["Faisalabad"]                                       # some India-origin fires within 150 km
 FAR_PK = ["Multan", "Rahim Yar Khan", "Islamabad", "Rawalpindi"]    # almost no India-origin fires
 IN_CITIES = ["Amritsar", "Ferozepur", "Ludhiana", "Jalandhar"]
+
+# ------------------------------------------------------------
+# Milestone 5: the 2024 data wave (Extension 1 of the proposal)
+# The constants above stay as they are, so the Milestone 2-4 notebooks
+# still reproduce. Only data_extension.ipynb and src/ingest.py read these.
+# ------------------------------------------------------------
+NASA_FILES_2024 = {
+    ("IN", 2024): "NASA - 2024 - India.csv",
+    ("PK", 2024): "NASA-2024.csv",              # no spaces in this file name
+}
+NASA_FILES_M5 = {**NASA_FILES, **NASA_FILES_2024}
+
+# AQ file per city (the AQ notebook keeps its own list; same paths)
+AQ_FILES = {
+    "Lahore": "Lahore - Air.csv",
+    "Faisalabad": "Faisalabad - Air.csv",
+    "Multan": "Multan - Air.csv",
+    "Rawalpindi": "Rawalpindi - Air.csv",
+    "Sialkot": "Sialkot - Air.csv",
+    "Rahim Yar Khan": "Rahim Yar Khan - Air.csv",
+    "Islamabad": "Islamabad - Air.csv",
+    "Amritsar": "Amritsar - AQ.csv",
+    "Ferozepur": "Ferozepur - AQ.csv",
+    "Ludhiana": "Ludhiana - AQ.xlsx",
+    "Jalandhar": "Jalandhar - AQ.csv",
+}
+
+def aq_path(city):
+    """Builds Dataset/<Country>/Air Quality/<file> for a city."""
+    return DATASET_DIR / COUNTRY_FOLDER[CITY_COUNTRY[city]] / "Air Quality" / AQ_FILES[city]
+
+def nasa_path_m5(country, year):
+    """Like nasa_path, but also knows the 2024 files."""
+    return DATASET_DIR / COUNTRY_FOLDER[country] / "NASA" / NASA_FILES_M5[(country, year)]
+
+# Raw-stream window for the ingestion (the Role 1 notebooks start on 2022-01-01 too)
+M5_RAW_START = "2022-01-01"
+# Last day on which every stream is complete for every city: the Ludhiana weather file
+# ends 2024-12-29 23:00 UTC (= 30 Dec 04:00 local), so 30-31 Dec 2024 are left out.
+M5_WINDOW_START = "2022-08-04"
+M5_WINDOW_END = "2024-12-29"
+NEW_WAVE_START = "2024-01-01"
+SEAL_M5 = "2025-01-01"                    # the 2024 seal is moved on purpose in Milestone 5
+# Re-training split: train on everything up to 31 Aug 2024, test on Sep-Dec 2024
+M5_TRAIN_START = "2022-08-04"
+M5_TRAIN_END = "2024-08-31"
+M5_SKIP_START = "2024-09-01"
+M5_SKIP_END = "2024-09-03"
+M5_TEST_START = "2024-09-04"
+M5_TEST_END = "2024-12-29"
+M5_CLEAN_DIR = CLEAN_DIR / "m5"
