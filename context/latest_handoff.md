@@ -1,12 +1,13 @@
-# Handoff: Trans-Boundary Smog Prediction (Milestone 4 complete → Week 14 test next)
+# Handoff: Trans-Boundary Smog Prediction (Milestone 5 complete)
 
 This document is for an AI coding agent (any vendor) picking up the project cold. It explains what the project is,
 what is finished, where everything lives, which decisions were made and why, what the Milestone 3 and Milestone 4
 results are, and what comes next. Read it fully before touching the code. Then read the briefs:
+- `context/mielstone 05 New Data Ingestion.md` (the Milestone 5 brief and rubric; the file name has the typo);
 - `context/milestone 4.md` (the Milestone 4 brief and rubric);
 - `context/milestone3.md`, `context/milestone3_plan.md` and `context/milestone3_finish_plan.md` (Milestone 3).
 
-Last updated: 2026-11-11. State of `main` at writing: see the commit tables in section 2.
+Last updated: 2026-11-26. State of `main` at writing: see the commit tables in section 2.
 Milestone 3 was graded. The grader took 5 points off the manuscript, so the Milestone 4 report is one rewritten paper.
 
 ---
@@ -19,9 +20,10 @@ Milestone 3 was graded. The grader took 5 points off the manuscript, so the Mile
 3. **Milestone 4 is finished** (section 10b): `advanced_modeling.ipynb` (39 cells, 18 tables, 7 figures, 6 new
    models), `src/fairness.py`, census tiers in `Dataset/external/city_population.csv`, `DECISIONS.md` rows P1–P9,
    an 18-page report rewritten as one paper, and the package `submission/milestone4/`.
-4. **Result:** RF and HGB do not beat LR full, so LR full stays the final model. Per-tier thresholds halve the
-   small-city false-alarm gap and lower the cost.
-5. **Next:** the Week 14 out-of-time test on 2024. See section 11. Nothing is pushed yet for Milestone 4.
+4. **Milestone 5 is finished** (section 10c): the 2024 wave, drift tests, zero-shot and re-trained audit, fairness
+   shift, `data_extension.ipynb`, `src/ingest.py`, `src/drift.py`, `DECISIONS.md` rows N1–N16, a 7-page IEEE paper
+   (+3 appendix pages) and the package `submission/milestone5/`.
+5. **Next:** nothing is scheduled. Nothing is pushed for Milestones 4 and 5. Push only when the user asks (section 11).
 6. One commit per phase, straight to `main`, author `bilal <bilelayub@gmail.com>`, **no** `Co-Authored-By`,
    `Claude-Session` or "Generated with" lines. Push only when the user asks.
 
@@ -41,8 +43,8 @@ aligned with SDG 3.9, 11.6 and 13. The course runs in milestones:
 - Milestone 1: proposal (done).
 - Milestone 2: data preparation, EDA and hypotheses (done).
 - Milestone 3: baseline models, leakage-free CV, error-cost analysis (done, graded).
-- **Milestone 4: advanced models, fairness audit, bias mitigation, ethics (done, not yet pushed).**
-- Week 14: out-of-time test on 2024 data.
+- Milestone 4: advanced models, fairness audit, bias mitigation, ethics (done, not yet pushed).
+- **Milestone 5: new data wave (2024), drift, zero-shot and re-training, fairness shift, IEEE paper (done, not yet pushed).**
 
 ---
 
@@ -82,7 +84,21 @@ aligned with SDG 3.9, 11.6 and 13. The course runs in milestones:
 | `1d99b05` | Milestone 4 decisions P2-P9: search spaces, final-model rule, fairness settings | `DECISIONS.md` |
 | `6a50d92` | Milestone 4 manuscript: one-paper builder, APA references and number check | `docs/manuscript/build_manuscript_m4.py`, `check_numbers_m4.py`, `manuscript_m4.json`, `render_docx.js` (argument 4) |
 | `2ab0611` | Milestone 4 submission package: report, notebooks, code, models and data | `submission/milestone4/` |
-| (this) | Update project handoff after Milestone 4 | this file |
+| `d9ecc0c` | Update project handoff after Milestone 4 | this file |
+
+- **Milestone 5 commits** (none pushed):
+
+| Commit | Message | Content |
+|---|---|---|
+| `6b53b2c` | Milestone 5 modules: raw-data ingestion and drift tests | `src/ingest.py`, `src/drift.py` (new); M5 constants in `src/config.py`; `sealed_from` arguments in `src/modeling.py` and `src/merge.py` |
+| `1e88b48` | Milestone 5 notebook: 2024 wave ingestion, drift tests, zero-shot and re-trained audit, fairness shift | `data_extension.ipynb` (executed), `docs/tables/m5_*.csv` (37), `figures/fig_m05_1..7`, `models/m5_*` (11), `Dataset/clean/m5/`, `master_daily_m5.parquet`, `master_data_dictionary_m5.csv`, `m5_params.json`, the M5 brief |
+| `f7b2d20` | Milestone 5 decisions N1-N16 | `DECISIONS.md` |
+| `1614d3b` | Milestone 5 manuscript: IEEE two-column paper, column-width figures and number check | `build_manuscript_m5.py`, `check_numbers_m5.py`, `make_figures_m5.py`, `manuscript_m5.json`, `render_docx.js` (argument 5, IEEE layout), `figures/fig_m05_paper_*` |
+| `b324b43` | Milestone 5 submission package | `submission/milestone5/` |
+| (this) | Update project handoff after Milestone 5 | this file |
+
+- **Uncommitted on purpose:** `submission/milestone4/advanced_modeling.ipynb` has the user's hand edits (a shorter
+  header). The user has not said whether to commit them. Leave the file alone.
 
 Earlier history worth knowing, oldest first: `5306bfe` (Role 1 fixes), `986d7d0` (Role 2 merge and analysis),
 `1071958` (manuscript, decision log), `dd2db4e`/`631c3b6` (review fixes), `70faa64` (Excel export, `submission/`),
@@ -126,6 +142,14 @@ Dataset/clean/         Role 1/2 outputs + master_daily.parquet (5,665 × 287), m
 figures/               fig_a*, fig_b*, fig_fire_*, fig_m1..m6 (Milestone 2); ★ fig_m3_1 … fig_m3_7 (Milestone 3);
                        ◆ fig_m04_1 … fig_m04_7 (Milestone 4; the 0 avoids a clash with the Milestone 2 fig_m4_*)
 docs/tables/*.csv      Every report table at 4 decimals; ★ 25 files named m3_*.csv; ◆ 18 files named m4_*.csv
+data_extension.ipynb   ▲ Milestone 5: 44 cells, sections M5.1–M5.11 + Summary, executed, ~81 min (section 10c)
+src/ingest.py          ▲ M5: Role 1 AQ, weather and fire cleaning as functions with frozen parameters; schema_report,
+                         compare_frames (reproduction check), write_clean
+src/drift.py           ▲ M5: psi, drift_table (KS, χ², PSI, BH q), domain_auc, concept_lr_test, calibration_table
+Dataset/clean/m5/      ▲ 2022–2024 daily tables + copies of the frozen params; master_daily_m5.parquet (9,669 × 291);
+                         m5_params.json
+submission/milestone5/ ▲ M5 package (33 MB, no raw files): report, 3 notebooks, src/ (8 modules), models/ (27),
+                         Dataset/clean inputs + m5/, README
 docs/manuscript/       build_manuscript.py (CSV → manuscript.json; --milestone 3 → manuscript_m3.json) +
                        render_docx.js (JSON → .docx; argument 3 → submission/milestone3/Milestone3_Report.docx);
                        ◆ build_manuscript_m4.py (→ manuscript_m4.json), render_docx.js argument 4
@@ -137,7 +161,7 @@ context/               milestone1/2/3.md briefs, Final Proposal.md, milestone3_p
 package.json           npm dependency for render_docx.js (`npm install` restores node_modules/, which is gitignored)
 ```
 
-★ = new in Milestone 3. ◆ = new in Milestone 4.
+★ = new in Milestone 3. ◆ = new in Milestone 4. ▲ = new in Milestone 5 (also `docs/tables/m5_*.csv` (37), `figures/fig_m05_*` and `fig_m05_paper_*`, `build_manuscript_m5.py`, `check_numbers_m5.py`, `make_figures_m5.py`).
 
 ---
 
@@ -150,7 +174,14 @@ npm install                               # restores node_modules/ for render_do
 # from the repository root:
 jupyter nbconvert --to notebook --execute --inplace modeling.ipynb     # ~5 min, 8 cores
 jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=7200 advanced_modeling.ipynb   # 67–82 min
+jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=10800 data_extension.ipynb    # ~81 min
 ```
+
+- `data_extension.ipynb` reads the raw files in `Dataset/Pakistan` and `Dataset/India`, the committed 2022–23 daily
+  tables (reproduction check), the Milestone 3/4 models and params, and `m4_metrics_validation.csv`/`m4_mitigation.csv`.
+  `M5_FAST=1` gives a short debugging run and writes `"fast_run": true`; the manuscript builder refuses those tables.
+- The full run peaks high in memory with 8 joblib workers. One run was killed by Windows for low memory while other
+  programs were open. Close other programs first.
 
 - `advanced_modeling.ipynb` reads the master, `role2_params.json`, `m3_params.json`, the Milestone 3 models in
   `models/`, `docs/tables/m3_metrics_validation.csv` and `Dataset/external/city_population.csv`. It asserts that the
@@ -538,14 +569,52 @@ Plan: `C:\Users\Bilel\.claude\plans\last-time-we-completed-joyful-truffle.md` (l
 
 ---
 
+## 10c. Milestone 5 (2024 wave, drift, re-training, fairness shift)
+
+### 10c.1 Agreed with the user (do not reopen)
+
+- New wave = calendar 2024. The window ends 2024-12-29 (the Ludhiana weather file ends there).
+- Re-trained evaluation = out-of-time + CV: re-train 2022-08-04 → 2024-08-31, skip 3 days, test 2024-09-04 →
+  2024-12-29, plus purged CV over the combined data.
+- Labels frozen: 2022–23 index weights, z-scores and city P90 thresholds. One sensitivity re-learns the thresholds.
+- Exposure lite: census population × spike days. The 1 km WorldPop grid was not done, and the paper says so.
+- Manuscript: IEEE two-column, 6–8 pages, detail tables in an appendix after page 8.
+
+### 10c.2 Results (all from `docs/tables/m5_*.csv`)
+
+- **Data:** N = 5,665 + 4,004 = 9,669 city-days, P = 291. 9,548 modelling rows, 663 spikes. Train 8,272 (483 spikes),
+  test 1,276 (180). The ingestion reproduces every committed 2022–23 cell inside the window.
+- **Covariate drift:** most PSI < 0.10. Season-matched, fires within 300 km PSI 0.401 (307 → 171 per city-day).
+  Domain AUC 0.531 whole wave, 0.645 season-matched.
+- **Label shift:** spike rate 5.4% → 9.1% (Sep–Dec 8.1% → 14.1%; November 4.5% → 27.6%).
+- **Concept drift:** LR test p 0.002. The stagnation effect weakened (ratio 0.43), the fire effect strengthened (1.51).
+  The frozen LR under-predicts (0.102 predicted vs 0.141 observed, Sep–Dec 2024).
+- **Three-way (LR full, PR-AUC / cost):** (1) 0.695 / 117.1; (2b) zero-shot 0.726 / 167.7; (3a) re-trained 0.728 /
+  166.9; (3b) CV 0.727 / 95.7. Re-trained − zero-shot not significant for LR; HGB +0.048 [0.003, 0.090]. LR full
+  stays final (CV 0.738), best ensemble RF full. The re-trained LR keeps only `persist_margin` and `temp_mean_c`.
+- **Fairness:** under one threshold no paired gap change excludes 0. Per-tier thresholds re-chosen on the combined
+  data nearly converge (0.174–0.180 vs 0.128–0.160 in M4); their tier DIR rises by 0.110 [0.018, 0.301].
+- **Exposure:** 295 M person-days in Sep–Dec 2024; zero-shot missed 10.6%, 58% of that in the 3 Pakistani metros.
+- **VIIRS gaps:** 20 dates in 2024 with no detection anywhere (incl. 3–5 Nov). Counts stay 0; dropping them changes
+  little (PR-AUC 0.728 → 0.730).
+
+### 10c.3 Report (`submission/milestone5/Milestone5_Report.pdf`, 10 pages)
+
+- Body and 34 numbered references pp. 1–7; one-column appendix (Tables A1–A9) pp. 8–10. 7 tables, 7 figures.
+- Build: `python docs/manuscript/make_figures_m5.py`, `python docs/manuscript/build_manuscript_m5.py`,
+  `python docs/manuscript/check_numbers_m5.py` (1,239 numbers, 0 missing), `node docs/manuscript/render_docx.js 5`,
+  then docx2pdf to `submission/milestone5/Milestone5_Report.pdf`.
+- The builder asserts every directional claim (e.g. "precision rose", "gaps within uncertainty", "per-tier
+  thresholds converge"). If a rerun changes a result, an assert fails instead of the text going wrong.
+
 ## 11. What is left
 
-Milestone 4 is complete but not pushed. Next:
+Milestones 4 and 5 are complete but not pushed. Next:
 - **Push** with `git push origin main` when the user asks.
-- **Week 14:** move `WINDOW_START/END` and split dates in `src/config.py`, add the 2024 files, rerun all notebooks and
-  deliberately move the `SEALED_FROM` assert in `src/modeling.py`. Test the final alert as it stands: LR full with
-  the per-tier cost-optimal thresholds, and report the tier gaps on 2024 too.
-- Open ideas not done: per-horizon tuning of the ensembles, surface pressure, an ozone weight check, and probability
+- Ask the user whether to commit their hand edits to `submission/milestone4/advanced_modeling.ipynb`.
+- The M5 package has no raw files (about 180 MB). The README says to copy them from the repository. Bundle them only
+  if the user asks.
+- Open ideas not done: the 1 km WorldPop exposure grid, a monthly intercept re-calibration of the alert, per-horizon tuning of the ensembles, surface pressure, an ozone weight check, and probability
   calibration of HGB.
 - **Report builds:**
   - Milestone 4: `python docs/manuscript/build_manuscript_m4.py`, then `python docs/manuscript/check_numbers_m4.py`
@@ -555,6 +624,15 @@ Milestone 4 is complete but not pushed. Next:
   - The default build (no argument) still produces the Milestone 2 report.
 
 ## 12. Rubric reminders
+
+**Milestone 5** (`context/mielstone 05 New Data Ingestion.md`):
+
+| Criterion | Weight | Where it is covered |
+|---|---|---|
+| Data ingestion + schema integration | 20 | M5.1–M5.3; report §II, Tables A1–A3 |
+| Drift + concept shift (KS, PSI, plots) | 30 | M5.4–M5.5; report §VI.B–C, Figs. 1–3, Table A4 |
+| Re-training + generalization, 3-way table | 30 | M5.6–M5.8; report §VI.D, Table V, Fig. 6, Tables A5–A6 |
+| Fairness shift, FATEN, code, PDF | 20 | M5.9–M5.10; report §VI.E, §VII, Tables A7–A9 |
 
 **Milestone 4** (`context/milestone 4.md`):
 
@@ -621,8 +699,11 @@ and `P.save()` at 300 dpi. Every number in the report must come from `docs/table
 - **The tuned LR is sparse.** With the margin encoding the L1 penalty keeps only 2 columns; driver analysis of
   weather therefore uses the weather-only LR and the H2 Logit.
 - **Git warnings** "LF will be replaced by CRLF" on commit are normal on this machine.
-- **Week 14:**
-  - change `WINDOW_START/END` and the split dates in `src/config.py`;
-  - add the 2024 files to `NASA_FILES`;
-  - rerun all notebooks, including `modeling.ipynb`;
-  - the `SEALED_FROM` assert in `src/modeling.py` must then be moved deliberately.
+- **Milestone 5 did not move the old constants.** `WINDOW_*`, `SEALED_FROM` and `NASA_FILES` keep their Milestone 4
+  values, so the M2–M4 notebooks still reproduce. M5 uses the `M5_*` constants, `NASA_FILES_M5` and explicit
+  `sealed_from=SEAL_M5` arguments.
+- **`rain_day` rounding:** daily rain is summed from hourly floats. Use `precip_sum_mm.round(6) >= 1`, or a day of
+  0.9999999999999999 mm flips the flag.
+- **`s.pop` on a DataFrame row** resolves to the method, not a column named `pop`. The exposure column is `popn`.
+- **Bash heredocs with quotes sometimes fail in this shell** ("unexpected EOF"). Write a script file instead.
+- **`python -I` ignores `PYTHONIOENCODING`.** Call `sys.stdout.reconfigure(encoding="utf-8")` inside the script.
