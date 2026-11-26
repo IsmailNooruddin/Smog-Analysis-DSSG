@@ -1,0 +1,2505 @@
+{
+ "blocks": [
+  {
+   "t": "title",
+   "text": "Forecasting Trans-Boundary Smog Spikes in Punjab under Data Drift: A Leakage-Free, Fairness-Audited Alert Tested on a 2024 Wave"
+  },
+  {
+   "t": "authors",
+   "text": "Munir Tariq, Ismail Nooruddin, Bilal Ayub"
+  },
+  {
+   "t": "affil",
+   "text": "Data Science for Social Good, Habib University, Karachi, Pakistan"
+  },
+  {
+   "t": "abstract",
+   "items": [
+    "Crop-fire smoke and city emissions collect over the Punjab plain each winter, on both sides of the Pakistan–India border. We built a next-day smog-spike alert for 11 cities and tested whether it stays accurate and fair on a new year of data. We merged CAMS air quality, weather and VIIRS fire detections into 5,665 city-days (August 2022–December 2023), then ingested a 2024 wave of 4,004 city-days with the same automated pipeline. A spike is a day above the city's 90th percentile of a Composite Smog Index. We compared persistence, logistic regression (LR), a decision tree, a random forest and gradient boosting under purged, week-grouped cross-validation and a 5:1 cost of a missed spike to a false alarm. We audited the alerts by country and census city-size tier and tested reweighing and tier-specific thresholds. A sparse LR on today's index margin and temperature matched persistence on ranking (PR-AUC 0.695 against 0.669) and cost less at every cost ratio from 2:1. The ensembles did not improve on it. In 2024 the next-day spike rate rose from 5.4% to 9.1%. Most feature shifts were small, but the relation between stagnation, fires and spikes changed (likelihood-ratio p 0.002). Applied unchanged to September–December 2024, the LR kept a PR-AUC of 0.726. Re-training on the combined data gave 0.728. The model under-predicted the higher 2024 spike rate, and the cost of errors grew. Under one threshold, the fairness gaps between tiers did not change beyond their uncertainty. We recommend a monitored, re-calibrated alert with tier thresholds and human review."
+   ]
+  },
+  {
+   "t": "indexterms",
+   "text": "Air pollution, early warning, concept drift, dataset shift, algorithmic fairness, cross-validation, crop-residue burning, Punjab."
+  },
+  {
+   "t": "section",
+   "layout": "two",
+   "newpage": false
+  },
+  {
+   "t": "h1",
+   "text": "I. Introduction"
+  },
+  {
+   "t": "p",
+   "text": "Every October and November, farmers in Indian and Pakistani Punjab burn rice stubble to clear fields for wheat. The smoke joins city emissions under cold, still winter air. Fine-particle levels in Lahore, Faisalabad and the Indian Punjab cities then rise far above the WHO 24-hour guideline of 15 µg/m³ [1]. Governments respond with school closures, traffic limits and kiln bans [2], [3]. These measures need a warning, and the warning must be right."
+  },
+  {
+   "t": "p",
+   "text": "Two features shape the problem. First, smoke crosses the border, so a city's air depends on fires it does not control. Second, an alert has two errors with unequal costs. A missed spike leaves children, the elderly and outdoor workers exposed. A false alarm closes schools and stops daily-wage work for nothing. Both costs fall on people, and they may fall unevenly across places. A third feature emerged in our final milestone: the data change from year to year. An alert tuned on one winter must survive the next."
+  },
+  {
+   "t": "p",
+   "text": "The work serves SDG 3 (targets 3.9 and 3.d: illness from air pollution and early warning), SDG 11 (target 11.6: urban air quality) and SDG 13 (climate action). The cross-border question also relates to SDG 17."
+  },
+  {
+   "t": "p",
+   "text": "Satellite and transport-model studies link post-monsoon residue fires to winter smog downwind [4], [5], [6]. Machine-learning models of air quality are common [7], but they rarely test whether fire counts add next-day skill beyond today's air quality, whether the alert treats places fairly, or whether it survives a new year of data."
+  },
+  {
+   "t": "p",
+   "text": "**Research hypotheses.** Each uses only information known on day *t*:",
+   "noindent": true
+  },
+  {
+   "t": "bullets",
+   "items": [
+    "**H1** Fires in the upwind cone raise the next-day smog index beyond the plain radius count.",
+    "**H2** Stagnation, humidity, no rain and a large day–night temperature range each raise the odds of a spike.",
+    "**H3** The fire effect is stronger on stagnant days.",
+    "**H4** India-origin fires raise the next-day index in Pakistani cities, more near the border.",
+    "**H5** A model with fire and weather features beats persistence and a weather-only model.",
+    "**H6** The learned relation holds on a new year (no concept drift), and the alert keeps its skill and fairness."
+   ]
+  },
+  {
+   "t": "p",
+   "text": "**Contributions.** (i) An audited, automated city-day dataset for 11 cross-border cities, extended to a 2024 wave. (ii) A leakage-free comparison of five model families against persistence under asymmetric costs. (iii) A geographic fairness audit with bias mitigation and a Pareto analysis. (iv) Drift tests, zero-shot and re-trained evaluation, and a fairness re-audit on the new wave. (v) FATEN-based governance recommendations for a living-lab pilot.",
+   "noindent": true
+  },
+  {
+   "t": "h1",
+   "text": "II. Data Curation and Master Dataset Inventory"
+  },
+  {
+   "t": "h2",
+   "text": "A. Sources"
+  },
+  {
+   "t": "p",
+   "text": "The study covers 11 cities: Lahore, Faisalabad, Multan, Rawalpindi, Sialkot, Rahim Yar Khan and Islamabad in Pakistan, and Amritsar, Ferozepur, Ludhiana and Jalandhar in India. Air quality comes from the CAMS model [8] through the Open-Meteo API [9], which also supplies the weather. Fire detections come from the VIIRS 375 m product [10] through NASA FIRMS [11]. Air quality and weather are gridded model estimates, not monitor readings. Table I lists the streams for both waves."
+  },
+  {
+   "t": "table",
+   "label": "TABLE I",
+   "caption": "Data streams for the initial wave and the 2024 wave",
+   "header": [
+    "Stream",
+    "Source",
+    "Processing",
+    "Initial",
+    "2024"
+   ],
+   "rows": [
+    [
+     "Air quality",
+     "Open-Meteo (CAMS), hourly, 7 pollutants",
+     "Negatives to 0; gaps ≤ 6 h interpolated; days with ≥ 18 valid hours; index and spike label",
+     "5,665",
+     "4,004"
+    ],
+    [
+     "Weather",
+     "Open-Meteo, hourly",
+     "Daily means, range, rain total; vector-mean wind; stagnant < 2 km/h",
+     "5,665",
+     "4,004"
+    ],
+    [
+     "Fire",
+     "NASA FIRMS VIIRS, points",
+     "Study box, vegetation fires, nominal/high confidence; counts by cone, radius, origin",
+     "5,665",
+     "4,004"
+    ],
+    [
+     "Master",
+     "Joins on city, country, date",
+     "Lags and targets within city; 291 columns",
+     "5,665",
+     "4,004"
+    ]
+   ],
+   "widths": [
+    1000,
+    1350,
+    1850,
+    420,
+    420
+   ],
+   "note": "City-days per wave. Initial: 4 Aug 2022–31 Dec 2023. 2024: 1 Jan–29 Dec 2024. N_total = 5,665 + 4,004 = 9,669.",
+   "font": 7.5,
+   "align": "left"
+  },
+  {
+   "t": "h2",
+   "text": "B. Automated ingestion and schema reconciliation"
+  },
+  {
+   "t": "p",
+   "text": "One module ports the three per-stream cleaning notebooks into functions that take the date window as an argument. It reads the raw files, reconciles them and writes the daily tables that the merge reads. The 2024 rows get the z-scores, log decisions, index weights and spike thresholds learned on the 2022–23 training rows. Nothing is re-learned, so the label definition stays fixed. A rebuild of 2022–23 with the same code reproduced every committed table cell inside the modelling window. The only exceptions are the next-day targets of 29–31 December 2023, which now point into 2024 instead of being empty. Re-learning the frozen parameters on the training rows gave the same values to within 0e+00. The only difference outside the window was one rain-day flag, caused by floating-point summation order."
+  },
+  {
+   "t": "p",
+   "text": "The reconciliation handled six kinds of difference (Appendix, Table A1): two file formats (.csv and .xlsx), three column orders, inconsistent file names, GMT and UTC clocks shifted to UTC+5 before taking the date, an early end of one weather file and missing satellite days. Columns are renamed by name, never by position. The Ludhiana weather file ends on 29 December 2024, so the window ends there for every stream. VIIRS has no detection anywhere in India or Pakistan on 20 dates of 2024, including 3–5 November in the burning season. We flag these dates and keep the counts at 0, as in 2022–23, and a sensitivity run drops the affected rows."
+  },
+  {
+   "t": "h2",
+   "text": "C. Target and predictors"
+  },
+  {
+   "t": "p",
+   "text": "The **Composite Smog Index** is 0.40·z(PM2.5) + 0.12·[z(PM10) + z(NO2) + z(SO2) + z(O3) + z(CO)], with log(1 + x) on skewed pollutants. A **spike** is a day whose index reaches the 90th percentile of that city's training October–March days. The thresholds run from 0.36 to 2.18. The model predicts the spike label of day *t* + 1 from 42 features of day *t*: today's index and its two lags as the margin over the city threshold, upwind fires (±45° cone, 300 km, lags 0–3), 14 weather features and 21 month and city dummies. The **no-fire** set drops the 4 fire columns, and the **weather-only** set also drops the 3 index columns."
+  },
+  {
+   "t": "p",
+   "text": "After dropping rows without a target or with flagged days, the expanded data hold 9,548 modelling rows (5,588 initial, 3,960 new) and 663 next-day spikes. P_total = 291 master columns."
+  },
+  {
+   "t": "h1",
+   "text": "III. Exploratory Data Analysis and Driver Analysis"
+  },
+  {
+   "t": "p",
+   "text": "Spikes cluster in December (26.1% of training city-days) and January (22.9%). October and November have 2.3% and 4.2%, although fires peak then. Fires alone therefore do not make a spike. Winter weather must trap the smoke."
+  },
+  {
+   "t": "p",
+   "text": "In the training harvest season, fires in the ±45° upwind cone at 300 km correlate with next-day smog (median Spearman ρ = 0.23 over the Pakistani cities). The plain circle gives −0.06 and a downwind placebo cone 0.01. After a stagnant day, 27.3% of next days were spikes, against 9.4% otherwise. Humid days gave 22.0% against 8.5%. No rain day was followed by a spike (0 of 72)."
+  },
+  {
+   "t": "table",
+   "label": "TABLE II",
+   "caption": "Hypothesis tests on the training rows",
+   "header": [
+    "",
+    "Evidence",
+    "Verdict"
+   ],
+   "rows": [
+    [
+     "H1",
+     "β_cone 0.054, p 0.012; with today's index p 0.002; placebo −0.032",
+     "Supported"
+    ],
+    [
+     "H2",
+     "OR stagnant 3.24, humidity 3.95/SD, temp. range 2.22/SD; rain Fisher p < 0.001",
+     "Supported"
+    ],
+    [
+     "H3",
+     "β_fire×stagnant −0.038",
+     "No"
+    ],
+    [
+     "H4",
+     "β_IN 0.001, p 0.481; Pakistan-origin 0.056",
+     "No"
+    ],
+    [
+     "H5",
+     "LR − persistence ΔPR-AUC 0.026 [−0.020, 0.052]; cheaper from 2:1",
+     "Partly"
+    ]
+   ],
+   "widths": [
+    300,
+    3700,
+    900
+   ],
+   "note": "H1, H3, H4: OLS of the next-day index, city-clustered SE, one-sided p. H2: Logit on rain-free Sep–Feb days. Fire terms per SD of log(1 + count). H5: validation.",
+   "font": 7.5,
+   "align": "left"
+  },
+  {
+   "t": "p",
+   "text": "**Drivers.** Shuffling the AQ-history columns costs 0.612 of validation PR-AUC for LR, and shuffling the fire columns costs at most 0.003 for any model. The L1-penalised LR keeps two of 42 columns: today's margin (OR 10.92 per SD) and mean temperature (OR 0.70 per SD). Fires shape smog levels (H1), but their smoke is already in today's index when the alert is issued."
+  },
+  {
+   "t": "h1",
+   "text": "IV. Predictive Modeling and Architecture Evaluation"
+  },
+  {
+   "t": "h2",
+   "text": "A. Leakage-free validation"
+  },
+  {
+   "t": "p",
+   "text": "The outer split is chronological: training 6 August 2022–31 August 2023 (4,246 city-days, 204 spikes), validation 4 September–30 December 2023 (1,298, 89). Inside training we use purged, repeated StratifiedGroupKFold (5 folds × 5 repeats). The group is the calendar week shared by all cities. The purge drops fit rows whose target day is held out, and an embargo drops rows whose index lags contain a held-out day. On the same rows, a random stratified split scores LR at PR-AUC 0.730 against 0.651 for our design, so random splits overstate skill [12]. We rank models by PR-AUC, which suits rare events [13]."
+  },
+  {
+   "t": "h2",
+   "text": "B. Models and hyperparameter search"
+  },
+  {
+   "t": "p",
+   "text": "Persistence (\"tomorrow repeats today\") is the benchmark. LR and a decision tree (DT) are the baselines, tuned by grid search. A random forest (RF) [14] and histogram gradient boosting (HGB) [15], [16] are the advanced models, tuned by random search with 60 draws [17]. All searches used the same 25 folds and scikit-learn pipelines [18]. The regressions used statsmodels [19]. HGB early stopping was off, because its random hold-out leaks neighbouring days. The final-model rule was fixed in advance: the highest CV PR-AUC among the full-feature models, with ties within 0.005 going to the simpler model."
+  },
+  {
+   "t": "table",
+   "label": "TABLE III",
+   "caption": "Validation, Sep–Dec 2023, at the 5:1 thresholds",
+   "header": [
+    "Model",
+    "Acc.",
+    "Prec.",
+    "Rec.",
+    "F1",
+    "ROC",
+    "PR",
+    "Cost",
+    "CV PR"
+   ],
+   "rows": [
+    [
+     "Persistence",
+     "0.955",
+     "0.688",
+     "0.618",
+     "0.651",
+     "0.963",
+     "0.669",
+     "150.2",
+     "0.636"
+    ],
+    [
+     "LR full",
+     "0.920",
+     "0.456",
+     "0.865",
+     "0.597",
+     "0.967",
+     "0.695",
+     "117.1",
+     "0.651"
+    ],
+    [
+     "DT full",
+     "0.936",
+     "0.521",
+     "0.820",
+     "0.638",
+     "0.953",
+     "0.590",
+     "113.3",
+     "0.519"
+    ],
+    [
+     "RF full",
+     "0.934",
+     "0.514",
+     "0.820",
+     "0.632",
+     "0.964",
+     "0.679",
+     "114.8",
+     "0.590"
+    ],
+    [
+     "HGB full",
+     "0.930",
+     "0.493",
+     "0.854",
+     "0.625",
+     "0.963",
+     "0.636",
+     "110.2",
+     "0.565"
+    ]
+   ],
+   "widths": [
+    1150,
+    520,
+    520,
+    520,
+    480,
+    520,
+    480,
+    520,
+    520
+   ],
+   "note": "ROC, PR = ROC-AUC and PR-AUC. Cost = (5·FN + FP) per 1,000 city-days. CV PR = mean PR-AUC over 25 purged folds.",
+   "font": 7.5
+  },
+  {
+   "t": "p",
+   "text": "**The ensembles do not beat LR** (Table III). RF reaches a validation PR-AUC of 0.679 and HGB 0.636, against 0.695 for LR. RF − LR is −0.015 [−0.067, 0.015], and RF wins 1 of 25 CV folds. Both ensembles beat the tree on CV PR-AUC. Under the fixed rule, LR full is the final model. **Accuracy misleads:** never alerting scores 93.1% accuracy. **Persistence is hard to beat on ranking**, but LR catches 22 of the 34 onset days that persistence misses by construction."
+  },
+  {
+   "t": "h2",
+   "text": "C. Asymmetric costs"
+  },
+  {
+   "t": "p",
+   "text": "We weight a missed spike as five false alarms. This is a stated policy assumption, informed by the health burden of air pollution [20]. Each model's threshold minimises 5·FN + FP on its out-of-fold training predictions. At 5:1 LR costs 117.1 per 1,000 city-days, against 150.2 for persistence and 342.8 for never alerting (Fig. 1). LR is cheaper than persistence at 19 of 20 ratios, from 2:1 upwards."
+  },
+  {
+   "t": "figure",
+   "path": "C:\\Users\\Bilel\\Documents\\Fall_2026\\DSFSG\\project\\Smog-Analysis-DSSG\\figures\\fig_m05_paper_7_cost_curve.png",
+   "caption": "Fig. 1. Validation cost per 1,000 city-days against the FN:FP ratio (Sep–Dec 2023). Thresholds are re-chosen on out-of-fold training predictions at each ratio. Dashed line: the 5:1 headline.",
+   "width_in": 3.45
+  },
+  {
+   "t": "h1",
+   "text": "V. Algorithmic Bias, Fairness and Ethics Audit"
+  },
+  {
+   "t": "h2",
+   "text": "A. Sensitive attributes and metrics"
+  },
+  {
+   "t": "p",
+   "text": "Our units are places, so the sensitive attribute is **geography**: country (Pakistan, India) and a city-size tier from census population, a socio-economic proxy. Tier 1 metros have ≥ 3 million people (Lahore, Faisalabad, Rawalpindi), Tier 2 1–3 million (Multan, Ludhiana, Amritsar, Islamabad) and Tier 3 < 1 million (Jalandhar, Sialkot, Rahim Yar Khan, Ferozepur) [21]. Small cities have fewer monitors and less administrative capacity. An alert is the positive prediction. We compute the disparate impact ratio (DIR) with the 80% rule read two-sided (0.8–1.25) [22], equal opportunity (ΔTPR), predictive equality (ΔFPR) and equalized odds [23]. With unequal base rates, these criteria cannot all hold at once [24], [25]."
+  },
+  {
+   "t": "h2",
+   "text": "B. Audit results"
+  },
+  {
+   "t": "p",
+   "text": "**Error rates are similar across countries:** recall 83.7% in Pakistan and 90.0% in India, false-alarm rates 7.2% and 8.3%. **Small cities bear more false alarms:** 10.5% of clean days in Tier 3 against 5.6% in metros (ΔFPR 0.049 [0.011, 0.126]). The tier DIR of 2.44 fails the 80% rule, but Tier 3 also had 11.0% spike days against 3.4% in metros. Demographic parity is the wrong target here. Equalized odds fits the problem better."
+  },
+  {
+   "t": "h2",
+   "text": "C. Mitigation and the fairness–accuracy trade-off"
+  },
+  {
+   "t": "p",
+   "text": "Reweighing [26] barely changes the LR alerts, because each city's own threshold equalises the training base rates by design. Per-tier 5:1 thresholds, chosen on out-of-fold predictions, cut the small-city false-alarm rate from 10.5% to 8.1%. They lower the cost from 117.1 to 113.3 per 1,000 city-days, with recall 0.865 → 0.854. Equalized-odds thresholds at ε = 0.05 give the same validation result. On training data, tightening ε trades cost for fairness along a Pareto frontier (Fig. 2). The frontier is flat down to an equalized-odds gap of about 0.02 and then turns steeply up."
+  },
+  {
+   "t": "figure",
+   "path": "C:\\Users\\Bilel\\Documents\\Fall_2026\\DSFSG\\project\\Smog-Analysis-DSSG\\figures\\fig_m05_paper_6_pareto.png",
+   "caption": "Fig. 2. Fairness–accuracy trade-off across city-size tiers (training out-of-fold predictions): cost against the equalized-odds gap for every threshold rule and reweighing strength. Lines join the Pareto-efficient rules.",
+   "width_in": 3.45
+  },
+  {
+   "t": "h1",
+   "text": "VI. Data Expansion, Drift and Model Re-training"
+  },
+  {
+   "t": "h2",
+   "text": "A. Design"
+  },
+  {
+   "t": "p",
+   "text": "Dataset shift can affect the inputs (covariate shift), the label frequency (prior shift) or the relation between them (concept drift) [27], [28]. We compare the initial wave with 2024 using two-sample Kolmogorov–Smirnov tests [29] for continuous features, χ² tests for categorical ones and the Population Stability Index (PSI) [30] with 10 reference-decile bins. P-values get the Benjamini–Hochberg correction [31]. PSI bands: < 0.10 stable, 0.10–0.25 moderate, ≥ 0.25 major. The initial wave holds two Aug–Dec seasons but one Jan–Jul, so we also compare Sep–Dec only (season-matched). A domain classifier tests the joint shift [32]. The concept test is a pooled logit with 2024 × predictor interactions on rain-free Sep–Feb days, with city fixed effects."
+  },
+  {
+   "t": "p",
+   "text": "**Evaluation settings.** (1) The saved Milestone 4 model on its own validation season, Sep–Dec 2023. (2) The same model and thresholds on 2024 without re-training (zero-shot): (2a) all of 2024 and (2b) Sep–Dec 2024. (3) Models re-trained on 8,272 rows from 2022-08 to 2024-08 with the same CV and search: (3a) on the held-out Sep–Dec 2024 season (1,276 city-days, 180 spikes) and (3b) purged CV over the whole combined dataset."
+  },
+  {
+   "t": "h2",
+   "text": "B. Covariate shift"
+  },
+  {
+   "t": "p",
+   "text": "With thousands of rows per wave, 17 of 20 features differ significantly in the season-matched comparison (q < 0.05). Most shifts are small (Fig. 3). The largest season-matched PSI is 0.40 for all fires within 300 km, and 4 more features reach the moderate band. Fewer fires burned within 300 km in Sep–Dec 2024 (mean 171.4 against 307.5 per city-day). India-origin upwind fires fell from 56.8 to 25.1, and Pakistan-origin ones rose from 28.9 to 38.3. Stagnant days rose from 11.8% to 18.3%, and mean PM2.5 from 65.8 to 75.3 µg/m³. The domain classifier separates the waves weakly over the whole wave (ROC-AUC 0.530) and moderately within Sep–Dec (0.644)."
+  },
+  {
+   "t": "figure",
+   "path": "C:\\Users\\Bilel\\Documents\\Fall_2026\\DSFSG\\project\\Smog-Analysis-DSSG\\figures\\fig_m05_paper_2_psi.png",
+   "caption": "Fig. 3. Population Stability Index of every feature between the initial wave and 2024, whole wave (grey) and Sep–Dec only (orange). Dashed: 0.10 (moderate); solid: 0.25 (major).",
+   "width_in": 3.45
+  },
+  {
+   "t": "table",
+   "label": "TABLE IV",
+   "caption": "Season-matched drift tests, Sep–Dec 2022–23 vs Sep–Dec 2024",
+   "header": [
+    "Feature",
+    "Test",
+    "Stat.",
+    "q (BH)",
+    "PSI",
+    "Mean"
+   ],
+   "rows": [
+    [
+     "Smog index",
+     "KS",
+     "0.053",
+     "0.019",
+     "0.042",
+     "0.27 → 0.38"
+    ],
+    [
+     "PM2.5 (µg/m³)",
+     "KS",
+     "0.092",
+     "< 0.001",
+     "0.082",
+     "65.8 → 75.3"
+    ],
+    [
+     "Mean temp. (°C)",
+     "KS",
+     "0.105",
+     "< 0.001",
+     "0.126",
+     "21.4 → 21.9"
+    ],
+    [
+     "Humidity (%)",
+     "KS",
+     "0.084",
+     "< 0.001",
+     "0.107",
+     "68.6 → 67.1"
+    ],
+    [
+     "Wind (km/h)",
+     "KS",
+     "0.113",
+     "< 0.001",
+     "0.078",
+     "4.93 → 4.22"
+    ],
+    [
+     "Upwind fires",
+     "KS",
+     "0.150",
+     "< 0.001",
+     "0.103",
+     "85.7 → 63.4"
+    ],
+    [
+     "Fires 300 km",
+     "KS",
+     "0.140",
+     "< 0.001",
+     "0.401",
+     "307.5 → 171.4"
+    ],
+    [
+     "Upwind IN fires",
+     "KS",
+     "0.101",
+     "< 0.001",
+     "0.052",
+     "56.8 → 25.1"
+    ],
+    [
+     "Stagnant (share)",
+     "χ²",
+     "29.628",
+     "< 0.001",
+     "0.033",
+     "0.12 → 0.18"
+    ],
+    [
+     "Wind sector",
+     "χ²",
+     "68.743",
+     "< 0.001",
+     "0.082",
+     "–"
+    ]
+   ],
+   "widths": [
+    1250,
+    450,
+    600,
+    700,
+    550,
+    1350
+   ],
+   "note": "Stat. = KS distance or χ² statistic. All 20 features are in Appendix Table A4.",
+   "font": 7.5
+  },
+  {
+   "t": "h2",
+   "text": "C. Label shift and concept drift"
+  },
+  {
+   "t": "p",
+   "text": "**The label shifted most.** With frozen thresholds, the next-day spike rate rose from 5.4% to 9.1% overall and from 8.1% to 14.1% in Sep–Dec (Fig. 4). November alone went from 4.5% to 27.6% of city-days, the month of the November 2024 school closures [3]. Every tier saw more spikes: Tier 3 went from 10.5% to 18.8% in Sep–Dec."
+  },
+  {
+   "t": "figure",
+   "path": "C:\\Users\\Bilel\\Documents\\Fall_2026\\DSFSG\\project\\Smog-Analysis-DSSG\\figures\\fig_m05_paper_1_label_shift.png",
+   "caption": "Fig. 4. Share of city-days followed by a spike, by calendar month, with the frozen 2022–23 thresholds.",
+   "width_in": 3.45
+  },
+  {
+   "t": "p",
+   "text": "**The relation changed as well.** Adding the 2024 interactions improves the pooled logit (likelihood-ratio χ² 22.7, 7 df, p 0.002; city-cluster Wald p < 0.001; n = 4,630, 650 spikes). The terms that changed are stagnant air (ratio of odds ratios 0.43 [0.25, 0.73]), upwind fires (log) (ratio of odds ratios 1.51 [1.21, 1.88]). Today's margin stays the strongest predictor in both waves (OR 20.8 per SD before, 15.7 in 2024). The 2024 intercept shift has a ratio of 2.78, so spikes became likelier at the same predictor values."
+  },
+  {
+   "t": "p",
+   "text": "**Calibration decays.** The frozen LR predicted a mean spike probability of 0.102 for Sep–Dec 2024, while 0.141 of city-days were followed by a spike. For Sep–Dec 2023 the figures were 0.056 and 0.069. The Brier score rose from 0.037 to 0.069 (Fig. 5)."
+  },
+  {
+   "t": "figure",
+   "path": "C:\\Users\\Bilel\\Documents\\Fall_2026\\DSFSG\\project\\Smog-Analysis-DSSG\\figures\\fig_m05_paper_3_calibration_time.png",
+   "caption": "Fig. 5. Observed next-day spike rate and the mean predicted probability of the frozen LR, by month. All predictions are out of sample: out-of-fold for training months, validation for Sep–Dec 2023, zero-shot for 2024.",
+   "width_in": 3.45
+  },
+  {
+   "t": "h2",
+   "text": "D. Zero-shot generalization and re-training"
+  },
+  {
+   "t": "table",
+   "label": "TABLE V",
+   "caption": "Three-way performance audit at the 5:1 thresholds",
+   "header": [
+    "",
+    "Model",
+    "Acc.",
+    "Prec.",
+    "Rec.",
+    "F1",
+    "ROC",
+    "PR",
+    "Cost"
+   ],
+   "rows": [
+    [
+     "(1)",
+     "Persistence",
+     "0.955",
+     "0.688",
+     "0.618",
+     "0.651",
+     "0.963",
+     "0.669",
+     "150"
+    ],
+    [
+     "(1)",
+     "LR full",
+     "0.920",
+     "0.456",
+     "0.865",
+     "0.597",
+     "0.967",
+     "0.695",
+     "117"
+    ],
+    [
+     "(1)",
+     "DT full",
+     "0.936",
+     "0.521",
+     "0.820",
+     "0.638",
+     "0.953",
+     "0.590",
+     "113"
+    ],
+    [
+     "(1)",
+     "RF full",
+     "0.934",
+     "0.514",
+     "0.820",
+     "0.632",
+     "0.964",
+     "0.679",
+     "115"
+    ],
+    [
+     "(1)",
+     "HGB full",
+     "0.930",
+     "0.493",
+     "0.854",
+     "0.625",
+     "0.963",
+     "0.636",
+     "110"
+    ],
+    [
+     "(2a)",
+     "Persistence",
+     "0.950",
+     "0.724",
+     "0.738",
+     "0.731",
+     "0.974",
+     "0.765",
+     "146"
+    ],
+    [
+     "(2a)",
+     "LR full",
+     "0.926",
+     "0.558",
+     "0.925",
+     "0.697",
+     "0.973",
+     "0.768",
+     "101"
+    ],
+    [
+     "(2a)",
+     "DT full",
+     "0.938",
+     "0.609",
+     "0.912",
+     "0.730",
+     "0.967",
+     "0.702",
+     "94"
+    ],
+    [
+     "(2a)",
+     "RF full",
+     "0.938",
+     "0.606",
+     "0.914",
+     "0.729",
+     "0.975",
+     "0.757",
+     "93"
+    ],
+    [
+     "(2a)",
+     "HGB full",
+     "0.932",
+     "0.583",
+     "0.895",
+     "0.706",
+     "0.969",
+     "0.730",
+     "107"
+    ],
+    [
+     "(2b)",
+     "Persistence",
+     "0.919",
+     "0.715",
+     "0.711",
+     "0.713",
+     "0.947",
+     "0.730",
+     "244"
+    ],
+    [
+     "(2b)",
+     "LR full",
+     "0.895",
+     "0.584",
+     "0.889",
+     "0.705",
+     "0.946",
+     "0.726",
+     "168"
+    ],
+    [
+     "(2b)",
+     "DT full",
+     "0.907",
+     "0.624",
+     "0.867",
+     "0.726",
+     "0.939",
+     "0.665",
+     "168"
+    ],
+    [
+     "(2b)",
+     "RF full",
+     "0.904",
+     "0.613",
+     "0.861",
+     "0.716",
+     "0.949",
+     "0.732",
+     "175"
+    ],
+    [
+     "(2b)",
+     "HGB full",
+     "0.895",
+     "0.587",
+     "0.861",
+     "0.698",
+     "0.938",
+     "0.681",
+     "183"
+    ],
+    [
+     "(3a)",
+     "Persistence",
+     "0.919",
+     "0.715",
+     "0.711",
+     "0.713",
+     "0.947",
+     "0.730",
+     "244"
+    ],
+    [
+     "(3a)",
+     "LR full",
+     "0.902",
+     "0.605",
+     "0.878",
+     "0.717",
+     "0.946",
+     "0.728",
+     "167"
+    ],
+    [
+     "(3a)",
+     "DT full",
+     "0.886",
+     "0.561",
+     "0.889",
+     "0.688",
+     "0.941",
+     "0.681",
+     "176"
+    ],
+    [
+     "(3a)",
+     "RF full",
+     "0.907",
+     "0.622",
+     "0.867",
+     "0.724",
+     "0.945",
+     "0.727",
+     "168"
+    ],
+    [
+     "(3a)",
+     "HGB full",
+     "0.892",
+     "0.574",
+     "0.906",
+     "0.703",
+     "0.945",
+     "0.729",
+     "161"
+    ],
+    [
+     "(3b)",
+     "Persistence",
+     "0.956",
+     "0.685",
+     "0.686",
+     "0.685",
+     "0.973",
+     "0.729",
+     "131"
+    ],
+    [
+     "(3b)",
+     "LR full",
+     "0.928",
+     "0.496",
+     "0.915",
+     "0.641",
+     "0.972",
+     "0.727",
+     "96"
+    ],
+    [
+     "(3b)",
+     "DT full",
+     "0.935",
+     "0.525",
+     "0.882",
+     "0.656",
+     "0.963",
+     "0.663",
+     "97"
+    ],
+    [
+     "(3b)",
+     "RF full",
+     "0.935",
+     "0.523",
+     "0.890",
+     "0.657",
+     "0.972",
+     "0.722",
+     "96"
+    ],
+    [
+     "(3b)",
+     "HGB full",
+     "0.925",
+     "0.486",
+     "0.907",
+     "0.631",
+     "0.972",
+     "0.720",
+     "100"
+    ]
+   ],
+   "widths": [
+    330,
+    1000,
+    500,
+    500,
+    500,
+    480,
+    500,
+    480,
+    500
+   ],
+   "note": "(1) Initial model, initial data (Sep–Dec 2023). (2a) Initial model, all 2024; (2b) Sep–Dec 2024 (zero-shot). (3a) Re-trained, held-out Sep–Dec 2024. (3b) Re-trained, purged 25-fold CV over the combined data (mean). Cost per 1,000 city-days. CIs: Appendix Table A5.",
+   "font": 7
+  },
+  {
+   "t": "p",
+   "text": "**The ranking skill held** (Table V, Fig. 6). Zero-shot on Sep–Dec 2024, LR full reached PR-AUC 0.726 [0.565, 0.798], against 0.695 on its own validation season, and ROC-AUC fell from 0.967 to 0.946. Precision and F1 rose with the higher spike rate. **The cost of errors grew** from 117.1 to 167.7 per 1,000 city-days: 20 missed spikes and 114 false alarms on 1,276 city-days. Persistence cost 243.7, so the model still saved 76.0 per 1,000 city-days."
+  },
+  {
+   "t": "figure",
+   "path": "C:\\Users\\Bilel\\Documents\\Fall_2026\\DSFSG\\project\\Smog-Analysis-DSSG\\figures\\fig_m05_paper_4_three_way.png",
+   "caption": "Fig. 6. PR-AUC by evaluation setting with 95% week-block bootstrap CIs. For (3b), bars show ±1 SD over the 25 CV folds.",
+   "width_in": 3.45
+  },
+  {
+   "t": "p",
+   "text": "**Re-training did not raise the ranking skill of the final model.** Re-tuned on the combined data, the fixed rule again chose LR full, with best ensemble RF full. The paired test-season difference re-trained − zero-shot for LR is 0.002 [−0.002, 0.007] in PR-AUC and −0.8 [−12.3, 11.6] in cost. For HGB it is 0.048 [0.003, 0.089], the only interval that excludes 0, and for RF −0.006 [−0.047, 0.033]. Re-trained, RF − LR is −0.001 [−0.090, 0.035] and HGB − LR 0.001 [−0.040, 0.022]. The CV PR-AUC of LR rose from 0.651 to 0.738 with more training winters. Fires still added no skill to LR (LR full ≡ LR no-fire), and AQ history still did: LR no-fire − LR weather-only 0.251 [0.098, 0.417]."
+  },
+  {
+   "t": "p",
+   "text": "**Sensitivity.** Dropping the 110 test rows that read a VIIRS gap day moves the re-trained LR PR-AUC from 0.728 to 0.730. Re-learning the spike thresholds on the expanded training rows changes them by −0.19 to 0.22 and lowers the test spike rate to 11.8% (PR-AUC 0.611 for LR, 0.614 for persistence). A moving threshold would hide part of the 2024 deterioration, so we keep the frozen label as the headline."
+  },
+  {
+   "t": "h2",
+   "text": "E. Fairness shift"
+  },
+  {
+   "t": "table",
+   "label": "TABLE VI",
+   "caption": "Fairness across city-size tiers before and after the data expansion",
+   "header": [
+    "",
+    "Threshold",
+    "Tier DIR",
+    "ΔTPR",
+    "ΔFPR",
+    "EO",
+    "EO country"
+   ],
+   "rows": [
+    [
+     "(1)",
+     "single",
+     "1.34–2.44",
+     "0.154",
+     "0.049",
+     "0.154",
+     "0.063"
+    ],
+    [
+     "(1)",
+     "per tier",
+     "1.34–2.14",
+     "0.135",
+     "0.025",
+     "0.135",
+     "0.084"
+    ],
+    [
+     "(2b)",
+     "single",
+     "1.25–1.54",
+     "0.079",
+     "0.022",
+     "0.079",
+     "0.081"
+    ],
+    [
+     "(2b)",
+     "per tier",
+     "1.28–1.47",
+     "0.079",
+     "0.015",
+     "0.079",
+     "0.090"
+    ],
+    [
+     "(3a)",
+     "single",
+     "1.28–1.60",
+     "0.062",
+     "0.026",
+     "0.062",
+     "0.100"
+    ],
+    [
+     "(3a)",
+     "per tier",
+     "1.26–1.58",
+     "0.045",
+     "0.024",
+     "0.045",
+     "0.087"
+    ]
+   ],
+   "widths": [
+    330,
+    700,
+    900,
+    600,
+    600,
+    600,
+    800
+   ],
+   "note": "DIR = alert rate relative to Tier 1 metros. ΔTPR, ΔFPR = largest gap between tiers. EO = equalized-odds gap. 95% CIs in Appendix Table A7.",
+   "font": 7.5
+  },
+  {
+   "t": "p",
+   "text": "**Under one threshold, the tier gaps did not widen beyond their uncertainty** (Table VI, Fig. 7). Zero-shot, the false-alarm rate rose in every tier: metros 5.6% → 9.2%, small cities 10.5% → 11.4%. The predictive-equality gap moved from 0.049 to 0.022 [0.004, 0.061]. Re-training moved it to 0.026 [0.007, 0.064], a paired change of 0.005 [−0.011, 0.020]. The tier DIR still fails the 80% rule, but it follows the base rates: Tier 3 had 18.8% spike days in Sep–Dec 2024 against 9.8% in metros. Between countries the equalized-odds gap stayed at 0.081 zero-shot and 0.100 re-trained."
+  },
+  {
+   "t": "p",
+   "text": "**The per-tier thresholds lose their small-city adjustment.** In Milestone 4 they ranged from 0.128 to 0.160, with the highest for Tier 3. Re-chosen on the combined data, they nearly converge (0.174 to 0.180). On the test season their tier DIR is higher than with the Milestone 4 tier thresholds by 0.110 [0.018, 0.301]. **Exposure.** Weighting by census population, the 180 spike days of Sep–Dec 2024 add up to 295 million person-days. The zero-shot alert missed 10.6% of them. The three Pakistani metros hold 58% of the missed person-days, since one missed day there affects millions."
+  },
+  {
+   "t": "figure",
+   "path": "C:\\Users\\Bilel\\Documents\\Fall_2026\\DSFSG\\project\\Smog-Analysis-DSSG\\figures\\fig_m05_paper_5_fairness_shift.png",
+   "caption": "Fig. 7. Recall and false-alarm rate by city-size tier (95% week-block CIs): Milestone 4 validation, 2024 zero-shot, and re-trained with the single and per-tier thresholds.",
+   "width_in": 3.45
+  },
+  {
+   "t": "h1",
+   "text": "VII. Policy Recommendations"
+  },
+  {
+   "t": "h2",
+   "text": "A. FATEN re-evaluation"
+  },
+  {
+   "t": "table",
+   "label": "TABLE VII",
+   "caption": "The alert against the FATEN principles after the 2024 test",
+   "header": [
+    "",
+    "Evidence",
+    "Safeguard"
+   ],
+   "rows": [
+    [
+     "Fairness",
+     "Similar error rates by country; tier ΔFPR 0.022 zero-shot. Per-tier thresholds re-chosen on the combined data nearly converge.",
+     "Re-audit tiers each season; re-choose tier thresholds only with a hold-out check."
+    ],
+    [
+     "Autonomy",
+     "The model advises. Officials set the cost ratio and the threshold.",
+     "Human decision for closures; recorded overrides."
+    ],
+    [
+     "Trust",
+     "Two readable inputs; skill held out of time (PR-AUC 0.726); calibration slipped.",
+     "Publish the alert record, its errors and monthly drift scores."
+    ],
+    [
+     "Equity",
+     "Small cities carry more false alarms; metros carry most missed person-days.",
+     "Support measures with each alert; low-cost sensors in Tier 3 cities."
+    ],
+    [
+     "Non-maleficence",
+     "20 spikes missed in Sep–Dec 2024; the frozen model under-predicted the spike rate.",
+     "Keep existing advisories; re-calibrate before each season."
+    ]
+   ],
+   "widths": [
+    1080,
+    2100,
+    1720
+   ],
+   "note": null,
+   "font": 7.5,
+   "align": "left"
+  },
+  {
+   "t": "h2",
+   "text": "B. Living-lab deployment and failure modes"
+  },
+  {
+   "t": "p",
+   "text": "A living lab tests an innovation with its users in a real setting [33]. We propose a one-season pilot with the Environment Protection Department of Punjab in two cities per tier. The model would issue an advisory each evening, and officials would record their own decision next to it. The 2024 test adds four failure modes and safeguards:"
+  },
+  {
+   "t": "bullets",
+   "items": [
+    "**Prior shift:** a worse winter raises the spike rate and the cost. Re-calibrate the intercept on the latest weeks and track observed against predicted rates monthly.",
+    "**Concept drift:** the stagnation and fire effects changed. Run the PSI, domain and interaction tests before each season, with fixed alarm levels.",
+    "**Satellite gaps:** VIIRS missed 3–5 November 2024. Flag fire inputs as missing, never as zero, and fall back to the no-fire model.",
+    "**Threshold transfer:** tier thresholds re-chosen on new data lost the small-city adjustment and raised the tier DIR. Validate any new threshold on held-out weeks before use."
+   ]
+  },
+  {
+   "t": "p",
+   "text": "A review board with officials from both tiers, a public-health expert and a community representative would review the fairness table, the drift scores and every missed spike each month. This guards against digital marginalisation of small cities, which have the fewest monitors."
+  },
+  {
+   "t": "h2",
+   "text": "C. Recommendations"
+  },
+  {
+   "t": "bullets",
+   "items": [
+    "Issue a next-day, city-level advisory from today's index margin and temperature. It stayed cheaper than persistence on 2024.",
+    "Re-calibrate and re-audit before every winter. Re-training on more years did not raise skill but keeps the thresholds current.",
+    "Use rain as an all-clear signal and treat fire control as source reduction, not a forecast input.",
+    "Share one alert method across the border. Error rates are similar in both countries, and India's GRAP already acts on daily levels [34]."
+   ]
+  },
+  {
+   "t": "h1",
+   "text": "VIII. Limitations and Conclusion"
+  },
+  {
+   "t": "p",
+   "text": "CAMS model estimates on a coarse grid stand in for monitors, and Islamabad and Rawalpindi share one series. The models use observed, not forecast, weather. The tiers rest on population only, with a 2011 census for India. Each test season has about 18 weeks, so the CIs are wide. The proposal's 1 km WorldPop exposure map was reduced to census population per city. Our next-day alert does not replace transport models that attribute smog to its sources."
+  },
+  {
+   "t": "p",
+   "text": "A transparent two-input alert forecast next-day smog spikes in 11 cross-border cities and kept its ranking skill on an unseen 2024 season (PR-AUC 0.726). The 2024 wave brought far more spikes and a changed stagnation and fire relation. The alert under-predicted risk and cost more. Re-training on the combined data did not improve ranking, and the ensembles still did not beat logistic regression. Under one threshold, the fairness gaps between countries and city tiers did not change beyond their uncertainty. The model is useful when it is re-calibrated each season, audited by tier and kept under human review."
+  },
+  {
+   "t": "h1",
+   "text": "References"
+  },
+  {
+   "t": "ieee_refs",
+   "items": [
+    "World Health Organization, *WHO Global Air Quality Guidelines: Particulate Matter (PM2.5 and PM10), Ozone, Nitrogen Dioxide, Sulfur Dioxide and Carbon Monoxide*. Geneva, Switzerland: WHO, 2021.",
+    "Environment Protection Department, Government of the Punjab, \"Smog Commission reports.\" [Online]. Available: https://epd.punjab.gov.pk/smog_commission_reports",
+    "A. Waqar and I. Gabol, \"Punjab govt orders closure of all schools as province tackles hazardous air quality,\" *Dawn*, Nov. 12, 2024. [Online]. Available: https://www.dawn.com/news/1871888",
+    "D. H. Cusworth *et al.*, \"Quantifying the influence of agricultural fires in northwest India on urban air pollution in Delhi, India,\" *Environ. Res. Lett.*, vol. 13, no. 4, Art. no. 044018, 2018, doi: 10.1088/1748-9326/aab303.",
+    "H. Jethva, O. Torres, R. D. Field, A. Lyapustin, R. Gautam, and V. Kayetha, \"Connecting crop productivity, residue fires, and air quality over northern India,\" *Sci. Rep.*, vol. 9, Art. no. 16594, 2019, doi: 10.1038/s41598-019-52799-x.",
+    "S. Tariq, Z. ul-Haq, and M. Ali, \"Analysis of optical and physical properties of aerosols during crop residue burning event of October 2010 over Lahore, Pakistan,\" *Atmos. Pollut. Res.*, vol. 6, no. 6, pp. 969–978, 2015, doi: 10.1016/j.apr.2015.05.002.",
+    "Y. Rybarczyk and R. Zalakeviciute, \"Machine learning approaches for outdoor air quality modelling: A systematic review,\" *Appl. Sci.*, vol. 8, no. 12, Art. no. 2570, 2018, doi: 10.3390/app8122570.",
+    "A. Inness *et al.*, \"The CAMS reanalysis of atmospheric composition,\" *Atmos. Chem. Phys.*, vol. 19, no. 6, pp. 3515–3556, 2019, doi: 10.5194/acp-19-3515-2019.",
+    "P. Zippenfenig, \"Open-Meteo.com Weather API,\" Zenodo, 2023, doi: 10.5281/zenodo.7970649.",
+    "W. Schroeder, P. Oliva, L. Giglio, and I. A. Csiszar, \"The New VIIRS 375 m active fire detection data product: Algorithm description and initial assessment,\" *Remote Sens. Environ.*, vol. 143, pp. 85–96, 2014, doi: 10.1016/j.rse.2013.12.008.",
+    "NASA, \"Fire Information for Resource Management System (FIRMS): VIIRS 375 m active fire product,\" 2024. [Online]. Available: https://firms.modaps.eosdis.nasa.gov",
+    "D. R. Roberts *et al.*, \"Cross-validation strategies for data with temporal, spatial, hierarchical, or phylogenetic structure,\" *Ecography*, vol. 40, no. 8, pp. 913–929, 2017, doi: 10.1111/ecog.02881.",
+    "T. Saito and M. Rehmsmeier, \"The precision-recall plot is more informative than the ROC plot when evaluating binary classifiers on imbalanced datasets,\" *PLoS ONE*, vol. 10, no. 3, Art. no. e0118432, 2015, doi: 10.1371/journal.pone.0118432.",
+    "L. Breiman, \"Random forests,\" *Mach. Learn.*, vol. 45, no. 1, pp. 5–32, 2001, doi: 10.1023/A:1010933404324.",
+    "J. H. Friedman, \"Greedy function approximation: A gradient boosting machine,\" *Ann. Statist.*, vol. 29, no. 5, pp. 1189–1232, 2001, doi: 10.1214/aos/1013203451.",
+    "G. Ke *et al.*, \"LightGBM: A highly efficient gradient boosting decision tree,\" in *Adv. Neural Inf. Process. Syst. 30*, 2017.",
+    "J. Bergstra and Y. Bengio, \"Random search for hyper-parameter optimization,\" *J. Mach. Learn. Res.*, vol. 13, pp. 281–305, 2012.",
+    "F. Pedregosa *et al.*, \"Scikit-learn: Machine learning in Python,\" *J. Mach. Learn. Res.*, vol. 12, no. 85, pp. 2825–2830, 2011.",
+    "S. Seabold and J. Perktold, \"Statsmodels: Econometric and statistical modeling with Python,\" in *Proc. 9th Python Sci. Conf.*, 2010, pp. 92–96, doi: 10.25080/Majora-92bf1922-011.",
+    "A. Pandey *et al.*, \"Health and economic impact of air pollution in the states of India: The Global Burden of Disease Study 2019,\" *Lancet Planet. Health*, vol. 5, no. 1, pp. e25–e38, 2021, doi: 10.1016/S2542-5196(20)30298-9.",
+    "Pakistan Bureau of Statistics, \"7th Population and Housing Census 2023: National census report,\" 2025. [Online]. Available: https://www.pbs.gov.pk/wp-content/uploads/2020/07/National-Census-Report-2023.pdf",
+    "M. Feldman, S. A. Friedler, J. Moeller, C. Scheidegger, and S. Venkatasubramanian, \"Certifying and removing disparate impact,\" in *Proc. 21st ACM SIGKDD Int. Conf. Knowl. Discov. Data Min.*, 2015, pp. 259–268, doi: 10.1145/2783258.2783311.",
+    "M. Hardt, E. Price, and N. Srebro, \"Equality of opportunity in supervised learning,\" in *Adv. Neural Inf. Process. Syst. 29*, 2016.",
+    "A. Chouldechova, \"Fair prediction with disparate impact: A study of bias in recidivism prediction instruments,\" *Big Data*, vol. 5, no. 2, pp. 153–163, 2017, doi: 10.1089/big.2016.0047.",
+    "N. Mehrabi, F. Morstatter, N. Saxena, K. Lerman, and A. Galstyan, \"A survey on bias and fairness in machine learning,\" *ACM Comput. Surv.*, vol. 54, no. 6, pp. 1–35, 2021, doi: 10.1145/3457607.",
+    "F. Kamiran and T. Calders, \"Data preprocessing techniques for classification without discrimination,\" *Knowl. Inf. Syst.*, vol. 33, no. 1, pp. 1–33, 2012, doi: 10.1007/s10115-011-0463-8.",
+    "J. G. Moreno-Torres, T. Raeder, R. Alaiz-Rodríguez, N. V. Chawla, and F. Herrera, \"A unifying view on dataset shift in classification,\" *Pattern Recognit.*, vol. 45, no. 1, pp. 521–530, 2012, doi: 10.1016/j.patcog.2011.06.019.",
+    "J. Gama, I. Žliobaitė, A. Bifet, M. Pechenizkiy, and A. Bouchachia, \"A survey on concept drift adaptation,\" *ACM Comput. Surv.*, vol. 46, no. 4, pp. 1–37, 2014, doi: 10.1145/2523813.",
+    "F. J. Massey, \"The Kolmogorov-Smirnov test for goodness of fit,\" *J. Amer. Statist. Assoc.*, vol. 46, no. 253, pp. 68–78, 1951, doi: 10.1080/01621459.1951.10500769.",
+    "B. Yurdakul and J. Naranjo, \"Statistical properties of the population stability index,\" *J. Risk Model Validation*, 2020, doi: 10.21314/JRMV.2020.227.",
+    "Y. Benjamini and Y. Hochberg, \"Controlling the false discovery rate: A practical and powerful approach to multiple testing,\" *J. Roy. Statist. Soc. Ser. B*, vol. 57, no. 1, pp. 289–300, 1995, doi: 10.1111/j.2517-6161.1995.tb02031.x.",
+    "S. Rabanser, S. Günnemann, and Z. C. Lipton, \"Failing loudly: An empirical study of methods for detecting dataset shift,\" arXiv:1810.11953, 2019.",
+    "S. Leminen, M. Westerlund, and A.-G. Nyström, \"Living labs as open-innovation networks,\" *Technol. Innov. Manage. Rev.*, vol. 2, no. 9, pp. 6–11, 2012, doi: 10.22215/timreview/602.",
+    "Tribune News Service, \"GRAP rules revised: Nod to hybrid learning till Class V in severe AQI,\" *The Tribune*, Dec. 15, 2024. [Online]. Available: https://www.tribuneindia.com/news/delhi/grap-rules-revised-nod-to-hybrid-learning-till-class-v-in-severe-aqi/"
+   ]
+  },
+  {
+   "t": "section",
+   "layout": "one",
+   "newpage": true
+  },
+  {
+   "t": "h1",
+   "text": "Appendix"
+  },
+  {
+   "t": "table",
+   "label": "TABLE A1",
+   "caption": "Schema reconciliation of the raw files",
+   "header": [
+    "Issue",
+    "Evidence",
+    "Action"
+   ],
+   "rows": [
+    [
+     "Two file formats",
+     "Ludhiana AQ and weather are .xlsx; the other 20 files are .csv",
+     "One reader chooses read_excel or read_csv by the file suffix"
+    ],
+    [
+     "Column order differs",
+     "Pakistani AQ files: NO2, SO2, O3, CO; Indian AQ files: CO, NO2, SO2, O3; Ludhiana weather lists humidity before rain",
+     "Columns are renamed by name (prefix match), never by position"
+    ],
+    [
+     "Units in column names",
+     "μg/m³, °C, km/h, %, mm in every file of a stream",
+     "Short names keep the unit as a suffix (pm2_5_ugm3, temp_c); units checked identical"
+    ],
+    [
+     "Time zone",
+     "Open-Meteo headers say GMT (offset 0); VIIRS acq_date and acq_time are UTC",
+     "+5 h is added before taking the date, for every stream (UTC+5 for Indian cities too; known limitation)"
+    ],
+    [
+     "File names",
+     "'Sailkot-Weather.csv' (typo), 'Rawalpindi weather.csv', 'NASA-2024.csv' (no spaces)",
+     "Mapped in src/config.py; no file is renamed (decision D11)"
+    ],
+    [
+     "VIIRS time as text",
+     "acq_time such as '0833' loses its leading zero if read as a number",
+     "Read as text and zero-padded to 4 digits"
+    ],
+    [
+     "AQ empty before 2022-08-04",
+     "Every pollutant is empty from January to 3 August 2022",
+     "All-empty hours are dropped; the modelling window starts on 2022-08-04"
+    ],
+    [
+     "Ludhiana weather ends early",
+     "Last hour 2024-12-29 23:00:00 UTC (= 30 Dec 04:00 local); every other file runs to 2026",
+     "The window ends on 2024-12-29, the last day every stream covers for every city"
+    ],
+    [
+     "VIIRS days without any detection",
+     "No detection anywhere in India or Pakistan on some UTC dates (see the audit)",
+     "Flagged as fire_gap_day; counts stay 0 as in 2022-23; one sensitivity run drops the affected rows"
+    ],
+    [
+     "Static and offshore VIIRS sources",
+     "type 2 (static) and type 3 (offshore) detections in both files",
+     "Only type 0 (vegetation fire) is kept, as in fire.ipynb"
+    ],
+    [
+     "Data types",
+     "Excel cells load as datetimes, CSV cells as text; fire confidence is a letter",
+     "Times parsed to datetime64; keys normalised by merge.normalise_keys (city text, date at midnight)"
+    ]
+   ],
+   "widths": [
+    1500,
+    4400,
+    4540
+   ],
+   "note": null,
+   "font": 7,
+   "align": "left"
+  },
+  {
+   "t": "table",
+   "label": "TABLE A2",
+   "caption": "Reproduction check of the automated ingestion against the committed 2022–23 tables",
+   "header": [
+    "Table",
+    "Run",
+    "Rows",
+    "Cols",
+    "Cells differing",
+    "Columns differing",
+    "In window"
+   ],
+   "rows": [
+    [
+     "aq_daily",
+     "rebuild of 2022-23 only",
+     "5,665",
+     "53",
+     "0",
+     "none",
+     "0"
+    ],
+    [
+     "aq_daily",
+     "2024 run, rows up to 2023-12-31",
+     "5,665",
+     "53",
+     "0",
+     "none",
+     "0"
+    ],
+    [
+     "wx_daily",
+     "rebuild of 2022-23 only",
+     "7,852",
+     "38",
+     "1",
+     "rain_day",
+     "0"
+    ],
+    [
+     "wx_daily",
+     "2024 run, rows up to 2023-12-31",
+     "7,852",
+     "38",
+     "1",
+     "rain_day",
+     "0"
+    ],
+    [
+     "wind_daily",
+     "rebuild of 2022-23 only",
+     "7,852",
+     "7",
+     "0",
+     "none",
+     "0"
+    ],
+    [
+     "wind_daily",
+     "2024 run, rows up to 2023-12-31",
+     "7,852",
+     "7",
+     "0",
+     "none",
+     "0"
+    ],
+    [
+     "fire_daily",
+     "rebuild of 2022-23 only",
+     "8,030",
+     "58",
+     "0",
+     "none",
+     "0"
+    ],
+    [
+     "fire_daily",
+     "2024 run, rows up to 2023-12-31",
+     "8,030",
+     "58",
+     "0",
+     "none",
+     "0"
+    ],
+    [
+     "fire_daily_long",
+     "rebuild of 2022-23 only",
+     "602,250",
+     "3",
+     "0",
+     "none",
+     "0"
+    ],
+    [
+     "fire_daily_long",
+     "2024 run, rows up to 2023-12-31",
+     "602,250",
+     "3",
+     "0",
+     "none",
+     "0"
+    ],
+    [
+     "master_daily",
+     "2024 run, rows up to 2023-12-28",
+     "5,632",
+     "283",
+     "0",
+     "none",
+     "0"
+    ],
+    [
+     "master_daily",
+     "2024 run, rows up to 2023-12-31",
+     "5,665",
+     "283",
+     "132",
+     "target_index_h1, target_spike_h1, target_index_h2, target_spike_h2, target_index_h3, target_spike_h3",
+     "132"
+    ]
+   ],
+   "widths": [
+    1200,
+    2600,
+    700,
+    500,
+    900,
+    3640,
+    900
+   ],
+   "note": "'In window' counts differing cells from three days before 4 Aug 2022 (the earliest day the master reads). The master's 2023-12-29 to 31 targets differ because they now point into 2024 instead of being empty.",
+   "font": 6.5
+  },
+  {
+   "t": "table",
+   "label": "TABLE A3",
+   "caption": "Data-quality audit by wave",
+   "header": [
+    "Stream",
+    "Check",
+    "Initial",
+    "2024"
+   ],
+   "rows": [
+    [
+     "AQ",
+     "city-days expected (11 cities x days)",
+     "5,665",
+     "4,004"
+    ],
+    [
+     "AQ",
+     "city-days kept (>= 18 valid hours)",
+     "5,665",
+     "4,004"
+    ],
+    [
+     "AQ",
+     "hourly PM2.5 values missing before cleaning",
+     "55",
+     "0"
+    ],
+    [
+     "AQ",
+     "pollutant cells filled by interpolation (gaps <= 6 h)",
+     "385",
+     "0"
+    ],
+    [
+     "AQ",
+     "suspect dates (any hour with PM2.5 < 2 ug/m3)",
+     "4",
+     "0"
+    ],
+    [
+     "AQ",
+     "spike days today (frozen thresholds)",
+     "297",
+     "370"
+    ],
+    [
+     "weather",
+     "hourly values missing",
+     "0",
+     "0"
+    ],
+    [
+     "weather",
+     "city-days with fewer than 24 hours",
+     "0",
+     "0"
+    ],
+    [
+     "weather",
+     "stagnant city-days",
+     "631",
+     "466"
+    ],
+    [
+     "weather",
+     "rain city-days",
+     "1,235",
+     "775"
+    ],
+    [
+     "fire",
+     "dates with no VIIRS detection in India or Pakistan (fire_gap_day)",
+     "8",
+     "20"
+    ],
+    [
+     "fire",
+     "dates with no detection in the Pakistan file only",
+     "2",
+     "1"
+    ],
+    [
+     "fire",
+     "upwind fires within 300 km, sum over city-days (main version)",
+     "295,943",
+     "183,953"
+    ]
+   ],
+   "widths": [
+    1000,
+    6640,
+    1400,
+    1400
+   ],
+   "note": null,
+   "font": 7
+  },
+  {
+   "t": "table",
+   "label": "TABLE A4",
+   "caption": "All drift tests (whole wave and season-matched)",
+   "header": [
+    "Feature",
+    "Test",
+    "Stat.",
+    "q",
+    "PSI",
+    "Stat. SM",
+    "q SM",
+    "PSI SM",
+    "Mean SM"
+   ],
+   "rows": [
+    [
+     "Composite Smog Index (today)",
+     "KS",
+     "0.099",
+     "< 0.001",
+     "0.072",
+     "0.053",
+     "0.019",
+     "0.042",
+     "0.27 → 0.38"
+    ],
+    [
+     "Index margin over city threshold (today)",
+     "KS",
+     "0.066",
+     "< 0.001",
+     "0.052",
+     "0.063",
+     "0.003",
+     "0.043",
+     "−0.92 → −0.82"
+    ],
+    [
+     "PM2.5 daily mean (µg/m³)",
+     "KS",
+     "0.112",
+     "< 0.001",
+     "0.094",
+     "0.092",
+     "< 0.001",
+     "0.082",
+     "65.84 → 75.33"
+    ],
+    [
+     "PM10 daily mean (µg/m³)",
+     "KS",
+     "0.051",
+     "< 0.001",
+     "0.033",
+     "0.061",
+     "0.004",
+     "0.026",
+     "99.33 → 98.24"
+    ],
+    [
+     "NO2 daily mean (µg/m³)",
+     "KS",
+     "0.132",
+     "< 0.001",
+     "0.092",
+     "0.061",
+     "0.004",
+     "0.086",
+     "32.50 → 31.53"
+    ],
+    [
+     "SO2 daily mean (µg/m³)",
+     "KS",
+     "0.116",
+     "< 0.001",
+     "0.077",
+     "0.061",
+     "0.004",
+     "0.036",
+     "15.23 → 15.16"
+    ],
+    [
+     "O3 daily mean (µg/m³)",
+     "KS",
+     "0.117",
+     "< 0.001",
+     "0.071",
+     "0.030",
+     "0.420",
+     "0.012",
+     "77.62 → 78.59"
+    ],
+    [
+     "CO daily mean (µg/m³)",
+     "KS",
+     "0.054",
+     "< 0.001",
+     "0.040",
+     "0.116",
+     "< 0.001",
+     "0.105",
+     "1,068.34 → 1,110.68"
+    ],
+    [
+     "Mean temperature (°C)",
+     "KS",
+     "0.102",
+     "< 0.001",
+     "0.152",
+     "0.105",
+     "< 0.001",
+     "0.126",
+     "21.37 → 21.94"
+    ],
+    [
+     "Daily temperature range (°C)",
+     "KS",
+     "0.067",
+     "< 0.001",
+     "0.039",
+     "0.059",
+     "0.005",
+     "0.036",
+     "11.56 → 11.49"
+    ],
+    [
+     "Relative humidity (%)",
+     "KS",
+     "0.104",
+     "< 0.001",
+     "0.096",
+     "0.084",
+     "< 0.001",
+     "0.107",
+     "68.60 → 67.10"
+    ],
+    [
+     "Vector-mean wind speed (km/h)",
+     "KS",
+     "0.031",
+     "0.021",
+     "0.008",
+     "0.113",
+     "< 0.001",
+     "0.078",
+     "4.93 → 4.22"
+    ],
+    [
+     "Rain (mm per day)",
+     "KS",
+     "0.038",
+     "0.003",
+     "0.006",
+     "0.028",
+     "0.498",
+     "0.007",
+     "1.02 → 0.68"
+    ],
+    [
+     "Upwind fires, ±45°, 300 km (count)",
+     "KS",
+     "0.077",
+     "< 0.001",
+     "0.031",
+     "0.150",
+     "< 0.001",
+     "0.103",
+     "85.66 → 63.38"
+    ],
+    [
+     "All fires within 300 km (count)",
+     "KS",
+     "0.069",
+     "< 0.001",
+     "0.112",
+     "0.140",
+     "< 0.001",
+     "0.401",
+     "307.45 → 171.40"
+    ],
+    [
+     "Upwind India-origin fires (count)",
+     "KS",
+     "0.051",
+     "< 0.001",
+     "0.014",
+     "0.101",
+     "< 0.001",
+     "0.052",
+     "56.76 → 25.08"
+    ],
+    [
+     "Upwind Pakistan-origin fires (count)",
+     "KS",
+     "0.069",
+     "< 0.001",
+     "0.020",
+     "0.118",
+     "< 0.001",
+     "0.068",
+     "28.90 → 38.30"
+    ],
+    [
+     "Stagnant air (vector wind < 2 km/h)",
+     "chi-square (df 1)",
+     "0.373",
+     "0.542",
+     "0.000",
+     "29.628",
+     "< 0.001",
+     "0.033",
+     "0.12 → 0.18"
+    ],
+    [
+     "Rain day (≥ 1 mm)",
+     "chi-square (df 1)",
+     "10.950",
+     "0.001",
+     "0.005",
+     "2.947",
+     "0.096",
+     "0.004",
+     "0.12 → 0.10"
+    ],
+    [
+     "Wind sector (8 sectors + calm)",
+     "chi-square (df 8)",
+     "56.966",
+     "< 0.001",
+     "0.025",
+     "68.743",
+     "< 0.001",
+     "0.082",
+     "–"
+    ]
+   ],
+   "widths": [
+    2700,
+    1200,
+    700,
+    800,
+    700,
+    800,
+    800,
+    800,
+    1940
+   ],
+   "note": "SM = season-matched (Sep–Dec). Domain-classifier ROC-AUC, all features: whole wave 0.530, season-matched 0.644.",
+   "font": 6.5
+  },
+  {
+   "t": "table",
+   "label": "TABLE A5",
+   "caption": "Three-way audit with 95% week-block bootstrap CIs",
+   "header": [
+    "",
+    "Model",
+    "PR-AUC",
+    "ROC-AUC",
+    "Recall",
+    "Cost per 1,000"
+   ],
+   "rows": [
+    [
+     "(1)",
+     "Persistence",
+     "0.669 [0.344, 0.765]",
+     "0.963 [0.937, 0.979]",
+     "0.618 [0.369, 0.703]",
+     "150.2 [48.4, 264.0]"
+    ],
+    [
+     "(1)",
+     "LR full",
+     "0.695 [0.323, 0.790]",
+     "0.967 [0.940, 0.983]",
+     "0.865 [0.667, 0.925]",
+     "117.1 [51.8, 189.3]"
+    ],
+    [
+     "(1)",
+     "DT full",
+     "0.590 [0.237, 0.716]",
+     "0.953 [0.900, 0.978]",
+     "0.820 [0.571, 0.899]",
+     "113.3 [43.1, 191.5]"
+    ],
+    [
+     "(1)",
+     "RF full",
+     "0.679 [0.311, 0.783]",
+     "0.964 [0.926, 0.983]",
+     "0.820 [0.619, 0.882]",
+     "114.8 [46.2, 189.1]"
+    ],
+    [
+     "(1)",
+     "HGB full",
+     "0.636 [0.254, 0.735]",
+     "0.963 [0.935, 0.981]",
+     "0.854 [0.710, 0.908]",
+     "110.2 [49.9, 171.5]"
+    ],
+    [
+     "(2a)",
+     "Persistence",
+     "0.765 [0.666, 0.822]",
+     "0.974 [0.962, 0.985]",
+     "0.738 [0.658, 0.790]",
+     "145.7 [80.0, 216.3]"
+    ],
+    [
+     "(2a)",
+     "LR full",
+     "0.768 [0.657, 0.827]",
+     "0.973 [0.961, 0.985]",
+     "0.925 [0.851, 0.967]",
+     "101.0 [58.8, 142.6]"
+    ],
+    [
+     "(2a)",
+     "DT full",
+     "0.702 [0.580, 0.770]",
+     "0.967 [0.952, 0.982]",
+     "0.912 [0.848, 0.951]",
+     "93.9 [52.5, 136.0]"
+    ],
+    [
+     "(2a)",
+     "RF full",
+     "0.757 [0.650, 0.806]",
+     "0.975 [0.963, 0.986]",
+     "0.914 [0.845, 0.958]",
+     "93.4 [51.7, 132.7]"
+    ],
+    [
+     "(2a)",
+     "HGB full",
+     "0.730 [0.607, 0.798]",
+     "0.969 [0.955, 0.983]",
+     "0.895 [0.821, 0.939]",
+     "106.6 [62.4, 149.1]"
+    ],
+    [
+     "(2b)",
+     "Persistence",
+     "0.730 [0.587, 0.797]",
+     "0.947 [0.916, 0.971]",
+     "0.711 [0.564, 0.776]",
+     "243.7 [111.7, 386.4]"
+    ],
+    [
+     "(2b)",
+     "LR full",
+     "0.726 [0.565, 0.798]",
+     "0.946 [0.911, 0.973]",
+     "0.889 [0.756, 0.949]",
+     "167.7 [87.3, 254.1]"
+    ],
+    [
+     "(2b)",
+     "DT full",
+     "0.665 [0.456, 0.761]",
+     "0.939 [0.902, 0.966]",
+     "0.867 [0.738, 0.928]",
+     "167.7 [85.7, 253.2]"
+    ],
+    [
+     "(2b)",
+     "RF full",
+     "0.732 [0.527, 0.808]",
+     "0.949 [0.913, 0.974]",
+     "0.861 [0.717, 0.927]",
+     "174.8 [90.9, 261.6]"
+    ],
+    [
+     "(2b)",
+     "HGB full",
+     "0.681 [0.504, 0.763]",
+     "0.938 [0.904, 0.967]",
+     "0.861 [0.763, 0.894]",
+     "183.4 [94.0, 279.2]"
+    ],
+    [
+     "(3a)",
+     "Persistence",
+     "0.730 [0.587, 0.797]",
+     "0.947 [0.916, 0.971]",
+     "0.711 [0.564, 0.776]",
+     "243.7 [111.7, 386.4]"
+    ],
+    [
+     "(3a)",
+     "LR full",
+     "0.728 [0.572, 0.799]",
+     "0.946 [0.913, 0.972]",
+     "0.878 [0.755, 0.934]",
+     "166.9 [84.4, 253.0]"
+    ],
+    [
+     "(3a)",
+     "DT full",
+     "0.681 [0.462, 0.786]",
+     "0.941 [0.902, 0.969]",
+     "0.889 [0.763, 0.955]",
+     "176.3 [86.2, 267.2]"
+    ],
+    [
+     "(3a)",
+     "RF full",
+     "0.727 [0.507, 0.822]",
+     "0.945 [0.911, 0.971]",
+     "0.867 [0.738, 0.928]",
+     "168.5 [85.7, 254.4]"
+    ],
+    [
+     "(3a)",
+     "HGB full",
+     "0.729 [0.550, 0.793]",
+     "0.945 [0.914, 0.973]",
+     "0.906 [0.785, 0.959]",
+     "161.4 [88.2, 245.6]"
+    ]
+   ],
+   "widths": [
+    500,
+    1200,
+    2200,
+    2200,
+    2200,
+    2140
+   ],
+   "note": null,
+   "font": 6.5
+  },
+  {
+   "t": "table",
+   "label": "TABLE A6",
+   "caption": "Re-trained models: selected settings, CV PR-AUC and 5:1 thresholds (initial → re-trained)",
+   "header": [
+    "Model",
+    "Selected setting",
+    "CV PR init.",
+    "CV PR re-tr.",
+    "Thr. init.",
+    "Thr. re-tr."
+   ],
+   "rows": [
+    [
+     "LR full",
+     "{C: 0.0052, class_weight: null, l1_ratio: 1.0}",
+     "0.651",
+     "0.738",
+     "0.128",
+     "0.174"
+    ],
+    [
+     "LR weather-only",
+     "{C: 3.7276, class_weight: null, l1_ratio: 0.0}",
+     "0.432",
+     "0.509",
+     "0.101",
+     "0.194"
+    ],
+    [
+     "LR no-fire",
+     "{C: 0.0052, class_weight: null, l1_ratio: 1.0}",
+     "0.651",
+     "0.738",
+     "0.128",
+     "0.174"
+    ],
+    [
+     "DT full",
+     "{class_weight: null, max_depth: 5, min_samples_leaf: 50}",
+     "0.519",
+     "0.657",
+     "0.199",
+     "0.163"
+    ],
+    [
+     "DT weather-only",
+     "{class_weight: balanced, max_depth: 8, min_samples_leaf: 25}",
+     "0.337",
+     "0.397",
+     "0.117",
+     "0.612"
+    ],
+    [
+     "DT no-fire",
+     "{class_weight: null, max_depth: 5, min_samples_leaf: 50}",
+     "0.519",
+     "0.666",
+     "0.199",
+     "0.166"
+    ],
+    [
+     "RF full",
+     "{n_estimators: 500, min_samples_leaf: 100, max_features: 1.0, max_depth: 5, class_weight: balanced}",
+     "0.590",
+     "0.710",
+     "0.175",
+     "0.735"
+    ],
+    [
+     "RF no-fire",
+     "{n_estimators: 300, min_samples_leaf: 5, max_features: 1.0, max_depth: 3, class_weight: null}",
+     "0.591",
+     "0.713",
+     "0.143",
+     "0.146"
+    ],
+    [
+     "HGB full",
+     "{class_weight: balanced, l2_regularization: 0.0572, learning_rate: 0.0199, max_depth: 8, max_iter: 330, max_leaf_nodes: 7, min_samples_leaf: 61}",
+     "0.565",
+     "0.701",
+     "0.578",
+     "0.528"
+    ],
+    [
+     "HGB no-fire",
+     "{class_weight: balanced, l2_regularization: 0.0572, learning_rate: 0.0199, max_depth: 8, max_iter: 330, max_leaf_nodes: 7, min_samples_leaf: 61}",
+     "0.580",
+     "0.703",
+     "0.578",
+     "0.628"
+    ]
+   ],
+   "widths": [
+    1300,
+    5400,
+    900,
+    900,
+    900,
+    1040
+   ],
+   "note": null,
+   "font": 6.5
+  },
+  {
+   "t": "table",
+   "label": "TABLE A7",
+   "caption": "Fairness metrics with 95% week-block bootstrap CIs",
+   "header": [
+    "",
+    "Rule",
+    "Grouping",
+    "ΔTPR",
+    "ΔFPR",
+    "DIR (max)"
+   ],
+   "rows": [
+    [
+     "(1)",
+     "single threshold",
+     "country",
+     "0.063 [0.004, 0.471]",
+     "0.011 [0.001, 0.044]",
+     "1.299 [0.853, 1.590]"
+    ],
+    [
+     "(1)",
+     "single threshold",
+     "city-size tier",
+     "0.154 [0.040, 0.690]",
+     "0.049 [0.011, 0.126]",
+     "2.438 [1.500, 3.900]"
+    ],
+    [
+     "(1)",
+     "threshold per tier",
+     "country",
+     "0.084 [0.006, 0.471]",
+     "0.010 [0.001, 0.043]",
+     "1.322 [0.804, 1.654]"
+    ],
+    [
+     "(1)",
+     "threshold per tier",
+     "city-size tier",
+     "0.135 [0.035, 0.690]",
+     "0.025 [0.004, 0.085]",
+     "2.143 [1.260, 3.375]"
+    ],
+    [
+     "(1)",
+     "equalized odds, ε = 0.05",
+     "country",
+     "0.084 [0.006, 0.471]",
+     "0.010 [0.001, 0.043]",
+     "1.322 [0.804, 1.654]"
+    ],
+    [
+     "(1)",
+     "equalized odds, ε = 0.05",
+     "city-size tier",
+     "0.135 [0.035, 0.690]",
+     "0.025 [0.004, 0.085]",
+     "2.143 [1.260, 3.375]"
+    ],
+    [
+     "(2a)",
+     "single threshold",
+     "country",
+     "0.060 [0.017, 0.126]",
+     "0.006 [0.000, 0.028]",
+     "1.127 [1.032, 1.229]"
+    ],
+    [
+     "(2a)",
+     "single threshold",
+     "city-size tier",
+     "0.037 [0.007, 0.146]",
+     "0.004 [0.001, 0.026]",
+     "1.312 [1.160, 1.553]"
+    ],
+    [
+     "(2a)",
+     "threshold per tier",
+     "country",
+     "0.069 [0.025, 0.135]",
+     "0.009 [0.001, 0.030]",
+     "1.114 [1.015, 1.200]"
+    ],
+    [
+     "(2a)",
+     "threshold per tier",
+     "city-size tier",
+     "0.037 [0.007, 0.146]",
+     "0.015 [0.003, 0.035]",
+     "1.239 [1.107, 1.405]"
+    ],
+    [
+     "(2a)",
+     "equalized odds, ε = 0.05",
+     "country",
+     "0.074 [0.030, 0.146]",
+     "0.011 [0.001, 0.032]",
+     "1.111 [1.011, 1.191]"
+    ],
+    [
+     "(2a)",
+     "equalized odds, ε = 0.05",
+     "city-size tier",
+     "0.039 [0.010, 0.146]",
+     "0.015 [0.004, 0.035]",
+     "1.228 [1.091, 1.389]"
+    ],
+    [
+     "(2b)",
+     "single threshold",
+     "country",
+     "0.081 [0.018, 0.162]",
+     "0.009 [0.001, 0.044]",
+     "1.174 [1.035, 1.300]"
+    ],
+    [
+     "(2b)",
+     "single threshold",
+     "city-size tier",
+     "0.079 [0.015, 0.311]",
+     "0.022 [0.004, 0.061]",
+     "1.539 [1.286, 1.958]"
+    ],
+    [
+     "(2b)",
+     "threshold per tier",
+     "country",
+     "0.090 [0.035, 0.162]",
+     "0.011 [0.001, 0.046]",
+     "1.178 [1.017, 1.302]"
+    ],
+    [
+     "(2b)",
+     "threshold per tier",
+     "city-size tier",
+     "0.079 [0.027, 0.311]",
+     "0.015 [0.004, 0.051]",
+     "1.474 [1.250, 1.761]"
+    ],
+    [
+     "(2b)",
+     "equalized odds, ε = 0.05",
+     "country",
+     "0.100 [0.048, 0.187]",
+     "0.016 [0.001, 0.047]",
+     "1.163 [1.000, 1.270]"
+    ],
+    [
+     "(2b)",
+     "equalized odds, ε = 0.05",
+     "city-size tier",
+     "0.082 [0.036, 0.314]",
+     "0.012 [0.003, 0.047]",
+     "1.447 [1.185, 1.742]"
+    ],
+    [
+     "(3a)",
+     "single threshold",
+     "country",
+     "0.100 [0.039, 0.172]",
+     "0.013 [0.001, 0.042]",
+     "1.178 [0.998, 1.282]"
+    ],
+    [
+     "(3a)",
+     "single threshold",
+     "city-size tier",
+     "0.062 [0.021, 0.308]",
+     "0.026 [0.007, 0.064]",
+     "1.597 [1.331, 2.029]"
+    ],
+    [
+     "(3a)",
+     "threshold per tier",
+     "country",
+     "0.087 [0.025, 0.150]",
+     "0.012 [0.001, 0.041]",
+     "1.174 [0.986, 1.274]"
+    ],
+    [
+     "(3a)",
+     "threshold per tier",
+     "city-size tier",
+     "0.045 [0.013, 0.267]",
+     "0.024 [0.006, 0.061]",
+     "1.583 [1.325, 1.995]"
+    ],
+    [
+     "(3a)",
+     "equalized odds, ε = 0.05",
+     "country",
+     "0.087 [0.025, 0.150]",
+     "0.014 [0.001, 0.047]",
+     "1.167 [0.938, 1.296]"
+    ],
+    [
+     "(3a)",
+     "equalized odds, ε = 0.05",
+     "city-size tier",
+     "0.045 [0.013, 0.267]",
+     "0.014 [0.004, 0.053]",
+     "1.528 [1.264, 1.904]"
+    ]
+   ],
+   "widths": [
+    400,
+    1800,
+    1200,
+    2300,
+    2300,
+    2440
+   ],
+   "note": null,
+   "font": 6.5
+  },
+  {
+   "t": "table",
+   "label": "TABLE A8",
+   "caption": "Population exposure (lite Extension 2): census population × spike days",
+   "header": [
+    "Setting",
+    "Group",
+    "Pop. (M)",
+    "Spike days",
+    "Exposed (M p-d)",
+    "Missed days",
+    "Missed (M p-d)",
+    "False alarms"
+   ],
+   "rows": [
+    [
+     "(1) initial, Sep-Dec 2023",
+     "all cities",
+     "28.68",
+     "89",
+     "126.9",
+     "12",
+     "20.8",
+     "92"
+    ],
+    [
+     "(1) initial, Sep-Dec 2023",
+     "Tier 1 metro (≥ 3 M)",
+     "20.05",
+     "12",
+     "53.6",
+     "3",
+     "11.1",
+     "19"
+    ],
+    [
+     "(1) initial, Sep-Dec 2023",
+     "Tier 2 large (1–3 M)",
+     "6.11",
+     "25",
+     "44.2",
+     "4",
+     "7.8",
+     "29"
+    ],
+    [
+     "(1) initial, Sep-Dec 2023",
+     "Tier 3 small (< 1 M)",
+     "2.51",
+     "52",
+     "29.1",
+     "5",
+     "1.9",
+     "44"
+    ],
+    [
+     "(2b) zero-shot, Sep-Dec 2024",
+     "all cities",
+     "28.68",
+     "180",
+     "295.1",
+     "20",
+     "31.4",
+     "114"
+    ],
+    [
+     "(2b) zero-shot, Sep-Dec 2024",
+     "Tier 1 metro (≥ 3 M)",
+     "20.05",
+     "34",
+     "141.8",
+     "5",
+     "18.1",
+     "29"
+    ],
+    [
+     "(2b) zero-shot, Sep-Dec 2024",
+     "Tier 2 large (1–3 M)",
+     "6.11",
+     "59",
+     "102.5",
+     "4",
+     "7.8",
+     "42"
+    ],
+    [
+     "(2b) zero-shot, Sep-Dec 2024",
+     "Tier 3 small (< 1 M)",
+     "2.51",
+     "87",
+     "50.8",
+     "11",
+     "5.4",
+     "43"
+    ],
+    [
+     "(2b) zero-shot, per-tier thresholds",
+     "all cities",
+     "28.68",
+     "180",
+     "295.1",
+     "21",
+     "32.3",
+     "107"
+    ],
+    [
+     "(2b) zero-shot, per-tier thresholds",
+     "Tier 1 metro (≥ 3 M)",
+     "20.05",
+     "34",
+     "141.8",
+     "5",
+     "18.1",
+     "28"
+    ],
+    [
+     "(2b) zero-shot, per-tier thresholds",
+     "Tier 2 large (1–3 M)",
+     "6.11",
+     "59",
+     "102.5",
+     "4",
+     "7.8",
+     "42"
+    ],
+    [
+     "(2b) zero-shot, per-tier thresholds",
+     "Tier 3 small (< 1 M)",
+     "2.51",
+     "87",
+     "50.8",
+     "12",
+     "6.3",
+     "37"
+    ],
+    [
+     "(3a) re-trained, Sep-Dec 2024",
+     "all cities",
+     "28.68",
+     "180",
+     "295.1",
+     "22",
+     "33.4",
+     "103"
+    ],
+    [
+     "(3a) re-trained, Sep-Dec 2024",
+     "Tier 1 metro (≥ 3 M)",
+     "20.05",
+     "34",
+     "141.8",
+     "5",
+     "18.1",
+     "25"
+    ],
+    [
+     "(3a) re-trained, Sep-Dec 2024",
+     "Tier 2 large (1–3 M)",
+     "6.11",
+     "59",
+     "102.5",
+     "5",
+     "8.9",
+     "38"
+    ],
+    [
+     "(3a) re-trained, Sep-Dec 2024",
+     "Tier 3 small (< 1 M)",
+     "2.51",
+     "87",
+     "50.8",
+     "12",
+     "6.3",
+     "40"
+    ],
+    [
+     "(3a) re-trained, per-tier thresholds",
+     "all cities",
+     "28.68",
+     "180",
+     "295.1",
+     "23",
+     "35.0",
+     "102"
+    ],
+    [
+     "(3a) re-trained, per-tier thresholds",
+     "Tier 1 metro (≥ 3 M)",
+     "20.05",
+     "34",
+     "141.8",
+     "5",
+     "18.1",
+     "25"
+    ],
+    [
+     "(3a) re-trained, per-tier thresholds",
+     "Tier 2 large (1–3 M)",
+     "6.11",
+     "59",
+     "102.5",
+     "6",
+     "10.5",
+     "38"
+    ],
+    [
+     "(3a) re-trained, per-tier thresholds",
+     "Tier 3 small (< 1 M)",
+     "2.51",
+     "87",
+     "50.8",
+     "12",
+     "6.3",
+     "39"
+    ]
+   ],
+   "widths": [
+    2700,
+    1900,
+    800,
+    800,
+    1100,
+    900,
+    1100,
+    1140
+   ],
+   "note": "M p-d = million person-days. Single 5:1 threshold unless the setting says otherwise.",
+   "font": 6.5
+  },
+  {
+   "t": "table",
+   "label": "TABLE A9",
+   "caption": "Sensitivity: frozen vs re-learned spike thresholds, Sep–Dec 2024 test",
+   "header": [
+    "Label rule",
+    "Model",
+    "Spike rate (%)",
+    "Recall",
+    "Precision",
+    "PR-AUC",
+    "Cost",
+    "Tier ΔFPR"
+   ],
+   "rows": [
+    [
+     "frozen (2022-23 training)",
+     "Persistence",
+     "14.1",
+     "0.711",
+     "0.715",
+     "0.730",
+     "243.7",
+     "0.026"
+    ],
+    [
+     "frozen (2022-23 training)",
+     "LR full (re-trained)",
+     "14.1",
+     "0.878",
+     "0.605",
+     "0.728",
+     "166.9",
+     "0.026"
+    ],
+    [
+     "frozen (2022-23 training)",
+     "LR full, per-tier thresholds",
+     "14.1",
+     "0.872",
+     "0.606",
+     "0.728",
+     "170.1",
+     "0.024"
+    ],
+    [
+     "re-learned (to 2024-08-31)",
+     "Persistence",
+     "11.8",
+     "0.633",
+     "0.638",
+     "0.614",
+     "257.8",
+     "0.015"
+    ],
+    [
+     "re-learned (to 2024-08-31)",
+     "LR full (re-trained)",
+     "11.8",
+     "0.907",
+     "0.517",
+     "0.611",
+     "154.4",
+     "0.024"
+    ],
+    [
+     "re-learned (to 2024-08-31)",
+     "LR full, per-tier thresholds",
+     "11.8",
+     "0.907",
+     "0.523",
+     "0.611",
+     "152.0",
+     "0.017"
+    ]
+   ],
+   "widths": [
+    2300,
+    2300,
+    900,
+    800,
+    900,
+    800,
+    800,
+    1440
+   ],
+   "note": null,
+   "font": 6.5
+  }
+ ]
+}
