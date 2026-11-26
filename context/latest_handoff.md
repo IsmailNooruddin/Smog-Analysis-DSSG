@@ -23,7 +23,7 @@ Milestone 3 was graded. The grader took 5 points off the manuscript, so the Mile
 4. **Milestone 5 is finished** (section 10c): the 2024 wave, drift tests, zero-shot and re-trained audit, fairness
    shift, `data_extension.ipynb`, `src/ingest.py`, `src/drift.py`, `DECISIONS.md` rows N1–N16, a 7-page IEEE paper
    (+3 appendix pages) and the package `submission/milestone5/`.
-5. **Next:** nothing is scheduled. Nothing is pushed for Milestones 4 and 5. Push only when the user asks (section 11).
+5. **Next:** nothing is scheduled. Milestones 4 and 5 are pushed. Push only when the user asks (section 11).
 6. One commit per phase, straight to `main`, author `bilal <bilelayub@gmail.com>`, **no** `Co-Authored-By`,
    `Claude-Session` or "Generated with" lines. Push only when the user asks.
 
@@ -43,8 +43,8 @@ aligned with SDG 3.9, 11.6 and 13. The course runs in milestones:
 - Milestone 1: proposal (done).
 - Milestone 2: data preparation, EDA and hypotheses (done).
 - Milestone 3: baseline models, leakage-free CV, error-cost analysis (done, graded).
-- Milestone 4: advanced models, fairness audit, bias mitigation, ethics (done, not yet pushed).
-- **Milestone 5: new data wave (2024), drift, zero-shot and re-training, fairness shift, IEEE paper (done, not yet pushed).**
+- Milestone 4: advanced models, fairness audit, bias mitigation, ethics (done).
+- **Milestone 5: new data wave (2024), drift, zero-shot and re-training, fairness shift, IEEE paper (done).**
 
 ---
 
@@ -73,7 +73,7 @@ aligned with SDG 3.9, 11.6 and 13. The course runs in milestones:
 | `a897ac1` | Milestone 3 report sections and submission package | `docs/manuscript/*` (builder `--milestone 3`, renderer argument 3, `manuscript_m3.json`), `requirements.txt` (scikit-learn ≥ 1.8), `submission/milestone3/` |
 | `9d64111` | Update project handoff after Milestone 3 | this file |
 
-- **Milestone 4 commits** (none pushed when this was written; `git log origin/main..main` lists them):
+- **Milestone 4 commits** (all pushed):
 
 | Commit | Message | Content |
 |---|---|---|
@@ -86,7 +86,7 @@ aligned with SDG 3.9, 11.6 and 13. The course runs in milestones:
 | `2ab0611` | Milestone 4 submission package: report, notebooks, code, models and data | `submission/milestone4/` |
 | `d9ecc0c` | Update project handoff after Milestone 4 | this file |
 
-- **Milestone 5 commits** (none pushed):
+- **Milestone 5 commits** (pushed on 2026-11-26):
 
 | Commit | Message | Content |
 |---|---|---|
@@ -609,8 +609,8 @@ Plan: `C:\Users\Bilel\.claude\plans\last-time-we-completed-joyful-truffle.md` (l
 
 ## 11. What is left
 
-Milestones 4 and 5 are complete but not pushed. Next:
-- **Push** with `git push origin main` when the user asks.
+Milestones 4 and 5 are complete and pushed. Next:
+- **Push** new commits with `git push origin main` only when the user asks.
 - Ask the user whether to commit their hand edits to `submission/milestone4/advanced_modeling.ipynb`.
 - The M5 package has no raw files (about 180 MB). The README says to copy them from the repository. Bundle them only
   if the user asks.
