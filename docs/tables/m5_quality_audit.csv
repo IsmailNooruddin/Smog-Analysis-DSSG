@@ -1,0 +1,14 @@
+stream,check,initial,new
+AQ,city-days expected (11 cities x days),5665.0,4004.0
+AQ,city-days kept (>= 18 valid hours),5665.0,4004.0
+AQ,hourly PM2.5 values missing before cleaning,55.0,0.0
+AQ,pollutant cells filled by interpolation (gaps <= 6 h),385.0,0.0
+AQ,suspect dates (any hour with PM2.5 < 2 ug/m3),4.0,0.0
+AQ,spike days today (frozen thresholds),297.0,370.0
+weather,hourly values missing,0.0,0.0
+weather,city-days with fewer than 24 hours,0.0,0.0
+weather,stagnant city-days,631.0,466.0
+weather,rain city-days,1235.0,775.0
+fire,dates with no VIIRS detection in India or Pakistan (fire_gap_day),8.0,20.0
+fire,dates with no detection in the Pakistan file only,2.0,1.0
+fire,"upwind fires within 300 km, sum over city-days (main version)",295943.0,183953.0

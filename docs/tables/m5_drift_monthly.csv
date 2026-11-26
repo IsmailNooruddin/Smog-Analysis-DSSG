@@ -1,0 +1,97 @@
+month,feature,label,psi,ref_mean,new_mean,n_ref,n_new
+1,composite_smog_index,Composite Smog Index (today),0.7336,0.7007,1.1909,341,341
+1,pm2_5_mean_ugm3,PM2.5 daily mean (µg/m³),0.689,92.734,121.5486,341,341
+1,temp_mean_c,Mean temperature (°C),0.379,10.5538,9.6262,341,341
+1,temp_range_c,Daily temperature range (°C),0.3853,11.0331,10.9328,341,341
+1,rh_mean_pct,Relative humidity (%),1.0832,75.4344,86.3536,341,341
+1,vec_len_kmh,Vector-mean wind speed (km/h),0.7023,5.7578,3.845,341,341
+1,fire_cnt_up45_r300_all,"Upwind fires, ±45°, 300 km (count)",0.1444,23.8915,29.7801,341,341
+1,stagnant,Stagnant air (vector wind < 2 km/h),0.0838,0.0938,0.1935,341,341
+2,composite_smog_index,Composite Smog Index (today),0.344,0.2077,-0.0456,308,319
+2,pm2_5_mean_ugm3,PM2.5 daily mean (µg/m³),0.3053,61.003,52.9442,308,319
+2,temp_mean_c,Mean temperature (°C),1.5669,16.6337,13.9148,308,319
+2,temp_range_c,Daily temperature range (°C),0.4096,13.6477,12.3583,308,319
+2,rh_mean_pct,Relative humidity (%),0.2042,61.4389,65.683,308,319
+2,vec_len_kmh,Vector-mean wind speed (km/h),0.0977,6.1837,6.1739,308,319
+2,fire_cnt_up45_r300_all,"Upwind fires, ±45°, 300 km (count)",0.1049,35.013,44.4514,308,319
+2,stagnant,Stagnant air (vector wind < 2 km/h),0.0005,0.0747,0.069,308,319
+3,composite_smog_index,Composite Smog Index (today),0.2022,-0.2864,-0.4614,341,341
+3,pm2_5_mean_ugm3,PM2.5 daily mean (µg/m³),0.3693,43.462,36.9979,341,341
+3,temp_mean_c,Mean temperature (°C),0.8831,20.2663,19.2039,341,341
+3,temp_range_c,Daily temperature range (°C),0.1545,12.2091,12.9859,341,341
+3,rh_mean_pct,Relative humidity (%),0.4374,63.4967,58.4029,341,341
+3,vec_len_kmh,Vector-mean wind speed (km/h),0.2516,5.2615,6.8651,341,341
+3,fire_cnt_up45_r300_all,"Upwind fires, ±45°, 300 km (count)",0.1028,13.8622,13.4751,341,341
+3,stagnant,Stagnant air (vector wind < 2 km/h),0.0335,0.0968,0.0499,341,341
+4,composite_smog_index,Composite Smog Index (today),0.474,-0.5773,-0.7886,330,330
+4,pm2_5_mean_ugm3,PM2.5 daily mean (µg/m³),0.5089,32.8887,27.8153,330,330
+4,temp_mean_c,Mean temperature (°C),0.1438,24.5107,24.6096,330,330
+4,temp_range_c,Daily temperature range (°C),0.0404,13.9636,13.9152,330,330
+4,rh_mean_pct,Relative humidity (%),0.1252,48.0077,46.6057,330,330
+4,vec_len_kmh,Vector-mean wind speed (km/h),0.1471,5.7284,6.642,330,330
+4,fire_cnt_up45_r300_all,"Upwind fires, ±45°, 300 km (count)",0.0764,11.2394,7.8848,330,330
+4,stagnant,Stagnant air (vector wind < 2 km/h),0.0165,0.0758,0.0455,330,330
+5,composite_smog_index,Composite Smog Index (today),0.1763,-0.5274,-0.5125,341,341
+5,pm2_5_mean_ugm3,PM2.5 daily mean (µg/m³),0.3239,34.261,31.9876,341,341
+5,temp_mean_c,Mean temperature (°C),1.1233,27.9702,32.1429,341,341
+5,temp_range_c,Daily temperature range (°C),1.0163,13.3018,15.8226,341,341
+5,rh_mean_pct,Relative humidity (%),2.2299,46.1928,29.6696,341,341
+5,vec_len_kmh,Vector-mean wind speed (km/h),0.0712,5.85,6.5359,341,341
+5,fire_cnt_up45_r300_all,"Upwind fires, ±45°, 300 km (count)",0.274,88.6657,168.4663,341,341
+5,stagnant,Stagnant air (vector wind < 2 km/h),0.0072,0.0733,0.0528,341,341
+6,composite_smog_index,Composite Smog Index (today),0.1228,-0.3447,-0.3245,330,330
+6,pm2_5_mean_ugm3,PM2.5 daily mean (µg/m³),0.3712,37.4393,38.7133,330,330
+6,temp_mean_c,Mean temperature (°C),1.288,31.2288,34.3329,330,330
+6,temp_range_c,Daily temperature range (°C),0.7618,11.273,13.153,330,330
+6,rh_mean_pct,Relative humidity (%),2.6202,56.2568,36.0097,330,330
+6,vec_len_kmh,Vector-mean wind speed (km/h),0.242,5.6634,6.64,330,330
+6,fire_cnt_up45_r300_all,"Upwind fires, ±45°, 300 km (count)",0.2445,21.2848,35.9,330,330
+6,stagnant,Stagnant air (vector wind < 2 km/h),0.0874,0.1485,0.0606,330,330
+7,composite_smog_index,Composite Smog Index (today),0.4639,-0.346,-0.0369,341,341
+7,pm2_5_mean_ugm3,PM2.5 daily mean (µg/m³),0.5685,39.689,50.8347,341,341
+7,temp_mean_c,Mean temperature (°C),1.1223,29.7381,31.8228,341,341
+7,temp_range_c,Daily temperature range (°C),0.5576,7.9622,9.1616,341,341
+7,rh_mean_pct,Relative humidity (%),1.3292,76.2347,69.4124,341,341
+7,vec_len_kmh,Vector-mean wind speed (km/h),0.0691,5.8516,6.3051,341,341
+7,fire_cnt_up45_r300_all,"Upwind fires, ±45°, 300 km (count)",0.0975,5.5748,3.5601,341,341
+7,stagnant,Stagnant air (vector wind < 2 km/h),0.0102,0.0792,0.1085,341,341
+8,composite_smog_index,Composite Smog Index (today),0.8793,-0.2256,-0.6625,627,341
+8,pm2_5_mean_ugm3,PM2.5 daily mean (µg/m³),0.8671,42.687,32.3943,627,341
+8,temp_mean_c,Mean temperature (°C),0.2461,29.6949,28.8947,627,341
+8,temp_range_c,Daily temperature range (°C),0.5614,8.1051,7.0499,627,341
+8,rh_mean_pct,Relative humidity (%),0.7589,74.9841,80.8413,627,341
+8,vec_len_kmh,Vector-mean wind speed (km/h),0.1571,5.5775,6.041,627,341
+8,fire_cnt_up45_r300_all,"Upwind fires, ±45°, 300 km (count)",0.067,2.8931,2.478,627,341
+8,stagnant,Stagnant air (vector wind < 2 km/h),0.041,0.1643,0.0968,627,341
+9,composite_smog_index,Composite Smog Index (today),0.0979,-0.1353,-0.16,660,297
+9,pm2_5_mean_ugm3,PM2.5 daily mean (µg/m³),0.2451,44.3824,42.9885,660,297
+9,temp_mean_c,Mean temperature (°C),0.1764,28.8942,28.9648,660,297
+9,temp_range_c,Daily temperature range (°C),0.0433,9.3829,9.3697,660,297
+9,rh_mean_pct,Relative humidity (%),0.074,69.0165,71.297,660,297
+9,vec_len_kmh,Vector-mean wind speed (km/h),0.099,4.6663,4.1847,660,297
+9,fire_cnt_up45_r300_all,"Upwind fires, ±45°, 300 km (count)",0.5707,5.7061,20.2593,660,297
+9,stagnant,Stagnant air (vector wind < 2 km/h),0.0,0.1803,0.1818,660,297
+10,composite_smog_index,Composite Smog Index (today),0.0961,0.1166,0.0915,682,341
+10,pm2_5_mean_ugm3,PM2.5 daily mean (µg/m³),0.2235,57.1443,53.2082,682,341
+10,temp_mean_c,Mean temperature (°C),0.7813,24.098,25.8429,682,341
+10,temp_range_c,Daily temperature range (°C),0.2595,12.3868,12.4677,682,341
+10,rh_mean_pct,Relative humidity (%),0.4456,61.3364,61.7173,682,341
+10,vec_len_kmh,Vector-mean wind speed (km/h),0.0475,4.9417,4.8237,682,341
+10,fire_cnt_up45_r300_all,"Upwind fires, ±45°, 300 km (count)",0.306,132.1745,72.6217,682,341
+10,stagnant,Stagnant air (vector wind < 2 km/h),0.0077,0.1012,0.129,682,341
+11,composite_smog_index,Composite Smog Index (today),0.6133,0.3772,0.7919,660,330
+11,pm2_5_mean_ugm3,PM2.5 daily mean (µg/m³),0.7045,71.7418,102.2681,660,330
+11,temp_mean_c,Mean temperature (°C),0.3765,18.462,19.9755,660,330
+11,temp_range_c,Daily temperature range (°C),0.1308,12.0386,11.7785,660,330
+11,rh_mean_pct,Relative humidity (%),0.0451,69.4237,69.9793,660,330
+11,vec_len_kmh,Vector-mean wind speed (km/h),0.5701,5.2318,3.6198,660,330
+11,fire_cnt_up45_r300_all,"Upwind fires, ±45°, 300 km (count)",0.075,167.9061,107.7424,660,330
+11,stagnant,Stagnant air (vector wind < 2 km/h),0.2282,0.0773,0.2455,660,330
+12,composite_smog_index,Composite Smog Index (today),0.1215,0.7607,0.7736,627,308
+12,pm2_5_mean_ugm3,PM2.5 daily mean (µg/m³),0.2682,91.6919,102.1371,627,308
+12,temp_mean_c,Mean temperature (°C),0.342,13.5463,12.9437,627,308
+12,temp_range_c,Daily temperature range (°C),0.0371,12.4606,12.1594,627,308
+12,rh_mean_pct,Relative humidity (%),0.7466,75.2073,65.9414,627,308
+12,vec_len_kmh,Vector-mean wind speed (km/h),0.1053,4.8746,4.2244,627,308
+12,fire_cnt_up45_r300_all,"Upwind fires, ±45°, 300 km (count)",0.2083,32.6555,47.1883,627,308
+12,stagnant,Stagnant air (vector wind < 2 km/h),0.0299,0.1148,0.1753,627,308

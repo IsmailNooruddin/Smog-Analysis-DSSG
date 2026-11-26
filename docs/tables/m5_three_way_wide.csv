@@ -1,0 +1,26 @@
+setting,model,accuracy,precision,recall,specificity,f1,roc_auc,pr_auc,brier,cost_per_1000
+"(1) initial model, initial data (Sep-Dec 2023)",Persistence,0.9545,0.6875,0.618,0.9793,0.6509,0.9629,0.6687,,150.2311
+"(1) initial model, initial data (Sep-Dec 2023)",LR full,0.9199,0.4556,0.8652,0.9239,0.5969,0.9665,0.6946,0.037,117.1032
+"(1) initial model, initial data (Sep-Dec 2023)",DT full,0.9361,0.5214,0.8202,0.9446,0.6376,0.9531,0.5895,0.0371,113.2512
+"(1) initial model, initial data (Sep-Dec 2023)",RF full,0.9345,0.5141,0.8202,0.9429,0.632,0.9639,0.6794,0.0353,114.792
+"(1) initial model, initial data (Sep-Dec 2023)",HGB full,0.9299,0.4935,0.8539,0.9355,0.6255,0.9628,0.636,0.0627,110.1695
+"(2a) initial model, zero-shot, all of 2024",Persistence,0.9503,0.7236,0.7376,0.9717,0.7305,0.9739,0.7653,,145.7071
+"(2a) initial model, zero-shot, all of 2024",LR full,0.9263,0.5583,0.9254,0.9263,0.6965,0.9732,0.7679,0.0399,101.0101
+"(2a) initial model, zero-shot, all of 2024",DT full,0.9384,0.6089,0.9116,0.9411,0.7301,0.9673,0.7023,0.038,93.9394
+"(2a) initial model, zero-shot, all of 2024",RF full,0.9379,0.6062,0.9144,0.9402,0.7291,0.9747,0.7566,0.0374,93.4343
+"(2a) initial model, zero-shot, all of 2024",HGB full,0.9318,0.5827,0.895,0.9355,0.7059,0.969,0.7304,0.0583,106.5657
+"(2b) initial model, zero-shot, Sep-Dec 2024",Persistence,0.9193,0.7151,0.7111,0.9535,0.7131,0.9467,0.7304,,243.7304
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR full,0.895,0.5839,0.8889,0.896,0.7048,0.9456,0.7258,0.0687,167.7116
+"(2b) initial model, zero-shot, Sep-Dec 2024",DT full,0.9075,0.624,0.8667,0.9142,0.7256,0.9385,0.6646,0.0649,167.7116
+"(2b) initial model, zero-shot, Sep-Dec 2024",RF full,0.9036,0.6126,0.8611,0.9106,0.7159,0.9486,0.7323,0.0639,174.7649
+"(2b) initial model, zero-shot, Sep-Dec 2024",HGB full,0.895,0.5871,0.8611,0.9005,0.6982,0.9381,0.6809,0.0898,183.3856
+"(3a) re-trained model, Sep-Dec 2024 test",Persistence,0.9193,0.7151,0.7111,0.9535,0.7131,0.9467,0.7304,,243.7304
+"(3a) re-trained model, Sep-Dec 2024 test",LR full,0.902,0.6054,0.8778,0.906,0.7166,0.9461,0.7277,0.0732,166.9279
+"(3a) re-trained model, Sep-Dec 2024 test",DT full,0.8864,0.5614,0.8889,0.8859,0.6882,0.9412,0.6814,0.0635,176.3323
+"(3a) re-trained model, Sep-Dec 2024 test",RF full,0.9067,0.6215,0.8667,0.9133,0.7239,0.9454,0.7265,0.0984,168.4953
+"(3a) re-trained model, Sep-Dec 2024 test",HGB full,0.8918,0.5739,0.9056,0.8896,0.7026,0.9445,0.7286,0.0911,161.442
+"(3b) re-trained model, combined data, purged CV",Persistence,0.9561,0.6854,0.686,0.9763,0.685,0.9725,0.7285,,131.2093
+"(3b) re-trained model, combined data, purged CV",LR full,0.928,0.4961,0.9154,0.929,0.6414,0.9722,0.7269,0.0377,95.6823
+"(3b) re-trained model, combined data, purged CV",DT full,0.9354,0.5248,0.8825,0.9393,0.6565,0.9627,0.6634,0.0335,97.2788
+"(3b) re-trained model, combined data, purged CV",RF full,0.9349,0.5234,0.89,0.9382,0.6572,0.9724,0.7215,0.0669,95.709
+"(3b) re-trained model, combined data, purged CV",HGB full,0.9254,0.4856,0.9072,0.9267,0.6307,0.9723,0.7195,0.0574,100.259

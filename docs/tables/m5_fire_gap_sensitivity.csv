@@ -1,0 +1,15 @@
+subset,model,n,spikes,pr_auc,roc_auc,recall,precision,cost_per_1000
+all test rows,Persistence,1276,180,0.7304,0.9467,0.7111,0.7151,243.7304
+all test rows,LR full (zero-shot),1276,180,0.7258,0.9456,0.8889,0.5839,167.7116
+all test rows,RF full (zero-shot),1276,180,0.7323,0.9486,0.8611,0.6126,174.7649
+all test rows,HGB full (zero-shot),1276,180,0.6809,0.9381,0.8611,0.5871,183.3856
+all test rows,LR full (re-trained),1276,180,0.7277,0.9461,0.8778,0.6054,166.9279
+all test rows,RF full (re-trained),1276,180,0.7265,0.9454,0.8667,0.6215,168.4953
+all test rows,HGB full (re-trained),1276,180,0.7286,0.9445,0.9056,0.5739,161.442
+without fire-gap rows,Persistence,1166,155,0.7261,0.9456,0.7226,0.6871,228.1304
+without fire-gap rows,LR full (zero-shot),1166,155,0.7299,0.9464,0.9032,0.5622,157.8045
+without fire-gap rows,RF full (zero-shot),1166,155,0.7335,0.9497,0.871,0.587,167.2384
+without fire-gap rows,HGB full (zero-shot),1166,155,0.6762,0.9387,0.8645,0.5678,177.53
+without fire-gap rows,LR full (re-trained),1166,155,0.7298,0.9463,0.8903,0.5823,157.8045
+without fire-gap rows,RF full (re-trained),1166,155,0.7265,0.946,0.8774,0.5965,160.3774
+without fire-gap rows,HGB full (re-trained),1166,155,0.7311,0.9457,0.9161,0.5441,157.8045

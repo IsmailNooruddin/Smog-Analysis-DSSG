@@ -1,0 +1,12 @@
+issue,evidence,action
+Two file formats,Ludhiana AQ and weather are .xlsx; the other 20 files are .csv,One reader chooses read_excel or read_csv by the file suffix
+Column order differs,"Pakistani AQ files: NO2, SO2, O3, CO; Indian AQ files: CO, NO2, SO2, O3; Ludhiana weather lists humidity before rain","Columns are renamed by name (prefix match), never by position"
+Units in column names,"μg/m³, °C, km/h, %, mm in every file of a stream","Short names keep the unit as a suffix (pm2_5_ugm3, temp_c); units checked identical"
+Time zone,Open-Meteo headers say GMT (offset 0); VIIRS acq_date and acq_time are UTC,"+5 h is added before taking the date, for every stream (UTC+5 for Indian cities too; known limitation)"
+File names,"'Sailkot-Weather.csv' (typo), 'Rawalpindi weather.csv', 'NASA-2024.csv' (no spaces)",Mapped in src/config.py; no file is renamed (decision D11)
+VIIRS time as text,acq_time such as '0833' loses its leading zero if read as a number,Read as text and zero-padded to 4 digits
+AQ empty before 2022-08-04,Every pollutant is empty from January to 3 August 2022,All-empty hours are dropped; the modelling window starts on 2022-08-04
+Ludhiana weather ends early,Last hour 2024-12-29 23:00:00 UTC (= 30 Dec 04:00 local); every other file runs to 2026,"The window ends on 2024-12-29, the last day every stream covers for every city"
+VIIRS days without any detection,No detection anywhere in India or Pakistan on some UTC dates (see the audit),Flagged as fire_gap_day; counts stay 0 as in 2022-23; one sensitivity run drops the affected rows
+Static and offshore VIIRS sources,type 2 (static) and type 3 (offshore) detections in both files,"Only type 0 (vegetation fire) is kept, as in fire.ipynb"
+Data types,"Excel cells load as datetimes, CSV cells as text; fire confidence is a letter","Times parsed to datetime64; keys normalised by merge.normalise_keys (city text, date at midnight)"

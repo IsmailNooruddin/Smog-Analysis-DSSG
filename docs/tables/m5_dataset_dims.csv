@@ -1,0 +1,4 @@
+data,first_date,last_date,days,cities,city_days_N,master_columns_P,model_features,model_rows_after_drops,spikes_next_day,spike_rate
+initial wave,2022-08-04,2023-12-31,515,11,5665,291,42,5588,301,0.0539
+new wave (2024),2024-01-01,2024-12-29,364,11,4004,291,42,3960,362,0.0914
+total,2022-08-04,2024-12-29,879,11,9669,291,42,9548,663,0.0694

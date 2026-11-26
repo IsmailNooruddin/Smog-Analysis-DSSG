@@ -1,0 +1,9 @@
+comparison,features,columns,n_ref,n_new,cv_roc_auc
+whole wave,"all model features (no month, no city)",21,5588,3960,0.5305
+whole wave,AQ history,3,5588,3960,0.5266
+whole wave,weather,14,5588,3960,0.5168
+whole wave,upwind fires,4,5588,3960,0.4991
+season-matched (Sep-Dec),"all model features (no month, no city)",21,2629,1276,0.6445
+season-matched (Sep-Dec),AQ history,3,2629,1276,0.4909
+season-matched (Sep-Dec),weather,14,2629,1276,0.5882
+season-matched (Sep-Dec),upwind fires,4,2629,1276,0.5791

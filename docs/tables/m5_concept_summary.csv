@@ -1,0 +1,13 @@
+term,value
+JOINT: n,4630.0
+JOINT: events,650.0
+JOINT: events_reference,301.0
+JOINT: events_new,349.0
+JOINT: interactions,7.0
+JOINT: lr_stat,22.727
+JOINT: lr_df,7.0
+JOINT: lr_p,0.0019
+JOINT: wald_cluster_stat,166.3138
+JOINT: wald_cluster_p,0.0
+JOINT: pseudo_r2_restricted,0.5373
+JOINT: pseudo_r2_full,0.5434

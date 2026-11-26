@@ -1,0 +1,13 @@
+table,run,rows,columns_compared,cells_differing,columns_differing,cells_differing_from_lead_in,max_abs_diff
+aq_daily,rebuild of 2022-23 only,5665,53,0,none,0,0.0
+aq_daily,"2024 run, rows up to 2023-12-31",5665,53,0,none,0,0.0
+wx_daily,rebuild of 2022-23 only,7852,38,1,rain_day,0,1.0
+wx_daily,"2024 run, rows up to 2023-12-31",7852,38,1,rain_day,0,1.0
+wind_daily,rebuild of 2022-23 only,7852,7,0,none,0,0.0
+wind_daily,"2024 run, rows up to 2023-12-31",7852,7,0,none,0,0.0
+fire_daily,rebuild of 2022-23 only,8030,58,0,none,0,0.0
+fire_daily,"2024 run, rows up to 2023-12-31",8030,58,0,none,0,0.0
+fire_daily_long,rebuild of 2022-23 only,602250,3,0,none,0,0.0
+fire_daily_long,"2024 run, rows up to 2023-12-31",602250,3,0,none,0,0.0
+master_daily,"2024 run, rows up to 2023-12-28",5632,283,0,none,0,0.0
+master_daily,"2024 run, rows up to 2023-12-31",5665,283,132,"target_index_h1, target_spike_h1, target_index_h2, target_spike_h2, target_index_h3, target_spike_h3",132,0.0

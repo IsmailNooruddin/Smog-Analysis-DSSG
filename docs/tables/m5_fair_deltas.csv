@@ -1,0 +1,31 @@
+rule,grouping,metric,retrained_minus_zero_shot,ci_low,ci_high,ci_excludes_0
+single threshold,country,eo_diff,0.0194,0.0,0.03,False
+single threshold,country,pe_diff,0.0045,-0.0185,0.015,False
+single threshold,country,eop_diff,0.0194,0.0,0.0301,False
+single threshold,country,dp_diff,-0.0009,-0.0163,0.0135,False
+single threshold,country,dir_vs_priv_max,0.0041,-0.116,0.0771,False
+single threshold,city-size tier,eo_diff,-0.0169,-0.0364,0.0211,False
+single threshold,city-size tier,pe_diff,0.0048,-0.0106,0.0199,False
+single threshold,city-size tier,eop_diff,-0.0169,-0.037,0.0222,False
+single threshold,city-size tier,dp_diff,0.0029,-0.0097,0.0193,False
+single threshold,city-size tier,dir_vs_priv_max,0.0584,-0.0777,0.2206,False
+threshold per tier,country,eo_diff,-0.0033,-0.06,0.0225,False
+threshold per tier,country,pe_diff,0.0009,-0.0138,0.0087,False
+threshold per tier,country,eop_diff,-0.0033,-0.06,0.0225,False
+threshold per tier,country,dp_diff,-0.0015,-0.0155,0.0118,False
+threshold per tier,country,dir_vs_priv_max,-0.0035,-0.1167,0.0706,False
+threshold per tier,city-size tier,eo_diff,-0.0339,-0.0833,0.0181,False
+threshold per tier,city-size tier,pe_diff,0.0093,-0.0099,0.029,False
+threshold per tier,city-size tier,eop_diff,-0.0339,-0.0833,0.0203,False
+threshold per tier,city-size tier,dp_diff,0.0129,0.0022,0.0275,True
+threshold per tier,city-size tier,dir_vs_priv_max,0.1096,0.0183,0.3012,True
+"equalized odds, ε = 0.05",country,eo_diff,-0.013,-0.091,0.0179,False
+"equalized odds, ε = 0.05",country,pe_diff,-0.0019,-0.0141,0.0123,False
+"equalized odds, ε = 0.05",country,eop_diff,-0.013,-0.091,0.0179,False
+"equalized odds, ε = 0.05",country,dp_diff,-0.0003,-0.0121,0.0123,False
+"equalized odds, ε = 0.05",country,dir_vs_priv_max,0.0037,-0.1005,0.0725,False
+"equalized odds, ε = 0.05",city-size tier,eo_diff,-0.0363,-0.0909,0.0113,False
+"equalized odds, ε = 0.05",city-size tier,pe_diff,0.0021,-0.0068,0.019,False
+"equalized odds, ε = 0.05",city-size tier,eop_diff,-0.0363,-0.0925,0.0103,False
+"equalized odds, ε = 0.05",city-size tier,dp_diff,0.0086,-0.0034,0.0237,False
+"equalized odds, ε = 0.05",city-size tier,dir_vs_priv_max,0.0804,-0.0242,0.2545,False

@@ -1,0 +1,7 @@
+parameter set,values,max_abs_diff
+AQ z-score mean and SD (13 columns),26,0.0
+AQ log1p decisions (13 columns),13,0.0
+"spike thresholds, mean index (11 cities)",11,0.0
+"spike thresholds, max index (11 cities)",11,0.0
+weather z-score mean and SD (10 columns),20,0.0
+fire log1p z-score mean and SD (10 columns),20,0.0

@@ -1,0 +1,6 @@
+dropped because,skip,test,train
+skip split,33,0,0
+missing target,0,11,0
+missing feature,0,0,22
+suspect feature day,0,0,44
+suspect target day,0,0,11

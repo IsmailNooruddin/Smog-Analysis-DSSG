@@ -1,0 +1,25 @@
+tier,feature,label,psi,ks_stat,ref_mean,new_mean
+Tier 1 metro (≥ 3 M),composite_smog_index,Composite Smog Index (today),0.0942,0.0735,0.4684,0.5378
+Tier 1 metro (≥ 3 M),pm2_5_mean_ugm3,PM2.5 daily mean (µg/m³),0.1231,0.0841,69.9652,79.4563
+Tier 1 metro (≥ 3 M),temp_mean_c,Mean temperature (°C),0.1612,0.1023,21.1202,21.5553
+Tier 1 metro (≥ 3 M),temp_range_c,Daily temperature range (°C),0.2147,0.1611,11.6852,11.2267
+Tier 1 metro (≥ 3 M),rh_mean_pct,Relative humidity (%),0.0619,0.0558,66.9489,67.1136
+Tier 1 metro (≥ 3 M),vec_len_kmh,Vector-mean wind speed (km/h),0.142,0.1438,5.1027,4.3275
+Tier 1 metro (≥ 3 M),fire_cnt_up45_r300_all,"Upwind fires, ±45°, 300 km (count)",0.101,0.1573,85.0781,60.2184
+Tier 1 metro (≥ 3 M),stagnant,Stagnant air (vector wind < 2 km/h),0.0247,,0.1004,0.1523
+Tier 2 large (1–3 M),composite_smog_index,Composite Smog Index (today),0.0786,0.0754,0.2591,0.3626
+Tier 2 large (1–3 M),pm2_5_mean_ugm3,PM2.5 daily mean (µg/m³),0.1153,0.1076,63.673,73.8328
+Tier 2 large (1–3 M),temp_mean_c,Mean temperature (°C),0.0962,0.106,21.1833,21.765
+Tier 2 large (1–3 M),temp_range_c,Daily temperature range (°C),0.0354,0.0573,11.3711,11.314
+Tier 2 large (1–3 M),rh_mean_pct,Relative humidity (%),0.1406,0.115,68.3979,66.7211
+Tier 2 large (1–3 M),vec_len_kmh,Vector-mean wind speed (km/h),0.0927,0.1131,4.9461,4.2587
+Tier 2 large (1–3 M),fire_cnt_up45_r300_all,"Upwind fires, ±45°, 300 km (count)",0.1461,0.18,81.5628,65.375
+Tier 2 large (1–3 M),stagnant,Stagnant air (vector wind < 2 km/h),0.0528,,0.1036,0.1832
+Tier 3 small (< 1 M),composite_smog_index,Composite Smog Index (today),0.0542,0.0811,0.1386,0.2756
+Tier 3 small (< 1 M),pm2_5_mean_ugm3,PM2.5 daily mean (µg/m³),0.0904,0.0963,64.9255,73.7264
+Tier 3 small (< 1 M),temp_mean_c,Mean temperature (°C),0.1249,0.1157,21.7458,22.3994
+Tier 3 small (< 1 M),temp_range_c,Daily temperature range (°C),0.0307,0.0844,11.6629,11.8744
+Tier 3 small (< 1 M),rh_mean_pct,Relative humidity (%),0.1668,0.1479,70.0483,67.478
+Tier 3 small (< 1 M),vec_len_kmh,Vector-mean wind speed (km/h),0.0831,0.1102,4.7826,4.0977
+Tier 3 small (< 1 M),fire_cnt_up45_r300_all,"Upwind fires, ±45°, 300 km (count)",0.076,0.1232,90.1956,63.75
+Tier 3 small (< 1 M),stagnant,Stagnant air (vector wind < 2 km/h),0.0237,,0.1464,0.2047

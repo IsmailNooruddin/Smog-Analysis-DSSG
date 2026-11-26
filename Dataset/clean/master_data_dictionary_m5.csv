@@ -1,0 +1,292 @@
+column,meaning,unit,source,owner,dtype,missing
+city,City name (11 cities),-,shared dictionary,B,str,0
+country,"Country code: PK = Pakistan, IN = India",-,shared dictionary,B,str,0
+date,Local date (UTC+5),date,all streams,B,datetime64[ns],0
+valid_hours,Hours with AQ data in the day,hours,Open-Meteo Air Quality API,A,int64,0
+pm10_mean_ugm3,PM10 daily mean,ug/m3,Open-Meteo Air Quality API,A,float64,0
+pm2_5_mean_ugm3,PM2.5 daily mean,ug/m3,Open-Meteo Air Quality API,A,float64,0
+no2_mean_ugm3,NO2 daily mean,ug/m3,Open-Meteo Air Quality API,A,float64,0
+so2_mean_ugm3,SO2 daily mean,ug/m3,Open-Meteo Air Quality API,A,float64,0
+o3_mean_ugm3,O3 daily mean,ug/m3,Open-Meteo Air Quality API,A,float64,0
+co_mean_ugm3,CO daily mean,ug/m3,Open-Meteo Air Quality API,A,float64,0
+dust_mean_ugm3,Dust daily mean,ug/m3,Open-Meteo Air Quality API,A,float64,0
+pm10_max_ugm3,PM10 daily max,ug/m3,Open-Meteo Air Quality API,A,float64,0
+pm2_5_max_ugm3,PM2.5 daily max,ug/m3,Open-Meteo Air Quality API,A,float64,0
+no2_max_ugm3,NO2 daily max,ug/m3,Open-Meteo Air Quality API,A,float64,0
+so2_max_ugm3,SO2 daily max,ug/m3,Open-Meteo Air Quality API,A,float64,0
+o3_max_ugm3,O3 daily max,ug/m3,Open-Meteo Air Quality API,A,float64,0
+co_max_ugm3,CO daily max,ug/m3,Open-Meteo Air Quality API,A,float64,0
+suspect_day,1 if the day was flagged suspect (PM2.5 < 2 ug/m3),0/1,Open-Meteo Air Quality API,A,int64,0
+pm10_mean_log,log1p of PM10 daily mean,log(1+ug/m3),Open-Meteo Air Quality API,A,float64,0
+pm10_mean_z,"PM10 daily mean, z-score (training mean/SD, after log1p if skewed)",z-score,Open-Meteo Air Quality API,A,float64,0
+pm2_5_mean_log,log1p of PM2.5 daily mean,log(1+ug/m3),Open-Meteo Air Quality API,A,float64,0
+pm2_5_mean_z,"PM2.5 daily mean, z-score (training mean/SD, after log1p if skewed)",z-score,Open-Meteo Air Quality API,A,float64,0
+no2_mean_log,log1p of NO2 daily mean,log(1+ug/m3),Open-Meteo Air Quality API,A,float64,0
+no2_mean_z,"NO2 daily mean, z-score (training mean/SD, after log1p if skewed)",z-score,Open-Meteo Air Quality API,A,float64,0
+so2_mean_log,log1p of SO2 daily mean,log(1+ug/m3),Open-Meteo Air Quality API,A,float64,0
+so2_mean_z,"SO2 daily mean, z-score (training mean/SD, after log1p if skewed)",z-score,Open-Meteo Air Quality API,A,float64,0
+o3_mean_z,"O3 daily mean, z-score (training mean/SD, after log1p if skewed)",z-score,Open-Meteo Air Quality API,A,float64,0
+co_mean_log,log1p of CO daily mean,log(1+ug/m3),Open-Meteo Air Quality API,A,float64,0
+co_mean_z,"CO daily mean, z-score (training mean/SD, after log1p if skewed)",z-score,Open-Meteo Air Quality API,A,float64,0
+dust_mean_log,log1p of Dust daily mean,log(1+ug/m3),Open-Meteo Air Quality API,A,float64,0
+dust_mean_z,"Dust daily mean, z-score (training mean/SD, after log1p if skewed)",z-score,Open-Meteo Air Quality API,A,float64,0
+pm10_max_log,log1p of PM10 daily max,log(1+ug/m3),Open-Meteo Air Quality API,A,float64,0
+pm10_max_z,"PM10 daily max, z-score (training mean/SD, after log1p if skewed)",z-score,Open-Meteo Air Quality API,A,float64,0
+pm2_5_max_log,log1p of PM2.5 daily max,log(1+ug/m3),Open-Meteo Air Quality API,A,float64,0
+pm2_5_max_z,"PM2.5 daily max, z-score (training mean/SD, after log1p if skewed)",z-score,Open-Meteo Air Quality API,A,float64,0
+no2_max_z,"NO2 daily max, z-score (training mean/SD, after log1p if skewed)",z-score,Open-Meteo Air Quality API,A,float64,0
+so2_max_log,log1p of SO2 daily max,log(1+ug/m3),Open-Meteo Air Quality API,A,float64,0
+so2_max_z,"SO2 daily max, z-score (training mean/SD, after log1p if skewed)",z-score,Open-Meteo Air Quality API,A,float64,0
+o3_max_z,"O3 daily max, z-score (training mean/SD, after log1p if skewed)",z-score,Open-Meteo Air Quality API,A,float64,0
+co_max_log,log1p of CO daily max,log(1+ug/m3),Open-Meteo Air Quality API,A,float64,0
+co_max_z,"CO daily max, z-score (training mean/SD, after log1p if skewed)",z-score,Open-Meteo Air Quality API,A,float64,0
+composite_smog_index,"Composite Smog Index (weighted z-scores, daily means)",z-score units,Open-Meteo Air Quality API,A,float64,0
+spike_threshold,City spike threshold (P90 of training Oct-Mar index),z-score units,Open-Meteo Air Quality API,A,float64,0
+smog_spike,1 if index >= city threshold,0/1,Open-Meteo Air Quality API,A,int64,0
+composite_smog_index_max,Composite Smog Index from daily maxima,z-score units,Open-Meteo Air Quality API,A,float64,0
+spike_threshold_max,City spike threshold for the max-based index,z-score units,Open-Meteo Air Quality API,A,float64,0
+smog_spike_max,1 if max-based index >= its threshold,0/1,Open-Meteo Air Quality API,A,int64,0
+pm10_mean_iqr_outlier,1 if PM10 daily mean is outside the 1.5xIQR fences,0/1,Open-Meteo Air Quality API,A,int64,0
+pm2_5_mean_iqr_outlier,1 if PM2.5 daily mean is outside the 1.5xIQR fences,0/1,Open-Meteo Air Quality API,A,int64,0
+no2_mean_iqr_outlier,1 if NO2 daily mean is outside the 1.5xIQR fences,0/1,Open-Meteo Air Quality API,A,int64,0
+so2_mean_iqr_outlier,1 if SO2 daily mean is outside the 1.5xIQR fences,0/1,Open-Meteo Air Quality API,A,int64,0
+o3_mean_iqr_outlier,1 if O3 daily mean is outside the 1.5xIQR fences,0/1,Open-Meteo Air Quality API,A,int64,0
+co_mean_iqr_outlier,1 if CO daily mean is outside the 1.5xIQR fences,0/1,Open-Meteo Air Quality API,A,int64,0
+dust_mean_iqr_outlier,1 if Dust daily mean is outside the 1.5xIQR fences,0/1,Open-Meteo Air Quality API,A,int64,0
+composite_smog_index_iqr_outlier,1 if the index is outside the 1.5xIQR fences,0/1,Open-Meteo Air Quality API,A,int64,0
+temp_mean_c,Daily mean 2 m temperature,deg C,Open-Meteo Historical Weather API,B,float64,0
+temp_min_c,Daily min temperature,deg C,Open-Meteo Historical Weather API,B,float64,0
+temp_max_c,Daily max temperature,deg C,Open-Meteo Historical Weather API,B,float64,0
+rh_mean_pct,Daily mean relative humidity,%,Open-Meteo Historical Weather API,B,float64,0
+precip_sum_mm,Daily rainfall total,mm,Open-Meteo Historical Weather API,B,float64,0
+wind_speed_mean_kmh,Mean of hourly wind speeds,km/h,Open-Meteo Historical Weather API,B,float64,0
+temp_range_c,Daily temperature range (inversion proxy),deg C,Open-Meteo Historical Weather API,B,float64,0
+rain_day,1 if rainfall >= 1 mm,0/1,Open-Meteo Historical Weather API,B,int64,0
+n_hours,Hours of weather data in the day,hours,Open-Meteo Historical Weather API,B,int64,0
+u_mean,Daily mean east-west wind component (+ = towards east),km/h,Open-Meteo Historical Weather API,B,float64,0
+v_mean,Daily mean north-south wind component (+ = towards north),km/h,Open-Meteo Historical Weather API,B,float64,0
+vec_len_kmh,Length of the daily mean wind vector,km/h,Open-Meteo Historical Weather API,B,float64,0
+wind_dir_daily_deg,Daily wind-from direction (vector mean),deg from N,Open-Meteo Historical Weather API,B,float64,0
+stagnant,1 if vec_len_kmh < 2 km/h (stagnation proxy),0/1,Open-Meteo Historical Weather API,B,int64,0
+precip_log1p,log1p of daily rainfall,log(1+mm),Open-Meteo Historical Weather API,B,float64,0
+temp_mean_c_z,"Daily mean 2 m temperature, z-score (training mean/SD)",z-score,Open-Meteo Historical Weather API,B,float64,0
+temp_min_c_z,"Daily min temperature, z-score (training mean/SD)",z-score,Open-Meteo Historical Weather API,B,float64,0
+temp_max_c_z,"Daily max temperature, z-score (training mean/SD)",z-score,Open-Meteo Historical Weather API,B,float64,0
+temp_range_c_z,"Daily temperature range (inversion proxy), z-score (training mean/SD)",z-score,Open-Meteo Historical Weather API,B,float64,0
+rh_mean_pct_z,"Daily mean relative humidity, z-score (training mean/SD)",z-score,Open-Meteo Historical Weather API,B,float64,0
+precip_log1p_z,"log1p of daily rainfall, z-score (training mean/SD)",z-score,Open-Meteo Historical Weather API,B,float64,0
+wind_speed_mean_kmh_z,"Mean of hourly wind speeds, z-score (training mean/SD)",z-score,Open-Meteo Historical Weather API,B,float64,0
+vec_len_kmh_z,"Length of the daily mean wind vector, z-score (training mean/SD)",z-score,Open-Meteo Historical Weather API,B,float64,0
+u_mean_z,"Daily mean east-west wind component (+ = towards east), z-score (training mean/SD)",z-score,Open-Meteo Historical Weather API,B,float64,0
+v_mean_z,"Daily mean north-south wind component (+ = towards north), z-score (training mean/SD)",z-score,Open-Meteo Historical Weather API,B,float64,0
+temp_mean_c_outlier_z,1 if temp_mean_c is an outlier (z rule),0/1,Open-Meteo Historical Weather API,B,int64,0
+temp_mean_c_outlier_iqr,1 if temp_mean_c is an outlier (iqr rule),0/1,Open-Meteo Historical Weather API,B,int64,0
+temp_range_c_outlier_z,1 if temp_range_c is an outlier (z rule),0/1,Open-Meteo Historical Weather API,B,int64,0
+temp_range_c_outlier_iqr,1 if temp_range_c is an outlier (iqr rule),0/1,Open-Meteo Historical Weather API,B,int64,0
+rh_mean_pct_outlier_z,1 if rh_mean_pct is an outlier (z rule),0/1,Open-Meteo Historical Weather API,B,int64,0
+rh_mean_pct_outlier_iqr,1 if rh_mean_pct is an outlier (iqr rule),0/1,Open-Meteo Historical Weather API,B,int64,0
+precip_sum_mm_outlier_z,1 if precip_sum_mm is an outlier (z rule),0/1,Open-Meteo Historical Weather API,B,int64,0
+precip_sum_mm_outlier_iqr,1 if precip_sum_mm is an outlier (iqr rule),0/1,Open-Meteo Historical Weather API,B,int64,0
+wind_speed_mean_kmh_outlier_z,1 if wind_speed_mean_kmh is an outlier (z rule),0/1,Open-Meteo Historical Weather API,B,int64,0
+wind_speed_mean_kmh_outlier_iqr,1 if wind_speed_mean_kmh is an outlier (iqr rule),0/1,Open-Meteo Historical Weather API,B,int64,0
+vec_len_kmh_outlier_z,1 if vec_len_kmh is an outlier (z rule),0/1,Open-Meteo Historical Weather API,B,int64,0
+vec_len_kmh_outlier_iqr,1 if vec_len_kmh is an outlier (iqr rule),0/1,Open-Meteo Historical Weather API,B,int64,0
+temp_mean_c_lag1,Daily mean 2 m temperature on day t-1,deg C,Open-Meteo Historical Weather API,B,float64,0
+temp_mean_c_lag2,Daily mean 2 m temperature on day t-2,deg C,Open-Meteo Historical Weather API,B,float64,0
+temp_mean_c_lag3,Daily mean 2 m temperature on day t-3,deg C,Open-Meteo Historical Weather API,B,float64,0
+temp_range_c_lag1,Daily temperature range (inversion proxy) on day t-1,deg C,Open-Meteo Historical Weather API,B,float64,0
+temp_range_c_lag2,Daily temperature range (inversion proxy) on day t-2,deg C,Open-Meteo Historical Weather API,B,float64,0
+temp_range_c_lag3,Daily temperature range (inversion proxy) on day t-3,deg C,Open-Meteo Historical Weather API,B,float64,0
+rh_mean_pct_lag1,Daily mean relative humidity on day t-1,%,Open-Meteo Historical Weather API,B,float64,0
+rh_mean_pct_lag2,Daily mean relative humidity on day t-2,%,Open-Meteo Historical Weather API,B,float64,0
+rh_mean_pct_lag3,Daily mean relative humidity on day t-3,%,Open-Meteo Historical Weather API,B,float64,0
+precip_sum_mm_lag1,Daily rainfall total on day t-1,mm,Open-Meteo Historical Weather API,B,float64,0
+precip_sum_mm_lag2,Daily rainfall total on day t-2,mm,Open-Meteo Historical Weather API,B,float64,0
+precip_sum_mm_lag3,Daily rainfall total on day t-3,mm,Open-Meteo Historical Weather API,B,float64,0
+wind_speed_mean_kmh_lag1,Mean of hourly wind speeds on day t-1,km/h,Open-Meteo Historical Weather API,B,float64,0
+wind_speed_mean_kmh_lag2,Mean of hourly wind speeds on day t-2,km/h,Open-Meteo Historical Weather API,B,float64,0
+wind_speed_mean_kmh_lag3,Mean of hourly wind speeds on day t-3,km/h,Open-Meteo Historical Weather API,B,float64,0
+vec_len_kmh_lag1,Length of the daily mean wind vector on day t-1,km/h,Open-Meteo Historical Weather API,B,float64,0
+vec_len_kmh_lag2,Length of the daily mean wind vector on day t-2,km/h,Open-Meteo Historical Weather API,B,float64,0
+vec_len_kmh_lag3,Length of the daily mean wind vector on day t-3,km/h,Open-Meteo Historical Weather API,B,float64,0
+stagnant_lag1,1 if vec_len_kmh < 2 km/h (stagnation proxy) on day t-1,0/1,Open-Meteo Historical Weather API,B,float64,0
+stagnant_lag2,1 if vec_len_kmh < 2 km/h (stagnation proxy) on day t-2,0/1,Open-Meteo Historical Weather API,B,float64,0
+stagnant_lag3,1 if vec_len_kmh < 2 km/h (stagnation proxy) on day t-3,0/1,Open-Meteo Historical Weather API,B,float64,0
+fire_cnt_r150_all,"Number of fire detections, all origins, within 150 km, any direction",count,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_cnt_r150_in,"Number of fire detections, India-origin, within 150 km, any direction",count,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_cnt_r150_pk,"Number of fire detections, Pakistan-origin, within 150 km, any direction",count,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_frp_r150_all,"Sum of fire radiative power, all origins, within 150 km, any direction",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_frp_r150_in,"Sum of fire radiative power, India-origin, within 150 km, any direction",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_frp_r150_pk,"Sum of fire radiative power, Pakistan-origin, within 150 km, any direction",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r150_all,"Number of fire detections, all origins, within 150 km, inside the +-45 deg upwind cone",count,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_cnt_up45_r150_in,"Number of fire detections, India-origin, within 150 km, inside the +-45 deg upwind cone",count,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_cnt_up45_r150_pk,"Number of fire detections, Pakistan-origin, within 150 km, inside the +-45 deg upwind cone",count,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_frp_up45_r150_all,"Sum of fire radiative power, all origins, within 150 km, inside the +-45 deg upwind cone",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_frp_up45_r150_in,"Sum of fire radiative power, India-origin, within 150 km, inside the +-45 deg upwind cone",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_frp_up45_r150_pk,"Sum of fire radiative power, Pakistan-origin, within 150 km, inside the +-45 deg upwind cone",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_down45_r150_all,"Number of fire detections, all origins, within 150 km, inside the +-45 deg downwind cone (placebo)",count,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_cnt_down45_r150_in,"Number of fire detections, India-origin, within 150 km, inside the +-45 deg downwind cone (placebo)",count,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_cnt_down45_r150_pk,"Number of fire detections, Pakistan-origin, within 150 km, inside the +-45 deg downwind cone (placebo)",count,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_frp_down45_r150_all,"Sum of fire radiative power, all origins, within 150 km, inside the +-45 deg downwind cone (placebo)",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_frp_down45_r150_in,"Sum of fire radiative power, India-origin, within 150 km, inside the +-45 deg downwind cone (placebo)",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_frp_down45_r150_pk,"Sum of fire radiative power, Pakistan-origin, within 150 km, inside the +-45 deg downwind cone (placebo)",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_r150_conf_h_all,"Number of fire detections, all origins, within 150 km, high confidence only",count,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_cnt_r150_conf_h_in,"Number of fire detections, India-origin, within 150 km, high confidence only",count,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_cnt_r150_conf_h_pk,"Number of fire detections, Pakistan-origin, within 150 km, high confidence only",count,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_frp_r150_conf_h_all,"Sum of fire radiative power, all origins, within 150 km, high confidence only",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_frp_r150_conf_h_in,"Sum of fire radiative power, India-origin, within 150 km, high confidence only",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_frp_r150_conf_h_pk,"Sum of fire radiative power, Pakistan-origin, within 150 km, high confidence only",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_r150_conf_nhl_all,"Number of fire detections, all origins, within 150 km, all confidence levels",count,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_cnt_r150_conf_nhl_in,"Number of fire detections, India-origin, within 150 km, all confidence levels",count,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_cnt_r150_conf_nhl_pk,"Number of fire detections, Pakistan-origin, within 150 km, all confidence levels",count,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_frp_r150_conf_nhl_all,"Sum of fire radiative power, all origins, within 150 km, all confidence levels",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_frp_r150_conf_nhl_in,"Sum of fire radiative power, India-origin, within 150 km, all confidence levels",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_frp_r150_conf_nhl_pk,"Sum of fire radiative power, Pakistan-origin, within 150 km, all confidence levels",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+out_z_fire_cnt_r150_all,1 if fire_cnt_r150_all is an outlier (|z| > 3 rule),0/1,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+out_iqr_fire_cnt_r150_all,1 if fire_cnt_r150_all is an outlier (1.5xIQR rule),0/1,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+out_z_fire_frp_r150_all,1 if fire_frp_r150_all is an outlier (|z| > 3 rule),0/1,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+out_iqr_fire_frp_r150_all,1 if fire_frp_r150_all is an outlier (1.5xIQR rule),0/1,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+out_z_fire_cnt_r150_in,1 if fire_cnt_r150_in is an outlier (|z| > 3 rule),0/1,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+out_iqr_fire_cnt_r150_in,1 if fire_cnt_r150_in is an outlier (1.5xIQR rule),0/1,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_cnt_r150_in_log1p,"log1p of number of fire detections, India-origin, within 150 km, any direction",log(1+count),NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_cnt_r150_pk_log1p,"log1p of number of fire detections, Pakistan-origin, within 150 km, any direction",log(1+count),NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_cnt_r150_all_log1p,"log1p of number of fire detections, all origins, within 150 km, any direction",log(1+count),NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_frp_r150_in_log1p,"log1p of sum of fire radiative power, India-origin, within 150 km, any direction",log(1+MW),NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_frp_r150_pk_log1p,"log1p of sum of fire radiative power, Pakistan-origin, within 150 km, any direction",log(1+MW),NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_frp_r150_all_log1p,"log1p of sum of fire radiative power, all origins, within 150 km, any direction",log(1+MW),NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r150_in_log1p,"log1p of number of fire detections, India-origin, within 150 km, inside the +-45 deg upwind cone",log(1+count),NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_frp_up45_r150_in_log1p,"log1p of sum of fire radiative power, India-origin, within 150 km, inside the +-45 deg upwind cone",log(1+MW),NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_down45_r150_in_log1p,"log1p of number of fire detections, India-origin, within 150 km, inside the +-45 deg downwind cone (placebo)",log(1+count),NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_frp_down45_r150_in_log1p,"log1p of sum of fire radiative power, India-origin, within 150 km, inside the +-45 deg downwind cone (placebo)",log(1+MW),NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_r150_in_log1p_z,"z-score of log1p of number of fire detections, India-origin, within 150 km, any direction",z-score,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_cnt_r150_pk_log1p_z,"z-score of log1p of number of fire detections, Pakistan-origin, within 150 km, any direction",z-score,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_cnt_r150_all_log1p_z,"z-score of log1p of number of fire detections, all origins, within 150 km, any direction",z-score,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_frp_r150_in_log1p_z,"z-score of log1p of sum of fire radiative power, India-origin, within 150 km, any direction",z-score,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_frp_r150_pk_log1p_z,"z-score of log1p of sum of fire radiative power, Pakistan-origin, within 150 km, any direction",z-score,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_frp_r150_all_log1p_z,"z-score of log1p of sum of fire radiative power, all origins, within 150 km, any direction",z-score,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r150_in_log1p_z,"z-score of log1p of number of fire detections, India-origin, within 150 km, inside the +-45 deg upwind cone",z-score,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_frp_up45_r150_in_log1p_z,"z-score of log1p of sum of fire radiative power, India-origin, within 150 km, inside the +-45 deg upwind cone",z-score,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_down45_r150_in_log1p_z,"z-score of log1p of number of fire detections, India-origin, within 150 km, inside the +-45 deg downwind cone (placebo)",z-score,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_frp_down45_r150_in_log1p_z,"z-score of log1p of sum of fire radiative power, India-origin, within 150 km, inside the +-45 deg downwind cone (placebo)",z-score,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_r150_all_lag1,"Number of fire detections, all origins, within 150 km, any direction on day t-1",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_r150_all_lag2,"Number of fire detections, all origins, within 150 km, any direction on day t-2",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_r150_all_lag3,"Number of fire detections, all origins, within 150 km, any direction on day t-3",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_r150_in_lag1,"Number of fire detections, India-origin, within 150 km, any direction on day t-1",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_r150_in_lag2,"Number of fire detections, India-origin, within 150 km, any direction on day t-2",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_r150_in_lag3,"Number of fire detections, India-origin, within 150 km, any direction on day t-3",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_r150_pk_lag1,"Number of fire detections, Pakistan-origin, within 150 km, any direction on day t-1",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_r150_pk_lag2,"Number of fire detections, Pakistan-origin, within 150 km, any direction on day t-2",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_r150_pk_lag3,"Number of fire detections, Pakistan-origin, within 150 km, any direction on day t-3",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r150_all_lag1,"Number of fire detections, all origins, within 150 km, inside the +-45 deg upwind cone on day t-1",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r150_all_lag2,"Number of fire detections, all origins, within 150 km, inside the +-45 deg upwind cone on day t-2",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r150_all_lag3,"Number of fire detections, all origins, within 150 km, inside the +-45 deg upwind cone on day t-3",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r150_in_lag1,"Number of fire detections, India-origin, within 150 km, inside the +-45 deg upwind cone on day t-1",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r150_in_lag2,"Number of fire detections, India-origin, within 150 km, inside the +-45 deg upwind cone on day t-2",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r150_in_lag3,"Number of fire detections, India-origin, within 150 km, inside the +-45 deg upwind cone on day t-3",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r150_pk_lag1,"Number of fire detections, Pakistan-origin, within 150 km, inside the +-45 deg upwind cone on day t-1",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r150_pk_lag2,"Number of fire detections, Pakistan-origin, within 150 km, inside the +-45 deg upwind cone on day t-2",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r150_pk_lag3,"Number of fire detections, Pakistan-origin, within 150 km, inside the +-45 deg upwind cone on day t-3",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_frp_up45_r150_all_lag1,"Sum of fire radiative power, all origins, within 150 km, inside the +-45 deg upwind cone on day t-1",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_frp_up45_r150_all_lag2,"Sum of fire radiative power, all origins, within 150 km, inside the +-45 deg upwind cone on day t-2",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_frp_up45_r150_all_lag3,"Sum of fire radiative power, all origins, within 150 km, inside the +-45 deg upwind cone on day t-3",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+target_index_h1,Composite Smog Index on day t+1 (response),z-score units,derived in merge,B,float64,11
+target_spike_h1,Spike label on day t+1 with A's training thresholds (response),0/1,derived in merge,B,Int64,11
+target_index_h2,Composite Smog Index on day t+2 (response),z-score units,derived in merge,B,float64,22
+target_spike_h2,Spike label on day t+2 with A's training thresholds (response),0/1,derived in merge,B,Int64,22
+target_index_h3,Composite Smog Index on day t+3 (response),z-score units,derived in merge,B,float64,33
+target_spike_h3,Spike label on day t+3 with A's training thresholds (response),0/1,derived in merge,B,Int64,33
+persist_index,Baseline: today's index used as the forecast,z-score units,derived in merge,B,float64,0
+persist_spike,Baseline: today's spike label used as the forecast,0/1,derived in merge,B,int64,0
+index_lag1,Composite Smog Index on day t-1,z-score units,derived in merge,B,float64,11
+index_lag2,Composite Smog Index on day t-2,z-score units,derived in merge,B,float64,22
+index_lag3,Composite Smog Index on day t-3,z-score units,derived in merge,B,float64,33
+city_faisalabad,1 if city is Faisalabad (reference: Lahore),0/1,derived in merge,B,int8,0
+city_multan,1 if city is Multan (reference: Lahore),0/1,derived in merge,B,int8,0
+city_rawalpindi,1 if city is Rawalpindi (reference: Lahore),0/1,derived in merge,B,int8,0
+city_sialkot,1 if city is Sialkot (reference: Lahore),0/1,derived in merge,B,int8,0
+city_rahim_yar_khan,1 if city is Rahim Yar Khan (reference: Lahore),0/1,derived in merge,B,int8,0
+city_islamabad,1 if city is Islamabad (reference: Lahore),0/1,derived in merge,B,int8,0
+city_amritsar,1 if city is Amritsar (reference: Lahore),0/1,derived in merge,B,int8,0
+city_ferozepur,1 if city is Ferozepur (reference: Lahore),0/1,derived in merge,B,int8,0
+city_ludhiana,1 if city is Ludhiana (reference: Lahore),0/1,derived in merge,B,int8,0
+city_jalandhar,1 if city is Jalandhar (reference: Lahore),0/1,derived in merge,B,int8,0
+is_india,1 if the city is in Indian Punjab,0/1,derived in merge,B,int8,0
+near_border,"1 if the city is a Pakistani border city (Lahore, Sialkot)",0/1,derived in merge,B,int8,0
+harvest_season,1 if the date is in October-December,0/1,derived in merge,B,int8,0
+month_02,1 if the month is 02 (reference: January),0/1,derived in merge,B,int8,0
+month_03,1 if the month is 03 (reference: January),0/1,derived in merge,B,int8,0
+month_04,1 if the month is 04 (reference: January),0/1,derived in merge,B,int8,0
+month_05,1 if the month is 05 (reference: January),0/1,derived in merge,B,int8,0
+month_06,1 if the month is 06 (reference: January),0/1,derived in merge,B,int8,0
+month_07,1 if the month is 07 (reference: January),0/1,derived in merge,B,int8,0
+month_08,1 if the month is 08 (reference: January),0/1,derived in merge,B,int8,0
+month_09,1 if the month is 09 (reference: January),0/1,derived in merge,B,int8,0
+month_10,1 if the month is 10 (reference: January),0/1,derived in merge,B,int8,0
+month_11,1 if the month is 11 (reference: January),0/1,derived in merge,B,int8,0
+month_12,1 if the month is 12 (reference: January),0/1,derived in merge,B,int8,0
+wind_sector,"Wind-from sector (8 compass sectors, 'calm' on stagnant days)",category,derived in merge,B,str,0
+wind_from_n,1 if the daily wind comes from N (reference: calm),0/1,derived in merge,B,int8,0
+wind_from_ne,1 if the daily wind comes from NE (reference: calm),0/1,derived in merge,B,int8,0
+wind_from_e,1 if the daily wind comes from E (reference: calm),0/1,derived in merge,B,int8,0
+wind_from_se,1 if the daily wind comes from SE (reference: calm),0/1,derived in merge,B,int8,0
+wind_from_s,1 if the daily wind comes from S (reference: calm),0/1,derived in merge,B,int8,0
+wind_from_sw,1 if the daily wind comes from SW (reference: calm),0/1,derived in merge,B,int8,0
+wind_from_w,1 if the daily wind comes from W (reference: calm),0/1,derived in merge,B,int8,0
+wind_from_nw,1 if the daily wind comes from NW (reference: calm),0/1,derived in merge,B,int8,0
+split,Re-training split: train (to 2024-08-31) / skip / test (2024-09-04 to 2024-12-29),category,derived in merge,B,str,0
+is_train,1 if the row is in the training period,0/1,derived in merge,B,int8,0
+fire_cnt_up45_r300_all,"Number of fire detections, all origins, within 300 km, inside the +-45 deg upwind cone",count,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_cnt_up45_r300_in,"Number of fire detections, India-origin, within 300 km, inside the +-45 deg upwind cone",count,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_cnt_up45_r300_pk,"Number of fire detections, Pakistan-origin, within 300 km, inside the +-45 deg upwind cone",count,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_frp_up45_r300_all,"Sum of fire radiative power, all origins, within 300 km, inside the +-45 deg upwind cone",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_frp_up45_r300_in,"Sum of fire radiative power, India-origin, within 300 km, inside the +-45 deg upwind cone",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_frp_up45_r300_pk,"Sum of fire radiative power, Pakistan-origin, within 300 km, inside the +-45 deg upwind cone",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r300_all_lag1,"Number of fire detections, all origins, within 300 km, inside the +-45 deg upwind cone on day t-1",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r300_all_lag2,"Number of fire detections, all origins, within 300 km, inside the +-45 deg upwind cone on day t-2",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r300_all_lag3,"Number of fire detections, all origins, within 300 km, inside the +-45 deg upwind cone on day t-3",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r300_in_lag1,"Number of fire detections, India-origin, within 300 km, inside the +-45 deg upwind cone on day t-1",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r300_in_lag2,"Number of fire detections, India-origin, within 300 km, inside the +-45 deg upwind cone on day t-2",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r300_in_lag3,"Number of fire detections, India-origin, within 300 km, inside the +-45 deg upwind cone on day t-3",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r300_pk_lag1,"Number of fire detections, Pakistan-origin, within 300 km, inside the +-45 deg upwind cone on day t-1",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r300_pk_lag2,"Number of fire detections, Pakistan-origin, within 300 km, inside the +-45 deg upwind cone on day t-2",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r300_pk_lag3,"Number of fire detections, Pakistan-origin, within 300 km, inside the +-45 deg upwind cone on day t-3",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_r300_all,"Number of fire detections, all origins, within 300 km, any direction",count,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_cnt_r300_in,"Number of fire detections, India-origin, within 300 km, any direction",count,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_cnt_r300_pk,"Number of fire detections, Pakistan-origin, within 300 km, any direction",count,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_frp_r300_all,"Sum of fire radiative power, all origins, within 300 km, any direction",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_frp_r300_in,"Sum of fire radiative power, India-origin, within 300 km, any direction",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_frp_r300_pk,"Sum of fire radiative power, Pakistan-origin, within 300 km, any direction",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_r300_all_lag1,"Number of fire detections, all origins, within 300 km, any direction on day t-1",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_r300_all_lag2,"Number of fire detections, all origins, within 300 km, any direction on day t-2",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_r300_all_lag3,"Number of fire detections, all origins, within 300 km, any direction on day t-3",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_down45_r300_all,"Number of fire detections, all origins, within 300 km, inside the +-45 deg downwind cone (placebo)",count,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_cnt_down45_r300_in,"Number of fire detections, India-origin, within 300 km, inside the +-45 deg downwind cone (placebo)",count,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_cnt_down45_r300_pk,"Number of fire detections, Pakistan-origin, within 300 km, inside the +-45 deg downwind cone (placebo)",count,NASA FIRMS VIIRS (NOAA-20),C,int64,0
+fire_frp_down45_r300_all,"Sum of fire radiative power, all origins, within 300 km, inside the +-45 deg downwind cone (placebo)",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_frp_down45_r300_in,"Sum of fire radiative power, India-origin, within 300 km, inside the +-45 deg downwind cone (placebo)",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_frp_down45_r300_pk,"Sum of fire radiative power, Pakistan-origin, within 300 km, inside the +-45 deg downwind cone (placebo)",MW,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_down45_r300_all_lag1,"Number of fire detections, all origins, within 300 km, inside the +-45 deg downwind cone (placebo) on day t-1",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_down45_r300_all_lag2,"Number of fire detections, all origins, within 300 km, inside the +-45 deg downwind cone (placebo) on day t-2",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_down45_r300_all_lag3,"Number of fire detections, all origins, within 300 km, inside the +-45 deg downwind cone (placebo) on day t-3",count,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r300_all_log1p,"log1p of number of fire detections, all origins, within 300 km, inside the +-45 deg upwind cone",log(1+count),NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r300_all_log1p_z,"z-score of log1p of number of fire detections, all origins, within 300 km, inside the +-45 deg upwind cone",z-score,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r300_in_log1p,"log1p of number of fire detections, India-origin, within 300 km, inside the +-45 deg upwind cone",log(1+count),NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r300_in_log1p_z,"z-score of log1p of number of fire detections, India-origin, within 300 km, inside the +-45 deg upwind cone",z-score,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r300_pk_log1p,"log1p of number of fire detections, Pakistan-origin, within 300 km, inside the +-45 deg upwind cone",log(1+count),NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_up45_r300_pk_log1p_z,"z-score of log1p of number of fire detections, Pakistan-origin, within 300 km, inside the +-45 deg upwind cone",z-score,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_r300_all_log1p,"log1p of number of fire detections, all origins, within 300 km, any direction",log(1+count),NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_r300_all_log1p_z,"z-score of log1p of number of fire detections, all origins, within 300 km, any direction",z-score,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_r300_in_log1p,"log1p of number of fire detections, India-origin, within 300 km, any direction",log(1+count),NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_r300_in_log1p_z,"z-score of log1p of number of fire detections, India-origin, within 300 km, any direction",z-score,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_r300_pk_log1p,"log1p of number of fire detections, Pakistan-origin, within 300 km, any direction",log(1+count),NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_r300_pk_log1p_z,"z-score of log1p of number of fire detections, Pakistan-origin, within 300 km, any direction",z-score,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_down45_r300_all_log1p,"log1p of number of fire detections, all origins, within 300 km, inside the +-45 deg downwind cone (placebo)",log(1+count),NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_down45_r300_all_log1p_z,"z-score of log1p of number of fire detections, all origins, within 300 km, inside the +-45 deg downwind cone (placebo)",z-score,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_down45_r300_in_log1p,"log1p of number of fire detections, India-origin, within 300 km, inside the +-45 deg downwind cone (placebo)",log(1+count),NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_down45_r300_in_log1p_z,"z-score of log1p of number of fire detections, India-origin, within 300 km, inside the +-45 deg downwind cone (placebo)",z-score,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_down45_r300_pk_log1p,"log1p of number of fire detections, Pakistan-origin, within 300 km, inside the +-45 deg downwind cone (placebo)",log(1+count),NASA FIRMS VIIRS (NOAA-20),C,float64,0
+fire_cnt_down45_r300_pk_log1p_z,"z-score of log1p of number of fire detections, Pakistan-origin, within 300 km, inside the +-45 deg downwind cone (placebo)",z-score,NASA FIRMS VIIRS (NOAA-20),C,float64,0
+wave,initial (2022-08-04 to 2023-12-31) or new (2024),category,derived in data_extension.ipynb,M5,str,0
+split_initial,"Milestone 3-4 split: train / skip / validation, or 'new wave' for 2024",category,derived in data_extension.ipynb,M5,str,0
+fire_gap_day,1 if no VIIRS detection exists anywhere in India or Pakistan on that date,0/1,derived in data_extension.ipynb,M5,int8,0
+fire_gap_affected,"1 if a fire_gap_day falls on day t, t-1, t-2 or t-3 (the days the fire lags read)",0/1,derived in data_extension.ipynb,M5,int8,0

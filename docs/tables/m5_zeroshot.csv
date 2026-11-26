@@ -1,0 +1,217 @@
+setting,model,metric,estimate,ci_low,ci_high,n_weeks
+"(1) initial model, initial data (Sep-Dec 2023)",Majority class,accuracy,0.9314,0.8687,0.9827,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",Majority class,precision,,,,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",Majority class,recall,0.0,0.0,0.0,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",Majority class,specificity,1.0,1.0,1.0,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",Majority class,f1,0.0,0.0,0.0,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",Majority class,roc_auc,,,,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",Majority class,pr_auc,,,,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",Majority class,brier,0.0686,0.0173,0.1313,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",Majority class,cost_per_1000,342.8351,86.5579,656.6986,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",Persistence,accuracy,0.9545,0.9214,0.9849,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",Persistence,precision,0.6875,0.4735,0.7569,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",Persistence,recall,0.618,0.3695,0.703,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",Persistence,specificity,0.9793,0.9602,0.9943,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",Persistence,f1,0.6509,0.422,0.712,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",Persistence,roc_auc,0.9629,0.9369,0.9794,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",Persistence,pr_auc,0.6687,0.3439,0.7655,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",Persistence,brier,,,,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",Persistence,cost_per_1000,150.2311,48.4184,263.968,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR full,accuracy,0.9199,0.8732,0.965,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR full,precision,0.4556,0.2222,0.5818,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR full,recall,0.8652,0.6667,0.9255,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR full,specificity,0.9239,0.8739,0.9686,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR full,f1,0.5969,0.3333,0.7084,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR full,roc_auc,0.9665,0.9398,0.9825,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR full,pr_auc,0.6946,0.323,0.7899,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR full,brier,0.037,0.0127,0.0649,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR full,cost_per_1000,117.1032,51.8237,189.2697,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR no-fire,accuracy,0.9199,0.8732,0.965,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR no-fire,precision,0.4556,0.2222,0.5818,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR no-fire,recall,0.8652,0.6667,0.9255,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR no-fire,specificity,0.9239,0.8739,0.9686,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR no-fire,f1,0.5969,0.3333,0.7084,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR no-fire,roc_auc,0.9665,0.9398,0.9825,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR no-fire,pr_auc,0.6946,0.323,0.7899,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR no-fire,brier,0.037,0.0127,0.0649,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR no-fire,cost_per_1000,117.1032,51.8237,189.2697,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR weather-only,accuracy,0.8066,0.669,0.9402,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR weather-only,precision,0.2282,0.0384,0.4275,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR weather-only,recall,0.764,0.2498,0.8816,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR weather-only,specificity,0.8098,0.655,0.9492,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR weather-only,f1,0.3514,0.0677,0.5571,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR weather-only,roc_auc,0.8548,0.6353,0.9249,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR weather-only,pr_auc,0.3879,0.0401,0.5314,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR weather-only,brier,0.0558,0.0175,0.1012,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",LR weather-only,cost_per_1000,258.0894,102.0404,412.1918,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",DT full,accuracy,0.9361,0.8968,0.9753,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",DT full,precision,0.5214,0.2563,0.6471,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",DT full,recall,0.8202,0.5713,0.8986,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",DT full,specificity,0.9446,0.9063,0.9796,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",DT full,f1,0.6376,0.3544,0.7464,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",DT full,roc_auc,0.9531,0.9002,0.9784,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",DT full,pr_auc,0.5895,0.2371,0.716,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",DT full,brier,0.0371,0.0124,0.0639,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",DT full,cost_per_1000,113.2512,43.1266,191.5134,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",RF full,accuracy,0.9345,0.8949,0.9737,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",RF full,precision,0.5141,0.2531,0.6471,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",RF full,recall,0.8202,0.619,0.8816,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",RF full,specificity,0.9429,0.9055,0.9779,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",RF full,f1,0.632,0.3673,0.7416,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",RF full,roc_auc,0.9639,0.9265,0.983,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",RF full,pr_auc,0.6794,0.3108,0.7827,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",RF full,brier,0.0353,0.0123,0.0606,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",RF full,cost_per_1000,114.792,46.2243,189.058,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",HGB full,accuracy,0.9299,0.8897,0.9707,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",HGB full,precision,0.4935,0.2436,0.6353,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",HGB full,recall,0.8539,0.7096,0.9077,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",HGB full,specificity,0.9355,0.8919,0.976,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",HGB full,f1,0.6255,0.3689,0.7355,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",HGB full,roc_auc,0.9628,0.9355,0.9807,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",HGB full,pr_auc,0.636,0.2543,0.735,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",HGB full,brier,0.0627,0.0277,0.0975,18.0
+"(1) initial model, initial data (Sep-Dec 2023)",HGB full,cost_per_1000,110.1695,49.9134,171.4713,18.0
+"(2a) initial model, zero-shot, all of 2024",Majority class,accuracy,0.9086,0.8574,0.9543,53.0
+"(2a) initial model, zero-shot, all of 2024",Majority class,precision,,,,53.0
+"(2a) initial model, zero-shot, all of 2024",Majority class,recall,0.0,0.0,0.0,53.0
+"(2a) initial model, zero-shot, all of 2024",Majority class,specificity,1.0,1.0,1.0,53.0
+"(2a) initial model, zero-shot, all of 2024",Majority class,f1,0.0,0.0,0.0,53.0
+"(2a) initial model, zero-shot, all of 2024",Majority class,roc_auc,,,,53.0
+"(2a) initial model, zero-shot, all of 2024",Majority class,pr_auc,,,,53.0
+"(2a) initial model, zero-shot, all of 2024",Majority class,brier,0.0914,0.0457,0.1426,53.0
+"(2a) initial model, zero-shot, all of 2024",Majority class,cost_per_1000,457.0707,228.5354,713.2298,53.0
+"(2a) initial model, zero-shot, all of 2024",Persistence,accuracy,0.9503,0.9263,0.9722,53.0
+"(2a) initial model, zero-shot, all of 2024",Persistence,precision,0.7236,0.6332,0.7869,53.0
+"(2a) initial model, zero-shot, all of 2024",Persistence,recall,0.7376,0.6577,0.7904,53.0
+"(2a) initial model, zero-shot, all of 2024",Persistence,specificity,0.9717,0.9546,0.9862,53.0
+"(2a) initial model, zero-shot, all of 2024",Persistence,f1,0.7305,0.656,0.7736,53.0
+"(2a) initial model, zero-shot, all of 2024",Persistence,roc_auc,0.9739,0.9624,0.9853,53.0
+"(2a) initial model, zero-shot, all of 2024",Persistence,pr_auc,0.7653,0.6664,0.822,53.0
+"(2a) initial model, zero-shot, all of 2024",Persistence,brier,,,,53.0
+"(2a) initial model, zero-shot, all of 2024",Persistence,cost_per_1000,145.7071,80.0147,216.2824,53.0
+"(2a) initial model, zero-shot, all of 2024",LR full,accuracy,0.9263,0.8884,0.9579,53.0
+"(2a) initial model, zero-shot, all of 2024",LR full,precision,0.5583,0.4428,0.6459,53.0
+"(2a) initial model, zero-shot, all of 2024",LR full,recall,0.9254,0.8508,0.9669,53.0
+"(2a) initial model, zero-shot, all of 2024",LR full,specificity,0.9263,0.881,0.9616,53.0
+"(2a) initial model, zero-shot, all of 2024",LR full,f1,0.6965,0.5871,0.7666,53.0
+"(2a) initial model, zero-shot, all of 2024",LR full,roc_auc,0.9732,0.9606,0.9853,53.0
+"(2a) initial model, zero-shot, all of 2024",LR full,pr_auc,0.7679,0.6573,0.8267,53.0
+"(2a) initial model, zero-shot, all of 2024",LR full,brier,0.0399,0.0221,0.0598,53.0
+"(2a) initial model, zero-shot, all of 2024",LR full,cost_per_1000,101.0101,58.8224,142.6127,53.0
+"(2a) initial model, zero-shot, all of 2024",LR no-fire,accuracy,0.9263,0.8884,0.9579,53.0
+"(2a) initial model, zero-shot, all of 2024",LR no-fire,precision,0.5583,0.4428,0.6459,53.0
+"(2a) initial model, zero-shot, all of 2024",LR no-fire,recall,0.9254,0.8508,0.9669,53.0
+"(2a) initial model, zero-shot, all of 2024",LR no-fire,specificity,0.9263,0.881,0.9616,53.0
+"(2a) initial model, zero-shot, all of 2024",LR no-fire,f1,0.6965,0.5871,0.7666,53.0
+"(2a) initial model, zero-shot, all of 2024",LR no-fire,roc_auc,0.9732,0.9606,0.9853,53.0
+"(2a) initial model, zero-shot, all of 2024",LR no-fire,pr_auc,0.7679,0.6573,0.8267,53.0
+"(2a) initial model, zero-shot, all of 2024",LR no-fire,brier,0.0399,0.0221,0.0598,53.0
+"(2a) initial model, zero-shot, all of 2024",LR no-fire,cost_per_1000,101.0101,58.8224,142.6127,53.0
+"(2a) initial model, zero-shot, all of 2024",LR weather-only,accuracy,0.8596,0.8016,0.916,53.0
+"(2a) initial model, zero-shot, all of 2024",LR weather-only,precision,0.3618,0.2038,0.4841,53.0
+"(2a) initial model, zero-shot, all of 2024",LR weather-only,recall,0.7017,0.3742,0.9137,53.0
+"(2a) initial model, zero-shot, all of 2024",LR weather-only,specificity,0.8755,0.804,0.9308,53.0
+"(2a) initial model, zero-shot, all of 2024",LR weather-only,f1,0.4774,0.2779,0.6058,53.0
+"(2a) initial model, zero-shot, all of 2024",LR weather-only,roc_auc,0.8858,0.8082,0.9385,53.0
+"(2a) initial model, zero-shot, all of 2024",LR weather-only,pr_auc,0.4404,0.2753,0.5339,53.0
+"(2a) initial model, zero-shot, all of 2024",LR weather-only,brier,0.071,0.0375,0.1101,53.0
+"(2a) initial model, zero-shot, all of 2024",LR weather-only,cost_per_1000,249.4949,127.3211,398.7449,53.0
+"(2a) initial model, zero-shot, all of 2024",DT full,accuracy,0.9384,0.9086,0.9654,53.0
+"(2a) initial model, zero-shot, all of 2024",DT full,precision,0.6089,0.5054,0.6841,53.0
+"(2a) initial model, zero-shot, all of 2024",DT full,recall,0.9116,0.8479,0.951,53.0
+"(2a) initial model, zero-shot, all of 2024",DT full,specificity,0.9411,0.9062,0.9697,53.0
+"(2a) initial model, zero-shot, all of 2024",DT full,f1,0.7301,0.6396,0.7868,53.0
+"(2a) initial model, zero-shot, all of 2024",DT full,roc_auc,0.9673,0.9516,0.9815,53.0
+"(2a) initial model, zero-shot, all of 2024",DT full,pr_auc,0.7023,0.5804,0.7699,53.0
+"(2a) initial model, zero-shot, all of 2024",DT full,brier,0.038,0.021,0.0554,53.0
+"(2a) initial model, zero-shot, all of 2024",DT full,cost_per_1000,93.9394,52.5171,135.9709,53.0
+"(2a) initial model, zero-shot, all of 2024",RF full,accuracy,0.9379,0.9086,0.9649,53.0
+"(2a) initial model, zero-shot, all of 2024",RF full,precision,0.6062,0.5014,0.6831,53.0
+"(2a) initial model, zero-shot, all of 2024",RF full,recall,0.9144,0.8449,0.9583,53.0
+"(2a) initial model, zero-shot, all of 2024",RF full,specificity,0.9402,0.9062,0.969,53.0
+"(2a) initial model, zero-shot, all of 2024",RF full,f1,0.7291,0.6343,0.789,53.0
+"(2a) initial model, zero-shot, all of 2024",RF full,roc_auc,0.9747,0.9627,0.9861,53.0
+"(2a) initial model, zero-shot, all of 2024",RF full,pr_auc,0.7566,0.6504,0.8058,53.0
+"(2a) initial model, zero-shot, all of 2024",RF full,brier,0.0374,0.0211,0.0551,53.0
+"(2a) initial model, zero-shot, all of 2024",RF full,cost_per_1000,93.4343,51.6889,132.71,53.0
+"(2a) initial model, zero-shot, all of 2024",HGB full,accuracy,0.9318,0.8996,0.9602,53.0
+"(2a) initial model, zero-shot, all of 2024",HGB full,precision,0.5827,0.4791,0.6632,53.0
+"(2a) initial model, zero-shot, all of 2024",HGB full,recall,0.895,0.8207,0.9392,53.0
+"(2a) initial model, zero-shot, all of 2024",HGB full,specificity,0.9355,0.8978,0.9666,53.0
+"(2a) initial model, zero-shot, all of 2024",HGB full,f1,0.7059,0.6092,0.7685,53.0
+"(2a) initial model, zero-shot, all of 2024",HGB full,roc_auc,0.969,0.9551,0.9833,53.0
+"(2a) initial model, zero-shot, all of 2024",HGB full,pr_auc,0.7304,0.607,0.798,53.0
+"(2a) initial model, zero-shot, all of 2024",HGB full,brier,0.0583,0.0336,0.0858,53.0
+"(2a) initial model, zero-shot, all of 2024",HGB full,cost_per_1000,106.5657,62.3722,149.1148,53.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",Majority class,accuracy,0.8589,0.7533,0.951,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",Majority class,precision,,,,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",Majority class,recall,0.0,0.0,0.0,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",Majority class,specificity,1.0,1.0,1.0,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",Majority class,f1,0.0,0.0,0.0,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",Majority class,roc_auc,,,,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",Majority class,pr_auc,,,,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",Majority class,brier,0.1411,0.049,0.2467,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",Majority class,cost_per_1000,705.3292,245.0132,1233.3375,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",Persistence,accuracy,0.9193,0.873,0.963,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",Persistence,precision,0.7151,0.5489,0.8019,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",Persistence,recall,0.7111,0.5637,0.7758,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",Persistence,specificity,0.9535,0.913,0.9821,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",Persistence,f1,0.7131,0.5714,0.7692,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",Persistence,roc_auc,0.9467,0.9159,0.9709,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",Persistence,pr_auc,0.7304,0.587,0.7969,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",Persistence,brier,,,,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",Persistence,cost_per_1000,243.7304,111.6773,386.4394,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR full,accuracy,0.895,0.8384,0.9471,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR full,precision,0.5839,0.3813,0.7018,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR full,recall,0.8889,0.7564,0.9487,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR full,specificity,0.896,0.8196,0.9532,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR full,f1,0.7048,0.516,0.7938,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR full,roc_auc,0.9456,0.9115,0.9725,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR full,pr_auc,0.7258,0.5646,0.7976,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR full,brier,0.0687,0.0285,0.1167,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR full,cost_per_1000,167.7116,87.2885,254.0666,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR no-fire,accuracy,0.895,0.8384,0.9471,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR no-fire,precision,0.5839,0.3813,0.7018,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR no-fire,recall,0.8889,0.7564,0.9487,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR no-fire,specificity,0.896,0.8196,0.9532,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR no-fire,f1,0.7048,0.516,0.7938,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR no-fire,roc_auc,0.9456,0.9115,0.9725,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR no-fire,pr_auc,0.7258,0.5646,0.7976,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR no-fire,brier,0.0687,0.0285,0.1167,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR no-fire,cost_per_1000,167.7116,87.2885,254.0666,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR weather-only,accuracy,0.779,0.6582,0.899,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR weather-only,precision,0.3125,0.0833,0.4897,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR weather-only,recall,0.4722,0.0642,0.8278,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR weather-only,specificity,0.8294,0.6983,0.9463,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR weather-only,f1,0.3761,0.0762,0.5659,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR weather-only,roc_auc,0.7766,0.6222,0.9004,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR weather-only,pr_auc,0.3869,0.1323,0.5842,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR weather-only,brier,0.1169,0.0434,0.2042,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",LR weather-only,cost_per_1000,518.8088,199.0319,939.4661,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",DT full,accuracy,0.9075,0.8575,0.9537,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",DT full,precision,0.624,0.4316,0.7257,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",DT full,recall,0.8667,0.7375,0.9283,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",DT full,specificity,0.9142,0.8488,0.9637,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",DT full,f1,0.7256,0.5549,0.796,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",DT full,roc_auc,0.9385,0.9021,0.9663,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",DT full,pr_auc,0.6646,0.4558,0.7613,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",DT full,brier,0.0649,0.0293,0.1039,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",DT full,cost_per_1000,167.7116,85.6647,253.2498,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",RF full,accuracy,0.9036,0.8513,0.9509,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",RF full,precision,0.6126,0.4154,0.718,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",RF full,recall,0.8611,0.7172,0.9271,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",RF full,specificity,0.9106,0.8408,0.9618,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",RF full,f1,0.7159,0.5341,0.7914,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",RF full,roc_auc,0.9486,0.9132,0.9741,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",RF full,pr_auc,0.7323,0.5267,0.8077,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",RF full,brier,0.0639,0.0288,0.1015,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",RF full,cost_per_1000,174.7649,90.8905,261.5678,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",HGB full,accuracy,0.895,0.8405,0.9462,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",HGB full,precision,0.5871,0.3934,0.7043,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",HGB full,recall,0.8611,0.7631,0.8941,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",HGB full,specificity,0.9005,0.8298,0.9535,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",HGB full,f1,0.6982,0.526,0.7804,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",HGB full,roc_auc,0.9381,0.9044,0.9673,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",HGB full,pr_auc,0.6809,0.5041,0.763,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",HGB full,brier,0.0898,0.046,0.135,18.0
+"(2b) initial model, zero-shot, Sep-Dec 2024",HGB full,cost_per_1000,183.3856,93.9859,279.2208,18.0

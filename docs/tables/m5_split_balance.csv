@@ -1,0 +1,6 @@
+rows,city_days,first,last,spikes,rate
+re-training: train,8272,2022-08-06,2024-08-31,483,0.0584
+re-training: test (Sep-Dec 2024),1276,2024-09-04,2024-12-28,180,0.1411
+initial wave: Milestone 4 train,4246,2022-08-06,2023-08-31,204,0.048
+initial wave: Milestone 4 validation,1309,2023-09-04,2023-12-31,97,0.0741
+new wave: Jan-Aug 2024 (in re-training train),2684,2024-01-01,2024-08-31,182,0.0678
