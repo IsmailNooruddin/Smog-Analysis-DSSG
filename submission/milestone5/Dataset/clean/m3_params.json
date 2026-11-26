@@ -1,0 +1,213 @@
+{
+  "target": "target_spike_h1",
+  "cost_fn_fp": [
+    5,
+    1
+  ],
+  "threshold_rule": "min 5*FN + 1*FP on OOF train",
+  "cv": {
+    "type": "purged repeated StratifiedGroupKFold",
+    "n_splits": 5,
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "group": "calendar week from WINDOW_START",
+    "purge_days": 1,
+    "embargo_days": 3
+  },
+  "rows": {
+    "train": 4246,
+    "validation": 1298
+  },
+  "feature_sets": {
+    "full": [
+      "persist_margin",
+      "margin_lag1",
+      "margin_lag2",
+      "fire_cnt_up45_r300_all",
+      "fire_cnt_up45_r300_all_lag1",
+      "fire_cnt_up45_r300_all_lag2",
+      "fire_cnt_up45_r300_all_lag3",
+      "stagnant",
+      "stagnant_lag1",
+      "rh_mean_pct",
+      "rain_day",
+      "temp_range_c",
+      "vec_len_kmh",
+      "temp_mean_c",
+      "wind_from_n",
+      "wind_from_ne",
+      "wind_from_e",
+      "wind_from_se",
+      "wind_from_s",
+      "wind_from_sw",
+      "wind_from_w",
+      "month_02",
+      "month_03",
+      "month_04",
+      "month_05",
+      "month_06",
+      "month_07",
+      "month_08",
+      "month_09",
+      "month_10",
+      "month_11",
+      "month_12",
+      "city_faisalabad",
+      "city_multan",
+      "city_rawalpindi",
+      "city_sialkot",
+      "city_rahim_yar_khan",
+      "city_islamabad",
+      "city_amritsar",
+      "city_ferozepur",
+      "city_ludhiana",
+      "city_jalandhar"
+    ],
+    "weather_only": [
+      "stagnant",
+      "stagnant_lag1",
+      "rh_mean_pct",
+      "rain_day",
+      "temp_range_c",
+      "vec_len_kmh",
+      "temp_mean_c",
+      "wind_from_n",
+      "wind_from_ne",
+      "wind_from_e",
+      "wind_from_se",
+      "wind_from_s",
+      "wind_from_sw",
+      "wind_from_w",
+      "month_02",
+      "month_03",
+      "month_04",
+      "month_05",
+      "month_06",
+      "month_07",
+      "month_08",
+      "month_09",
+      "month_10",
+      "month_11",
+      "month_12",
+      "city_faisalabad",
+      "city_multan",
+      "city_rawalpindi",
+      "city_sialkot",
+      "city_rahim_yar_khan",
+      "city_islamabad",
+      "city_amritsar",
+      "city_ferozepur",
+      "city_ludhiana",
+      "city_jalandhar"
+    ],
+    "no_fire": [
+      "persist_margin",
+      "margin_lag1",
+      "margin_lag2",
+      "stagnant",
+      "stagnant_lag1",
+      "rh_mean_pct",
+      "rain_day",
+      "temp_range_c",
+      "vec_len_kmh",
+      "temp_mean_c",
+      "wind_from_n",
+      "wind_from_ne",
+      "wind_from_e",
+      "wind_from_se",
+      "wind_from_s",
+      "wind_from_sw",
+      "wind_from_w",
+      "month_02",
+      "month_03",
+      "month_04",
+      "month_05",
+      "month_06",
+      "month_07",
+      "month_08",
+      "month_09",
+      "month_10",
+      "month_11",
+      "month_12",
+      "city_faisalabad",
+      "city_multan",
+      "city_rawalpindi",
+      "city_sialkot",
+      "city_rahim_yar_khan",
+      "city_islamabad",
+      "city_amritsar",
+      "city_ferozepur",
+      "city_ludhiana",
+      "city_jalandhar"
+    ]
+  },
+  "models": {
+    "majority": {
+      "best_params": {},
+      "cv_pr_auc": null,
+      "threshold": "never alert"
+    },
+    "lr_full": {
+      "best_params": {
+        "C": 0.02682695795279726,
+        "class_weight": null,
+        "l1_ratio": 1.0
+      },
+      "cv_pr_auc": 0.650756786220784,
+      "threshold": 0.12803977540343262
+    },
+    "lr_weather_only": {
+      "best_params": {
+        "C": 0.005179474679231213,
+        "class_weight": null,
+        "l1_ratio": 0.0
+      },
+      "cv_pr_auc": 0.4318552664850315,
+      "threshold": 0.10085857586952704
+    },
+    "lr_no_fire": {
+      "best_params": {
+        "C": 0.02682695795279726,
+        "class_weight": null,
+        "l1_ratio": 1.0
+      },
+      "cv_pr_auc": 0.6507470889832067,
+      "threshold": 0.1280281511305619
+    },
+    "dt_full": {
+      "best_params": {
+        "class_weight": null,
+        "max_depth": 4,
+        "min_samples_leaf": 50
+      },
+      "cv_pr_auc": 0.5190487079447529,
+      "threshold": 0.19880070797242955
+    },
+    "dt_weather_only": {
+      "best_params": {
+        "class_weight": null,
+        "max_depth": 3,
+        "min_samples_leaf": 10
+      },
+      "cv_pr_auc": 0.3367823549590274,
+      "threshold": 0.11726372637263727
+    },
+    "dt_no_fire": {
+      "best_params": {
+        "class_weight": null,
+        "max_depth": 4,
+        "min_samples_leaf": 50
+      },
+      "cv_pr_auc": 0.5193023079272518,
+      "threshold": 0.19880070797242955
+    },
+    "persistence": {
+      "rule": "alert when today's index >= city spike threshold"
+    }
+  }
+}

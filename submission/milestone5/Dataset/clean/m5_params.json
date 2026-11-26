@@ -1,0 +1,304 @@
+{
+  "target": "target_spike_h1",
+  "cost_fn_fp": [
+    5,
+    1
+  ],
+  "fast_run": false,
+  "windows": {
+    "raw": [
+      "2022-01-01",
+      "2024-12-29"
+    ],
+    "model": [
+      "2022-08-04",
+      "2024-12-29"
+    ],
+    "new_wave_start": "2024-01-01",
+    "seal": "2025-01-01",
+    "retrain_train": [
+      "2022-08-04",
+      "2024-08-31"
+    ],
+    "skip": [
+      "2024-09-01",
+      "2024-09-03"
+    ],
+    "test": [
+      "2024-09-04",
+      "2024-12-29"
+    ]
+  },
+  "frozen_parameters": [
+    "aq_params.json",
+    "weather_zscore_params.json",
+    "fire_zscore_params.json",
+    "role2_params.json"
+  ],
+  "dims": [
+    {
+      "data": "initial wave",
+      "first_date": "2022-08-04",
+      "last_date": "2023-12-31",
+      "days": "515",
+      "cities": "11",
+      "city_days_N": "5665",
+      "master_columns_P": "291",
+      "model_features": "42",
+      "model_rows_after_drops": "5588",
+      "spikes_next_day": "301",
+      "spike_rate": "0.05386542591267001"
+    },
+    {
+      "data": "new wave (2024)",
+      "first_date": "2024-01-01",
+      "last_date": "2024-12-29",
+      "days": "364",
+      "cities": "11",
+      "city_days_N": "4004",
+      "master_columns_P": "291",
+      "model_features": "42",
+      "model_rows_after_drops": "3960",
+      "spikes_next_day": "362",
+      "spike_rate": "0.09141414141414142"
+    },
+    {
+      "data": "total",
+      "first_date": "2022-08-04",
+      "last_date": "2024-12-29",
+      "days": "879",
+      "cities": "11",
+      "city_days_N": "9669",
+      "master_columns_P": "291",
+      "model_features": "42",
+      "model_rows_after_drops": "9548",
+      "spikes_next_day": "663",
+      "spike_rate": "0.06943862589023879"
+    }
+  ],
+  "fire_gap_days": [
+    "2022-07-27",
+    "2022-07-28",
+    "2022-07-29",
+    "2022-07-30",
+    "2022-07-31",
+    "2022-08-01",
+    "2022-08-02",
+    "2022-08-03",
+    "2022-08-04",
+    "2022-08-05",
+    "2022-08-06",
+    "2022-08-07",
+    "2022-08-08",
+    "2022-08-09",
+    "2022-08-10",
+    "2023-07-26",
+    "2024-05-30",
+    "2024-05-31",
+    "2024-06-01",
+    "2024-06-02",
+    "2024-06-03",
+    "2024-07-10",
+    "2024-07-11",
+    "2024-07-12",
+    "2024-07-13",
+    "2024-07-14",
+    "2024-07-15",
+    "2024-07-24",
+    "2024-07-25",
+    "2024-07-26",
+    "2024-07-27",
+    "2024-07-28",
+    "2024-09-26",
+    "2024-11-03",
+    "2024-11-04",
+    "2024-11-05"
+  ],
+  "drift": {
+    "psi_bins": 10,
+    "psi_eps": 0.0001,
+    "psi_bands": {
+      "stable": "< 0.10",
+      "moderate": "0.10-0.25",
+      "major": ">= 0.25"
+    },
+    "multiple_testing": "Benjamini-Hochberg",
+    "season_matched_months": [
+      9,
+      10,
+      11,
+      12
+    ],
+    "concept_test_sample": "Sep-Feb, rain_day == 0",
+    "concept_terms": [
+      "persist_margin",
+      "temp_mean_c",
+      "stagnant",
+      "rh_mean_pct",
+      "temp_range_c",
+      "vec_len_kmh",
+      "fire_log1p"
+    ]
+  },
+  "cv": {
+    "type": "purged repeated StratifiedGroupKFold",
+    "n_splits": 5,
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ]
+  },
+  "search": {
+    "n_iter": 60,
+    "seed": 42,
+    "scoring": "average_precision"
+  },
+  "models": {
+    "lr_full": {
+      "best_params": {
+        "C": 0.005179474679231213,
+        "class_weight": null,
+        "l1_ratio": 1.0
+      },
+      "cv_pr_auc": 0.7383028952030847,
+      "threshold": 0.17382579032818138
+    },
+    "lr_weather_only": {
+      "best_params": {
+        "C": 3.7275937203149416,
+        "class_weight": null,
+        "l1_ratio": 0.0
+      },
+      "cv_pr_auc": 0.5093668295684433,
+      "threshold": 0.19437722039956454
+    },
+    "lr_no_fire": {
+      "best_params": {
+        "C": 0.005179474679231213,
+        "class_weight": null,
+        "l1_ratio": 1.0
+      },
+      "cv_pr_auc": 0.7383000023223929,
+      "threshold": 0.1738589484077034
+    },
+    "dt_full": {
+      "best_params": {
+        "class_weight": null,
+        "max_depth": 5,
+        "min_samples_leaf": 50
+      },
+      "cv_pr_auc": 0.6573159800390914,
+      "threshold": 0.16341145151537514
+    },
+    "dt_weather_only": {
+      "best_params": {
+        "class_weight": "balanced",
+        "max_depth": 8,
+        "min_samples_leaf": 25
+      },
+      "cv_pr_auc": 0.3964509409983905,
+      "threshold": 0.612332167971298
+    },
+    "dt_no_fire": {
+      "best_params": {
+        "class_weight": null,
+        "max_depth": 5,
+        "min_samples_leaf": 50
+      },
+      "cv_pr_auc": 0.6664967825978824,
+      "threshold": 0.1660488141527378
+    },
+    "rf_full": {
+      "best_params": {
+        "n_estimators": 500,
+        "min_samples_leaf": 100,
+        "max_features": 1.0,
+        "max_depth": 5,
+        "class_weight": "balanced"
+      },
+      "cv_pr_auc": 0.7100026723752356,
+      "threshold": 0.7353918530075659
+    },
+    "rf_no_fire": {
+      "best_params": {
+        "n_estimators": 300,
+        "min_samples_leaf": 5,
+        "max_features": 1.0,
+        "max_depth": 3,
+        "class_weight": null
+      },
+      "cv_pr_auc": 0.7133268326604422,
+      "threshold": 0.1461178652915942
+    },
+    "hgb_full": {
+      "best_params": {
+        "class_weight": "balanced",
+        "l2_regularization": 0.05719341217670732,
+        "learning_rate": 0.019859290160502092,
+        "max_depth": 8,
+        "max_iter": 330,
+        "max_leaf_nodes": 7,
+        "min_samples_leaf": 61
+      },
+      "cv_pr_auc": 0.7013256589621684,
+      "threshold": 0.5280814566507592
+    },
+    "hgb_no_fire": {
+      "best_params": {
+        "class_weight": "balanced",
+        "l2_regularization": 0.05719341217670732,
+        "learning_rate": 0.019859290160502092,
+        "max_depth": 8,
+        "max_iter": 330,
+        "max_leaf_nodes": 7,
+        "min_samples_leaf": 61
+      },
+      "cv_pr_auc": 0.7029599929292567,
+      "threshold": 0.6278822793468416
+    }
+  },
+  "final_model_rule": "highest CV PR-AUC among full-feature LR, DT, RF, HGB; within 0.005 = tie; simplest tied model wins",
+  "final_model": "lr_full",
+  "best_ensemble": "rf_full",
+  "final_model_thresholds": {
+    "single threshold": {
+      "Tier 1 metro (≥ 3 M)": 0.17382579032818138,
+      "Tier 2 large (1–3 M)": 0.17382579032818138,
+      "Tier 3 small (< 1 M)": 0.17382579032818138
+    },
+    "threshold per tier": {
+      "Tier 1 metro (≥ 3 M)": 0.17448388684553912,
+      "Tier 2 large (1–3 M)": 0.1799550781354357,
+      "Tier 3 small (< 1 M)": 0.17594707256475617
+    },
+    "equalized odds, ε = 0.05": {
+      "Tier 1 metro (≥ 3 M)": 0.17448388684553912,
+      "Tier 2 large (1–3 M)": 0.1799550781354357,
+      "Tier 3 small (< 1 M)": 0.18999191084493708
+    }
+  },
+  "relearned_label": {
+    "thresholds": {
+      "Amritsar": 1.6352201246662292,
+      "Faisalabad": 1.7737657209925808,
+      "Ferozepur": 1.3602777652473403,
+      "Islamabad": 0.5988735182972336,
+      "Jalandhar": 1.2614908704165253,
+      "Lahore": 1.9899457801588851,
+      "Ludhiana": 1.2477362591712444,
+      "Multan": 1.377785888205505,
+      "Rahim Yar Khan": 0.5863660368932178,
+      "Rawalpindi": 0.5988735182972336,
+      "Sialkot": 1.3247307852155463
+    },
+    "lr_full_threshold": 0.15414727552434787,
+    "lr_full_best_params": {
+      "C": 0.005179474679231213,
+      "class_weight": null,
+      "l1_ratio": 1.0
+    }
+  }
+}
